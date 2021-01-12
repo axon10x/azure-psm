@@ -1,0 +1,106 @@
+#!/bin/bash
+
+. ./step0.variables.sh
+
+# Public IPs (for convenience to work with VMs - not necessary in production)
+az deployment group create --subscription "$subscriptionId" -n "VM1-PIP-""$location1" --verbose \
+	-g "$rgNameSourceLocation1" --template-file "$templatePublicIp" \
+	--parameters \
+	location="$location1" \
+	publicIpName="$vm1PipNameLocation1" \
+	publicIpType="$vmPublicIpType" \
+	publicIpSku="$vmPublicIpSku" \
+	domainNameLabel="$vm1NameLocation1"
+
+az deployment group create --subscription "$subscriptionId" -n "VM2-PIP-""$location1" --verbose \
+	-g "$rgNameSourceLocation1" --template-file "$templatePublicIp" \
+	--parameters \
+	location="$location1" \
+	publicIpName="$vm2PipNameLocation1" \
+	publicIpType="$vmPublicIpType" \
+	publicIpSku="$vmPublicIpSku" \
+	domainNameLabel="$vm2NameLocation1"
+
+# Network Interfaces
+az deployment group create --subscription "$subscriptionId" -n "VM1-NIC-""$location1" --verbose \
+	-g "$rgNameSourceLocation1" --template-file "$templateNetworkInterface" \
+	--parameters \
+	location="$location1" \
+	networkInterfaceName="$vm1NicNameLocation1" \
+	vnetResourceGroup="$rgNameNetLocation1" \
+	vnetName="$vnetNameLocation1" \
+	subnetName="$subnetName" \
+	enableAcceleratedNetworking="$enableAcceleratedNetworking" \
+	privateIpAllocationMethod="$privateIpAllocationMethod" \
+	publicIpResourceGroup="$rgNameSourceLocation1" \
+	publicIpName="$vm1PipNameLocation1" \
+	ipConfigName="$ipConfigName"
+
+az deployment group create --subscription "$subscriptionId" -n "VM2-NIC-""$location1" --verbose \
+	-g "$rgNameSourceLocation1" --template-file "$templateNetworkInterface" \
+	--parameters \
+	location="$location1" \
+	networkInterfaceName="$vm2NicNameLocation1" \
+	vnetResourceGroup="$rgNameNetLocation1" \
+	vnetName="$vnetNameLocation1" \
+	subnetName="$subnetName" \
+	enableAcceleratedNetworking="$enableAcceleratedNetworking" \
+	privateIpAllocationMethod="$privateIpAllocationMethod" \
+	publicIpResourceGroup="$rgNameSourceLocation1" \
+	publicIpName="$vm2PipNameLocation1" \
+	ipConfigName="$ipConfigName"
+
+# VMs
+az deployment group create --subscription "$subscriptionId" -n "VM1-""$location1" --verbose \
+	-g "$rgNameSourceLocation1" --template-file "$templateVirtualMachine" \
+	--parameters \
+	location="$location1" \
+	virtualMachineName="$vm1NameLocation1" \
+	virtualMachineSize="$vmSize" \
+	imageResourceId="" \
+	publisher="$vmPublisher" \
+	offer="$vmOffer" \
+	sku="$vm1Sku" \
+	version="$vmVersion" \
+	provisionVmAgent="$provisionVmAgent" \
+	adminUsername="$adminUsername" \
+	adminPublicKey="$adminPublicKey" \
+	virtualMachineTimeZone="$vmTimeZoneLocation1" \
+	osDiskStorageType="$osDiskStorageType" \
+	osDiskSizeInGB="$osDiskSizeInGB" \
+	dataDiskStorageType="$dataDiskStorageType" \
+	dataDiskCount="$dataDiskCount" \
+	dataDiskSizeInGB="$dataDiskSizeInGB" \
+	vmAutoShutdownTime="$vmAutoShutdownTime" \
+	enableAutoShutdownNotification="$enableAutoShutdownNotification" \
+	autoShutdownNotificationWebhookURL="$autoShutdownNotificationWebhookURL" \
+	autoShutdownNotificationMinutesBefore="$autoShutdownNotificationMinutesBefore" \
+	resourceGroupNameNetworkInterface="$rgNameSourceLocation1" \
+	networkInterfaceName="$vm1NicNameLocation1"
+
+az deployment group create --subscription "$subscriptionId" -n "VM2-""$location1" --verbose \
+	-g "$rgNameSourceLocation1" --template-file "$templateVirtualMachine" \
+	--parameters \
+	location="$location1" \
+	virtualMachineName="$vm2NameLocation1" \
+	virtualMachineSize="$vmSize" \
+	imageResourceId="" \
+	publisher="$vmPublisher" \
+	offer="$vmOffer" \
+	sku="$vm2Sku" \
+	version="$vmVersion" \
+	provisionVmAgent="$provisionVmAgent" \
+	adminUsername="$adminUsername" \
+	adminPublicKey="$adminPublicKey" \
+	virtualMachineTimeZone="$vmTimeZoneLocation1" \
+	osDiskStorageType="$osDiskStorageType" \
+	osDiskSizeInGB="$osDiskSizeInGB" \
+	dataDiskStorageType="$dataDiskStorageType" \
+	dataDiskCount="$dataDiskCount" \
+	dataDiskSizeInGB="$dataDiskSizeInGB" \
+	vmAutoShutdownTime="$vmAutoShutdownTime" \
+	enableAutoShutdownNotification="$enableAutoShutdownNotification" \
+	autoShutdownNotificationWebhookURL="$autoShutdownNotificationWebhookURL" \
+	autoShutdownNotificationMinutesBefore="$autoShutdownNotificationMinutesBefore" \
+	resourceGroupNameNetworkInterface="$rgNameSourceLocation1" \
+	networkInterfaceName="$vm2NicNameLocation1"
