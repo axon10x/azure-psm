@@ -1,0 +1,30 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+		"timestamp": {
+			"type": "string",
+			"defaultValue": "[utcNow('u')]"
+		},
+
+        "privateDnsZoneName": {
+            "type": "String"
+        }
+    },
+    "variables": {
+		"resourceTags": {
+			"Timestamp": "[parameters('timestamp')]"
+		},
+        "apiVersionDnsZones": "2020-06-01"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Network/privateDnsZones",
+            "apiVersion": "[variables('apiVersionDnsZones')]",
+            "name": "[parameters('privateDnsZoneName')]",
+            "location": "global",
+			"tags": "[variables('resourceTags')]",
+            "properties": {}
+        }
+    ]
+}

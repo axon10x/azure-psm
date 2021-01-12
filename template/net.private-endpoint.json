@@ -1,0 +1,95 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+		"timestamp": {
+			"type": "string",
+			"defaultValue": "[utcNow('u')]"
+		},
+        "location": {
+            "defaultValue": "[resourceGroup().location]",
+            "type": "String"
+        },
+        "privateDnsZoneResourceGroup": {
+            "type": "string"
+        },
+        "privateDnsZoneName": {
+            "type": "string"
+        },
+        "protectedWorkloadResourceGroup": {
+            "type": "string"
+        },
+        "protectedWorkloadResourceType": {
+            "type": "string"
+        },
+        "protectedWorkloadName": {
+            "type": "string"
+        },
+        "protectedWorkloadSubResource": {
+            "type": "string"
+        },
+        "privateEndpointName": {
+            "type": "string"
+        },
+        "networkResourceGroup": {
+            "type": "string"
+        },
+        "vnetName": {
+            "type": "string"
+        },
+        "subnetName": {
+            "type": "string"
+        }
+    },
+    "variables": {
+        "vnetId": "[resourceId(parameters('networkResourceGroup'), 'Microsoft.Network/virtualNetworks', parameters('vnetName'))]",
+        "subnetId": "[concat(variables('vnetId'), '/subnets/', parameters('subnetName'))]",
+		"resourceTags": {
+			"Timestamp": "[parameters('timestamp')]"
+		},
+        "apiVersionPrivateEndpoint": "2020-07-01"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Network/privateEndpoints",
+            "apiVersion": "[variables('apiVersionPrivateEndpoint')]",
+            "name": "[parameters('privateEndpointName')]",
+            "location": "[parameters('location')]",
+			"tags": "[variables('resourceTags')]",
+            "properties": {
+                "privateLinkServiceConnections": [
+                    {
+                        "name": "[parameters('privateEndpointName')]",
+                        "properties": {
+                            "privateLinkServiceId": "[resourceId(parameters('protectedWorkloadResourceGroup'), parameters('protectedWorkloadResourceType'), parameters('protectedWorkloadName'))]",
+                            "groupIds": [ "[parameters('protectedWorkloadSubResource')]" ]
+                        }
+                    }
+                ],
+                "manualPrivateLinkServiceConnections": [],
+                "subnet": {
+                    "id": "[variables('subnetId')]"
+                },
+                "customDnsConfigs": []
+            }
+        },
+        {
+            "type": "Microsoft.Network/privateEndpoints/privateDnsZoneGroups",
+            "apiVersion": "[variables('apiVersionPrivateEndpoint')]",
+            "name": "[concat(parameters('privateEndpointName'), '/default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/privateEndpoints', parameters('privateEndpointName'))]"
+            ],
+            "properties": {
+                "privateDnsZoneConfigs": [
+                    {
+                        "name": "[parameters('privateDnsZoneName')]",
+                        "properties": {
+                            "privateDnsZoneId": "[resourceId(parameters('privateDnsZoneResourceGroup'), 'Microsoft.Network/privateDnsZones', parameters('privateDnsZoneName'))]"
+                        }
+                    }
+                ]
+            }
+        }
+    ]
+}

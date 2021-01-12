@@ -1,0 +1,43 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+		"timestamp": {
+			"type": "string",
+			"defaultValue": "[utcNow('u')]"
+		},
+        "privateDnsZoneName": {
+            "type": "String"
+        },
+        "vnetResourceGroup": {
+            "defaultValue": "",
+            "type": "String"
+        },
+        "vnetName": {
+            "defaultValue": "",
+            "type": "String"
+        }
+    },
+    "variables": {
+		"vnetId": "[resourceId(parameters('vnetResourceGroup'), 'Microsoft.Network/virtualNetworks', parameters('vnetName'))]",
+		"resourceTags": {
+			"Timestamp": "[parameters('timestamp')]"
+		},
+        "apiVersionDnsZonesVnetLinks": "2020-06-01"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
+            "apiVersion": "[variables('apiVersionDnsZonesVnetLinks')]",
+            "name": "[concat(parameters('privateDnsZoneName'), '/link-', toLower(parameters('vnetResourceGroup')), '-', toLower(parameters('vnetName')))]",
+            "location": "global",
+			"tags": "[variables('resourceTags')]",
+            "properties": {
+                "registrationEnabled": false,
+                "virtualNetwork": {
+                    "id": "[variables('vnetId')]"
+                }
+            }
+        }
+    ]
+}
