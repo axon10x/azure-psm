@@ -106,6 +106,10 @@
 			"type": "bool",
 			"defaultValue": true
 		},
+		"osDiskName": {
+			"type": "string",
+			"defaultValue": "[concat(parameters('virtualMachineName'), '-os')]"
+		},
 		"osDiskStorageType": {
 			"type": "string",
 			"allowedValues": [
@@ -127,6 +131,10 @@
 				"displayName": "OS disk size in GB",
 				"description": ""
 			}
+		},
+		"dataDiskNameInfix": {
+			"type": "string",
+			"defaultValue": "[concat(parameters('virtualMachineName'), '-data-')]"
 		},
 		"dataDiskStorageType": {
 			"type": "string",
@@ -211,8 +219,6 @@
 		}
 	},
 	"variables": {
-		"osDiskName": "[concat(parameters('virtualMachineName'), '-os')]",
-		"dataDiskNamePrefix": "[concat(parameters('virtualMachineName'), '-data-')]",
 		"networkInterfaceId": "[resourceId(parameters('resourceGroupNameNetworkInterface'), 'Microsoft.Network/networkInterfaces', parameters('networkInterfaceName'))]",
 		"imageReference": "[
 			if
@@ -276,7 +282,7 @@
 					"imageReference": "[variables('imageReference')]",
 					"osDisk": {
 						"createOption": "FromImage",
-						"name": "[variables('osDiskName')]",
+						"name": "[parameters('osDiskName')]",
 						"diskSizeGB": "[parameters('osDiskSizeInGB')]",
 						"managedDisk": {
 							"storageAccountType": "[parameters('osDiskStorageType')]"
@@ -289,7 +295,7 @@
 							"input": {
 								"lun": "[copyIndex('dataDisks')]",
 								"createOption": "Empty",
-								"name": "[concat(variables('dataDiskNamePrefix'), copyIndex('dataDisks', 1))]",
+								"name": "[concat(parameters('dataDiskNameInfix'), copyIndex('dataDisks', 1))]",
 								"diskSizeGB": "[parameters('dataDiskSizeInGB')]",
 								"managedDisk": {
 									"storageAccountType": "[parameters('dataDiskStorageType')]"

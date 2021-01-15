@@ -93,9 +93,9 @@
 				"copy": [
 					{
 						"name": "serviceEndpoints",
-						"count": "[if (empty(trim(parameters('serviceEndpoints'))), 0, length(variables('serviceEndpointNames')))]",
+						"count": "[if (empty(variables('serviceEndpointNames')), 0, length(variables('serviceEndpointNames')))]",
 						"input": {
-							"service": "[trim(variables('serviceEndpointNames')[copyIndex('serviceEndpoints')])]"
+							"service": "[variables('serviceEndpointNames')[copyIndex('serviceEndpoints')]]"
 						}
 					}
 				],

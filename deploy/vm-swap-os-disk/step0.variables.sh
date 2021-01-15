@@ -4,7 +4,7 @@
 subscriptionId="PROVIDE"
 nsgRuleInbound100Src="PROVIDE"
 adminUsername="PROVIDE"
-adminPublicKey="ssh-rsa PROVIDE== ""$adminUsername"
+adminPublicKey="PROVIDE"
 
 # Deployment
 location1="eastus2"
@@ -78,6 +78,7 @@ vm2NicNameLocation1="$vm2NameLocation1""-nic"
 vm3NameLocation1="pz-vm3"
 vm3PipNameLocation1="$vm3NameLocation1""-pip"
 vm3NicNameLocation1="$vm3NameLocation1""-nic"
+vm3OsDiskNameVersion0="$vm3NameLocation1""-os"
 vm3OsDiskNameVersion1="$vm3NameLocation1""-os-""v1-1.0.0"
 vm3OsDiskNameVersion2="$vm3NameLocation1""-os-""v2-1.0.0"
 
