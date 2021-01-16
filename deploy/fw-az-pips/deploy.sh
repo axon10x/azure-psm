@@ -25,7 +25,7 @@ subnetPrefixOther="10.1.10.0/24"
 
 publicIpType="Static" # Static or Dynamic - Standard SKU requires Static
 publicIpSku="Standard" # Basic or Standard
-firewallAvailabilityZones="1, 2, 3"
+firewallAvailabilityZones="2"
 
 pipNameZrLocation1="pip-fw-zr"
 pipNameZ1Location1="pip-fw-z1"
@@ -128,4 +128,4 @@ az deployment group create --subscription "$subscriptionId" -n "FW-""$location1"
 	firewallTier="$firewallTier" \
 	firewallThreatIntelMode="$firewallThreatIntelMode" \
 	publicIpResourceGroup="$rgNameLocation1" \
-	publicIpAddressNames="$pipNameZrLocation1, $pipNameZ1Location1, $pipNameZ2Location1"
+	publicIpAddressNames="$pipNameZrLocation1, $pipNameZ2Location1"
