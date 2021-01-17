@@ -14,8 +14,6 @@
 
 vm1Id="$(az vm show --subscription "$subscriptionId" -g "$rgNameSourceLocation1" -n "$vm1NameLocation1" -o tsv --query "id")"
 vm2Id="$(az vm show --subscription "$subscriptionId" -g "$rgNameSourceLocation1" -n "$vm2NameLocation1" -o tsv --query "id")"
-#echo $vm1Id
-#echo $vm2Id
 
 # Deallocate the source VMs
 # https://docs.microsoft.com/en-us/cli/azure/vm?view=azure-cli-latest#az_vm_deallocate
@@ -43,8 +41,6 @@ az image create --subscription "$subscriptionId" -g "$rgNameSigLocation1" --verb
 # Get VM Image IDs for SIG Image Version Creation
 image1Id="$(az image show --subscription "$subscriptionId" -g "$rgNameSigLocation1" -n "$vm1ImageName" -o tsv --query "id")"
 image2Id="$(az image show --subscription "$subscriptionId" -g "$rgNameSigLocation1" -n "$vm2ImageName" -o tsv --query "id")"
-#echo $image1Id
-#echo $image2Id
 
 # Create Image Version (e.g. from custom image from generalized VM)
 # https://docs.microsoft.com/cli/azure/sig/image-version?view=azure-cli-latest#az_sig_image_version_create

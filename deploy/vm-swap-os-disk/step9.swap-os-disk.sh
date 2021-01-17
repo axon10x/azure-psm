@@ -7,9 +7,6 @@ echo "Get the resource IDs of the OS disks"
 vm3OsDiskIdVersion0="$(az disk show --subscription "$subscriptionId" -g "$rgNameDeployLocation1" -n "$vm3OsDiskNameVersion0" -o tsv --query "id")"
 vm3OsDiskIdVersion1="$(az disk show --subscription "$subscriptionId" -g "$rgNameDeployLocation1" -n "$vm3OsDiskNameVersion1" -o tsv --query "id")"
 vm3OsDiskIdVersion2="$(az disk show --subscription "$subscriptionId" -g "$rgNameDeployLocation1" -n "$vm3OsDiskNameVersion2" -o tsv --query "id")"
-#echo "$vm3OsDiskIdVersion0"
-#echo "$vm3OsDiskIdVersion1"
-#echo "$vm3OsDiskIdVersion2"
 
 echo "Deallocate the existing VM so we can swap in the OS disk"
 az vm deallocate --subscription "$subscriptionId" -g "$rgNameDeployLocation1" --name "$vm3NameLocation1" --verbose

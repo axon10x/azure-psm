@@ -5,8 +5,6 @@
 # Get Shared Image Gallery (SIG) Version References
 sigImageReference1="$(az sig image-version show --subscription "$subscriptionId" -g "$rgNameSigLocation1" --gallery-name "$sigName" --gallery-image-definition "$imageDefinition1" --gallery-image-version "$imageVersion1" -o tsv --query "id")"
 sigImageReference2="$(az sig image-version show --subscription "$subscriptionId" -g "$rgNameSigLocation1" --gallery-name "$sigName" --gallery-image-definition "$imageDefinition2" --gallery-image-version "$imageVersion2" -o tsv --query "id")"
-#echo $sigImageReference1
-#echo $sigImageReference2
 
 # Create managed OS disks from SIG image versions
 # https://docs.microsoft.com/cli/azure/disk?view=azure-cli-latest#az_disk_create
