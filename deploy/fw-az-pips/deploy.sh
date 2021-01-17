@@ -25,7 +25,7 @@ subnetPrefixOther="10.1.10.0/24"
 
 publicIpType="Static" # Static or Dynamic - Standard SKU requires Static
 publicIpSku="Standard" # Basic or Standard
-firewallAvailabilityZones="2"
+firewallAvailabilityZones="1,2,3"
 
 pipNameZrLocation1="pip-fw-zr"
 pipNameZ1Location1="pip-fw-z1"
