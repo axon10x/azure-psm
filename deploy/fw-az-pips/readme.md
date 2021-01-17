@@ -4,7 +4,7 @@
 
 ### Summary
 
-[deploy.sh](deploy.sh) deploys an Azure Firewall with Public IP Addresses, as well as the associated infrastructure (Resource Group, Network Security Group, VNet, Subnet).
+[deploy.sh](deploy.sh) deploys an Azure Firewall with Public IP Addresses (PIPs), as well as the associated infrastructure (Resource Group, Network Security Group, VNet, Subnet).
 
 The Azure Firewall can be configured for the following Azure Availability Zone (AZ) settings (in an Azure Region that supports AZs) by setting the `$firewallAvailabilityZones` value as follows:
 
@@ -13,9 +13,9 @@ The Azure Firewall can be configured for the following Azure Availability Zone (
 - One AZ (e.g. 1): "1"
 - Some AZs (e.g. 1,2 but not 3): "1,2"
 
-The [Azure Firewall documentation](https://docs.microsoft.com/azure/firewall/deploy-availability-zone-powershell#create-a-firewall-with-availability-zones) describes the combination of Azure Firewall AZ configurations and permissible associated Public IP Address AZ configurations. As Azure Firewall can be configured for multiple AZs, whereas Public IPs can be configured either for none or exactly one AZ, it's worth reviewing the guidelines.
+The [Azure Firewall documentation](https://docs.microsoft.com/azure/firewall/deploy-availability-zone-powershell#create-a-firewall-with-availability-zones) describes the combination of Azure Firewall AZ configurations and permissible associated PIP AZ configurations. As Azure Firewall can be configured for multiple AZs, whereas PIPs can be configured either for none or exactly one AZ, it's worth reviewing the guidelines.
 
-Firewall AZ | Non-Zonal Public IP | AZ1 Public IP | AZ2 Public IP | AZ3 Public IP
+Firewall AZ | Non-Zonal PIP | AZ1 PIP | AZ2 PIP | AZ3 PIP
 ---- | :----: | :----: | :----: | :-----:
 None | Yes | Yes | Yes | Yes
 All (1,2,3) | Yes | No | No | No
@@ -26,7 +26,20 @@ All (1,2,3) | Yes | No | No | No
 
 ### Deployment
 
-Edit [deploy.sh](deploy.sh). Minimally, set values for `$subscriptionId`. Adjust any other values desired. Run from any bash prompt with the current [Azure Command-Line Interface (CLI)](https://docs.microsoft.com/cli/azure/install-azure-cli?view=azure-cli-latest) installed.
+Edit [deploy.sh](deploy.sh).
+
+Set `$subscriptionId` to the value for your Azure subscription ID.
+
+Set `$firewallAvailabilityZones` to the AZs for the Azure Firewall. This is a comma-delimited string, so you can leave it blank for a non-zonal deployment, or set it to a value like `"1,2"` or `"1,2,3"`.
+
+The script creates four PIP: a non-zonal PIP, and one PIP in each of the three AZs. The corresponding variables are `$pipNameZrLocation1`, `$pipNameZ1Location1`, `$pipNameZ2Location1`, and `$pipNameZ3Location1`.
+
+Set `$publicIpAddressNames` to a comma-delimited string with the PIP names to configure to the Firewall. For example, to configure a Firewall with all four PIPs, use
+`publicIpAddressNames="$pipNameZrLocation1"",""$pipNameZ1Location1"",""$pipNameZ2Location1"",""$pipNameZ3Location1"`
+
+(NOTE: It is fully expected that invalid combinations of an AZ-configured Firewall and various of the PIPs will cause the deployment to _fail_. The intent of this script is to test through the permutations easily to understand which will succeed or fail, per the above table.)
+
+Run `./deploy.sh` from a bash prompt with the current [Azure Command-Line Interface (CLI)](https://docs.microsoft.com/cli/azure/install-azure-cli?view=azure-cli-latest) installed.
 
 ### NOTE
 
