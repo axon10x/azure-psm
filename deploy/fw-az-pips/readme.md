@@ -30,4 +30,4 @@ Edit [deploy.sh](deploy.sh). Minimally, set values for `$subscriptionId`. Adjust
 
 ### NOTE
 
-As with all assets in this repo, usage is at your own risk and is not supported by my employer. See [disclaimer](/) at the root of this repo.
+As with all assets in this repo, usage is at your own risk and is not supported by my employer. See [disclaimer](https://github.com/plzm/azure-deploy/) at the root of this repo.
