@@ -56,6 +56,12 @@ To create a VM on which to test OS disk swap, run Step 8.
 
 To swap OS disks, run Step 9 as needed. _Reminder: set the disk ID to use on `az vm update --os-disk` to the correct OS disk ID._
 
+### Data Disks
+
+What if a VM has data disks in addition to an OS disk? Data disks do not need to be detached and re-attached from VMs to swap the OS disk; the step9 script will work.
+
+However, you may still need to take appropriate steps inside the guest OS, when swapping a new OS disk onto a VM where you previously had data disks mounted. For example, you may need to create persistent filesystem mounts for the data disks, in order to access the file systems on the data disks. For details, review the Azure docs for managing Azure disks on [Linux](https://docs.microsoft.com/azure/virtual-machines/linux/tutorial-manage-disks) or [Windows](https://docs.microsoft.com/azure/virtual-machines/windows/tutorial-manage-data-disk).
+
 ### NOTE
 
 As with all assets in this repo, usage is at your own risk and is not supported by my employer. See [disclaimer](https://github.com/plzm/azure-deploy/) at the root of this repo.
