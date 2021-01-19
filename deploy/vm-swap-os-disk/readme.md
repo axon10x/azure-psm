@@ -6,7 +6,7 @@
 
 This deployment shows how to create VM OS disk images, and to swap a VM's OS disk without deleting and re-creating the associated Azure resources (VM resource, Network Interface, Public IP, Data Disks).
 
-Why is this be useful?
+Why is this useful?
 
 - Periodically create new versions of OS disks with up-to-date patches and other configurations
 - Maintain multiple environments for development, testing, etc.
