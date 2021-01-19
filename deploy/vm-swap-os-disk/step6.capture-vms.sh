@@ -5,7 +5,7 @@
 # ##################################################
 # IMPORTANT DO NOT SKIP THIS - READ THIS!!!!
 # MAKE SURE YOU GENERALIZE THE VMs FIRST!!!!!
-# Step 1 at https://docs.microsoft.com/en-us/azure/virtual-machines/linux/capture-image
+# Step 1 at https://docs.microsoft.com/azure/virtual-machines/linux/capture-image
 # TODO - could add ssh and sudo waagent -deprovision here, depends if execution context has SSH key needed for that
 # OTHERWISE - just SSH into your VMs and do step 1 (doc link) there before actually running this .sh
 # ##################################################
@@ -16,21 +16,21 @@ vm1Id="$(az vm show --subscription "$subscriptionId" -g "$rgNameSourceLocation1"
 vm2Id="$(az vm show --subscription "$subscriptionId" -g "$rgNameSourceLocation1" -n "$vm2NameLocation1" -o tsv --query "id")"
 
 # Deallocate the source VMs
-# https://docs.microsoft.com/en-us/cli/azure/vm?view=azure-cli-latest#az_vm_deallocate
+# https://docs.microsoft.com/cli/azure/vm?view=azure-cli-latest#az_vm_deallocate
 az vm deallocate --subscription "$subscriptionId" -g "$rgNameSourceLocation1" --name "$vm1NameLocation1" --verbose
 
 az vm deallocate --subscription "$subscriptionId" -g "$rgNameSourceLocation1" --name "$vm2NameLocation1" --verbose
 
 
 # Generalize the source VMs
-# https://docs.microsoft.com/en-us/cli/azure/vm?view=azure-cli-latest#az_vm_generalize
+# https://docs.microsoft.com/cli/azure/vm?view=azure-cli-latest#az_vm_generalize
 az vm generalize --subscription "$subscriptionId" -g "$rgNameSourceLocation1" --name "$vm1NameLocation1" --verbose
 
 az vm generalize --subscription "$subscriptionId" -g "$rgNameSourceLocation1" --name "$vm2NameLocation1" --verbose
 
 
 # Create VM images
-# https://docs.microsoft.com/en-us/cli/azure/image?view=azure-cli-latest#az_image_create
+# https://docs.microsoft.com/cli/azure/image?view=azure-cli-latest#az_image_create
 az image create --subscription "$subscriptionId" -g "$rgNameSigLocation1" --verbose \
 	-n "$vm1ImageName" --source "$vm1Id"
 
@@ -44,10 +44,6 @@ image2Id="$(az image show --subscription "$subscriptionId" -g "$rgNameSigLocatio
 
 # Create Image Version (e.g. from custom image from generalized VM)
 # https://docs.microsoft.com/cli/azure/sig/image-version?view=azure-cli-latest#az_sig_image_version_create
-# NOTE: current open bug, to be fixed Jan 19 2021 in Azure CLI 2.18
-# https://github.com/Azure/azure-cli/issues/16466
-# https://github.com/Azure/azure-cli/issues/16493
-# WHILE THIS BUG PERSISTS / UNTIL AZ CLI 2.18, USE PORTAL TO CREATE NEW SIG IMAGE VERSIONS
 az sig image-version create --subscription "$subscriptionId" -g "$rgNameSigLocation1" -l "$location1" --verbose \
 	-r "$sigName" --gallery-image-definition "$imageDefinition1" --gallery-image-version "$imageVersion1" \
 	--managed-image "$image1Id" --target-regions "$location1"
