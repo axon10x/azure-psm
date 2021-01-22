@@ -2,7 +2,9 @@
 
 . ./step0.variables.sh
 
-# Public IPs (for convenience to work with VMs - not necessary in production)
+echo "Deploy Source VMs to use for image capture"
+
+echo "Deploy Source VM1 Public IP"
 az deployment group create --subscription "$subscriptionId" -n "VM1-PIP-""$location1" --verbose \
 	-g "$rgNameSourceLocation1" --template-file "$templatePublicIp" \
 	--parameters \
@@ -12,6 +14,7 @@ az deployment group create --subscription "$subscriptionId" -n "VM1-PIP-""$locat
 	publicIpSku="$vmPublicIpSku" \
 	domainNameLabel="$vm1NameLocation1"
 
+echo "Deploy Source VM2 Public IP"
 az deployment group create --subscription "$subscriptionId" -n "VM2-PIP-""$location1" --verbose \
 	-g "$rgNameSourceLocation1" --template-file "$templatePublicIp" \
 	--parameters \
@@ -21,7 +24,7 @@ az deployment group create --subscription "$subscriptionId" -n "VM2-PIP-""$locat
 	publicIpSku="$vmPublicIpSku" \
 	domainNameLabel="$vm2NameLocation1"
 
-# Network Interfaces
+echo "Deploy Source VM1 Network Interface"
 az deployment group create --subscription "$subscriptionId" -n "VM1-NIC-""$location1" --verbose \
 	-g "$rgNameSourceLocation1" --template-file "$templateNetworkInterface" \
 	--parameters \
@@ -36,6 +39,7 @@ az deployment group create --subscription "$subscriptionId" -n "VM1-NIC-""$locat
 	publicIpName="$vm1PipNameLocation1" \
 	ipConfigName="$ipConfigName"
 
+echo "Deploy Source VM2 Network Interface"
 az deployment group create --subscription "$subscriptionId" -n "VM2-NIC-""$location1" --verbose \
 	-g "$rgNameSourceLocation1" --template-file "$templateNetworkInterface" \
 	--parameters \
@@ -50,7 +54,7 @@ az deployment group create --subscription "$subscriptionId" -n "VM2-NIC-""$locat
 	publicIpName="$vm2PipNameLocation1" \
 	ipConfigName="$ipConfigName"
 
-# VMs
+echo "Deploy Source VM1"
 az deployment group create --subscription "$subscriptionId" -n "VM1-""$location1" --verbose \
 	-g "$rgNameSourceLocation1" --template-file "$templateVirtualMachine" \
 	--parameters \
@@ -78,6 +82,7 @@ az deployment group create --subscription "$subscriptionId" -n "VM1-""$location1
 	resourceGroupNameNetworkInterface="$rgNameSourceLocation1" \
 	networkInterfaceName="$vm1NicNameLocation1"
 
+echo "Deploy Source VM2"
 az deployment group create --subscription "$subscriptionId" -n "VM2-""$location1" --verbose \
 	-g "$rgNameSourceLocation1" --template-file "$templateVirtualMachine" \
 	--parameters \
@@ -104,3 +109,5 @@ az deployment group create --subscription "$subscriptionId" -n "VM2-""$location1
 	autoShutdownNotificationMinutesBefore="$autoShutdownNotificationMinutesBefore" \
 	resourceGroupNameNetworkInterface="$rgNameSourceLocation1" \
 	networkInterfaceName="$vm2NicNameLocation1"
+
+echo "Source VMs deployed"

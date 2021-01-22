@@ -8,10 +8,13 @@ sigImageReference2="$(az sig image-version show --subscription "$subscriptionId"
 
 # Create managed OS disks from SIG image versions
 # https://docs.microsoft.com/cli/azure/disk?view=azure-cli-latest#az_disk_create
+
+echo "Create Managed OS Disk 1"
 az disk create --subscription "$subscriptionId" -g "$rgNameDeployLocation1" -l "$location1" --verbose \
 	-n "$vm3OsDiskNameVersion1" --gallery-image-reference "$sigImageReference1" \
 	--os-type "$osType" --sku "$osDiskStorageType"
 
+echo "Create Managed OS Disk 2"
 az disk create --subscription "$subscriptionId" -g "$rgNameDeployLocation1" -l "$location1" --verbose \
 	-n "$vm3OsDiskNameVersion2" --gallery-image-reference "$sigImageReference2" \
 	--os-type "$osType" --sku "$osDiskStorageType"

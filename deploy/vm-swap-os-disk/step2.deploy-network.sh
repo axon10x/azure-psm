@@ -2,7 +2,7 @@
 
 . ./step0.variables.sh
 
-# Create NSG
+echo "Create NSG"
 az deployment group create --subscription "$subscriptionId" -n "NSG-""$location1" --verbose \
 	-g "$rgNameNetLocation1" --template-file "$templateNsg" \
 	--parameters \
@@ -10,7 +10,7 @@ az deployment group create --subscription "$subscriptionId" -n "NSG-""$location1
 	nsgName="$nsgNameLocation1" \
 	nsgRuleInbound100Src="$nsgRuleInbound100Src"
 
-# Create VNet
+echo "Create VNet"
 az deployment group create --subscription "$subscriptionId" -n "VNet-""$location1" --verbose \
 	-g "$rgNameNetLocation1" --template-file "$templateVnet" \
 	--parameters \
@@ -20,7 +20,7 @@ az deployment group create --subscription "$subscriptionId" -n "VNet-""$location
 	enableDdosProtection="false" \
 	enableVmProtection="false"
 
-# Create Subnet
+echo "Create Subnet"
 az deployment group create --subscription "$subscriptionId" -n "VNet-Subnet-""$location1" --verbose \
 	-g "$rgNameNetLocation1" --template-file "$templateSubnet" \
 	--parameters \

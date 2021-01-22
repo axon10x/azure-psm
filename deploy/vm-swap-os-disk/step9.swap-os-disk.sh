@@ -1,6 +1,5 @@
 #!/bin/bash
 
-echo "Variables"
 . ./step0.variables.sh
 
 echo "Get the resource IDs of the OS disks"
@@ -14,7 +13,7 @@ az vm deallocate --subscription "$subscriptionId" -g "$rgNameDeployLocation1" --
 echo "Update the VM with one of the new OS disk IDs"
 # SPECIFY THE CORRECT OS DISK ID TO SWAP -->TO<-- WITH THE --os-disk PARAMETER
 az vm update --subscription "$subscriptionId" -g "$rgNameDeployLocation1" --verbose \
-	-n "$vm3NameLocation1" --os-disk "$vm3OsDiskIdVersion2"
+	-n "$vm3NameLocation1" --os-disk "$vm3OsDiskIdVersion1"
 
 echo "Start the VM"
 az vm start --subscription "$subscriptionId" -g "$rgNameDeployLocation1" --verbose \

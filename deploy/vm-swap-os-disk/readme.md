@@ -60,7 +60,9 @@ To swap OS disks, run Step 9 as needed. _Reminder: set the disk ID to use on `az
 
 What if a VM has data disks in addition to an OS disk? Data disks do not need to be detached and re-attached from VMs to swap the OS disk; the step9 script will work.
 
-However, you may still need to take appropriate steps inside the guest OS, when swapping a new OS disk onto a VM where you previously had data disks mounted. For example, you may need to create persistent filesystem mounts for the data disks, in order to access the file systems on the data disks. For details, review the Azure docs for managing Azure disks on [Linux](https://docs.microsoft.com/azure/virtual-machines/linux/tutorial-manage-disks) or [Windows](https://docs.microsoft.com/azure/virtual-machines/windows/tutorial-manage-data-disk).
+However, you may still need to take appropriate steps inside the guest OS, when swapping a new OS disk onto a VM where you previously had data disks mounted. For example, you may need to create persistent filesystem mounts for the data disks, in order to access the file systems on the data disks. For details, review the Azure docs for managing Azure disks on [Linux](https://docs.microsoft.com/azure/virtual-machines/linux/tutorial-manage-disks#prepare-data-disks) or [Windows](https://docs.microsoft.com/azure/virtual-machines/windows/tutorial-manage-data-disk).
+
+These steps are laid out in [step8a.prep-data-disks.sh](step8a.prep-data-disks.sh), which covers one-time data disk preparation tasks as well as tasks to perform once whenever a new OS disk is swapped in for the first time.
 
 ### NOTE
 

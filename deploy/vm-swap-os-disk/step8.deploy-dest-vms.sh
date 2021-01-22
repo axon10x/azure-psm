@@ -2,7 +2,9 @@
 
 . ./step0.variables.sh
 
-# Public IPs (for convenience to work with VMs - not necessary in production)
+echo "Deploy Destination VM to use for OS disk swaps"
+
+echo "Deploy Public IP"
 az deployment group create --subscription "$subscriptionId" -n "VM3-PIP-""$location1" --verbose \
 	-g "$rgNameDeployLocation1" --template-file "$templatePublicIp" \
 	--parameters \
@@ -12,7 +14,7 @@ az deployment group create --subscription "$subscriptionId" -n "VM3-PIP-""$locat
 	publicIpSku="$vmPublicIpSku" \
 	domainNameLabel="$vm3NameLocation1"
 
-# Network Interfaces
+echo "Deploy Network Interface"
 az deployment group create --subscription "$subscriptionId" -n "VM3-NIC-""$location1" --verbose \
 	-g "$rgNameDeployLocation1" --template-file "$templateNetworkInterface" \
 	--parameters \
@@ -27,7 +29,7 @@ az deployment group create --subscription "$subscriptionId" -n "VM3-NIC-""$locat
 	publicIpName="$vm3PipNameLocation1" \
 	ipConfigName="$ipConfigName"
 
-# VMs
+echo "Deploy VM"
 az deployment group create --subscription "$subscriptionId" -n "VM3-""$location1" --verbose \
 	-g "$rgNameDeployLocation1" --template-file "$templateVirtualMachine" \
 	--parameters \
@@ -54,3 +56,5 @@ az deployment group create --subscription "$subscriptionId" -n "VM3-""$location1
 	autoShutdownNotificationMinutesBefore="$autoShutdownNotificationMinutesBefore" \
 	resourceGroupNameNetworkInterface="$rgNameDeployLocation1" \
 	networkInterfaceName="$vm3NicNameLocation1"
+
+echo "Destination VM deployed"

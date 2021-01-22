@@ -15,25 +15,28 @@
 vm1Id="$(az vm show --subscription "$subscriptionId" -g "$rgNameSourceLocation1" -n "$vm1NameLocation1" -o tsv --query "id")"
 vm2Id="$(az vm show --subscription "$subscriptionId" -g "$rgNameSourceLocation1" -n "$vm2NameLocation1" -o tsv --query "id")"
 
-# Deallocate the source VMs
 # https://docs.microsoft.com/cli/azure/vm?view=azure-cli-latest#az_vm_deallocate
+echo "Deallocate Source VM1"
 az vm deallocate --subscription "$subscriptionId" -g "$rgNameSourceLocation1" --name "$vm1NameLocation1" --verbose
 
+echo "Deallocate Source VM2"
 az vm deallocate --subscription "$subscriptionId" -g "$rgNameSourceLocation1" --name "$vm2NameLocation1" --verbose
 
 
-# Generalize the source VMs
 # https://docs.microsoft.com/cli/azure/vm?view=azure-cli-latest#az_vm_generalize
+echo "Generalize Source VM1"
 az vm generalize --subscription "$subscriptionId" -g "$rgNameSourceLocation1" --name "$vm1NameLocation1" --verbose
 
+echo "Generalize Source VM2"
 az vm generalize --subscription "$subscriptionId" -g "$rgNameSourceLocation1" --name "$vm2NameLocation1" --verbose
 
 
-# Create VM images
 # https://docs.microsoft.com/cli/azure/image?view=azure-cli-latest#az_image_create
+echo "Create Source VM1 Image"
 az image create --subscription "$subscriptionId" -g "$rgNameSigLocation1" --verbose \
 	-n "$vm1ImageName" --source "$vm1Id"
 
+echo "Create Source VM2 Image"
 az image create --subscription "$subscriptionId" -g "$rgNameSigLocation1" --verbose \
 	-n "$vm2ImageName" --source "$vm2Id"
 
@@ -42,12 +45,14 @@ az image create --subscription "$subscriptionId" -g "$rgNameSigLocation1" --verb
 image1Id="$(az image show --subscription "$subscriptionId" -g "$rgNameSigLocation1" -n "$vm1ImageName" -o tsv --query "id")"
 image2Id="$(az image show --subscription "$subscriptionId" -g "$rgNameSigLocation1" -n "$vm2ImageName" -o tsv --query "id")"
 
-# Create Image Version (e.g. from custom image from generalized VM)
+
 # https://docs.microsoft.com/cli/azure/sig/image-version?view=azure-cli-latest#az_sig_image_version_create
+echo "Create Source VM1 Shared Image Gallery Image Version from generalized VM custom image"
 az sig image-version create --subscription "$subscriptionId" -g "$rgNameSigLocation1" -l "$location1" --verbose \
 	-r "$sigName" --gallery-image-definition "$imageDefinition1" --gallery-image-version "$imageVersion1" \
 	--managed-image "$image1Id" --target-regions "$location1"
 
+echo "Create Source VM2 Shared Image Gallery Image Version from generalized VM custom image"
 az sig image-version create --subscription "$subscriptionId" -g "$rgNameSigLocation1" -l "$location1" --verbose \
 	-r "$sigName" --gallery-image-definition "$imageDefinition2" --gallery-image-version "$imageVersion2" \
 	--managed-image "$image2Id" --target-regions "$location1"
