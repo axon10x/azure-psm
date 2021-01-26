@@ -13,7 +13,7 @@ Why is this useful?
 - Create clean baseline OS installs for test suites and swap them without affecting/changing other Azure resources
 - Etc.
 
-Ten shell scripts are provided: step0 through step9. Each file has a descriptor between the file name start (step designator) and the file extension (.sh). Each script accomplishes one purpose.
+Twelve shell scripts are provided: step00 through step11. Each file has a descriptor between the file name start (step designator) and the file extension (.sh). Each script accomplishes one purpose.
 
 [step00.variables.sh](step00.variables.sh): this file sets all variable values used by all the other shell scripts. It is dot-invoked by all the other scripts, which avoids duplicate variable definitions ("Don't Repeat Yourself").
 
