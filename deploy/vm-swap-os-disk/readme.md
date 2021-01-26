@@ -74,4 +74,4 @@ These steps are laid out in [step11.prep-data-disks.sh](step11.prep-data-disks.s
 
 ### NOTE
 
-As with all assets in this repo, usage is at your own risk. These assets (scripts, templates, etc.) are not supported by my employer. Please perform your own validation and testing as with any public web open source artifact. See [disclaimer](../../readme.md) at the root of this repo.
+As with all assets in this repo, usage is at your own risk. These assets (scripts, templates, etc.) are not supported by my employer. Please perform your own validation and testing as with any public web open source artifact. See [disclaimer](../../.) at the root of this repo.
