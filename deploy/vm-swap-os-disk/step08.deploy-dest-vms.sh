@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. ./step0.variables.sh
+. ./step00.variables.sh
 
 echo "Deploy Destination VM to use for OS disk swaps"
 
@@ -45,6 +45,7 @@ az deployment group create --subscription "$subscriptionId" -n "VM3-""$location1
 	adminUsername="$adminUsername" \
 	adminPublicKey="$adminPublicKey" \
 	virtualMachineTimeZone="$vmTimeZoneLocation1" \
+	osDiskName="$vm3OsDiskNameVersion0" \
 	osDiskStorageType="$osDiskStorageType" \
 	osDiskSizeInGB="$osDiskSizeInGB" \
 	dataDiskStorageType="$dataDiskStorageType" \

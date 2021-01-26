@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. ./step0.variables.sh
+. ./step00.variables.sh
 
 echo "Get the resource IDs of the OS disks"
 vm3OsDiskIdVersion0="$(az disk show --subscription "$subscriptionId" -g "$rgNameDeployLocation1" -n "$vm3OsDiskNameVersion0" -o tsv --query "id")"

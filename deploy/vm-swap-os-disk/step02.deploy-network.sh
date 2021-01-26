@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. ./step0.variables.sh
+. ./step00.variables.sh
 
 echo "Create NSG"
 az deployment group create --subscription "$subscriptionId" -n "NSG-""$location1" --verbose \

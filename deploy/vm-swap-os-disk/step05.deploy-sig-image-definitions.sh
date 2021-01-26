@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. ./step0.variables.sh
+. ./step00.variables.sh
 
 # https://docs.microsoft.com/cli/azure/sig/image-definition?view=azure-cli-latest#az_sig_image_definition_create
 

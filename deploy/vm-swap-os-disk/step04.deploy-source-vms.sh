@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. ./step0.variables.sh
+. ./step00.variables.sh
 
 echo "Deploy Source VMs to use for image capture"
 

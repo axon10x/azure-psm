@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. ./step0.variables.sh
+. ./step00.variables.sh
 
 # ##################################################
 # IMPORTANT DO NOT SKIP THIS - READ THIS!!!!

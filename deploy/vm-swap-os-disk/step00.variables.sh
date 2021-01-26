@@ -96,9 +96,9 @@ vm2NicNameLocation1="$vm2NameLocation1""-nic"
 vm3NameLocation1="pz-""$osInfix""-vm3"
 vm3PipNameLocation1="$vm3NameLocation1""-pip"
 vm3NicNameLocation1="$vm3NameLocation1""-nic"
-vm3OsDiskNameVersion0="$vm3NameLocation1""-os"
-vm3OsDiskNameVersion1="$vm3NameLocation1""-os-""v1-1.0.0"
-vm3OsDiskNameVersion2="$vm3NameLocation1""-os-""v2-1.0.0"
+vm3OsDiskNameVersion0="$vm3NameLocation1""-os-2101"
+vm3OsDiskNameVersion1="$vm3NameLocation1""-os-2102"
+vm3OsDiskNameVersion2="$vm3NameLocation1""-os-2103"
 
 #SIG
 sigName="sig"
@@ -110,3 +110,7 @@ imageVersion2="1.0.0"
 
 vm1ImageName="$vm1NameLocation1""-image"
 vm2ImageName="$vm2NameLocation1""-image"
+
+# New VM
+newAdminUsername="newAdmin"
+sshPubKeyPath="~/.ssh/id_rsa.pub"

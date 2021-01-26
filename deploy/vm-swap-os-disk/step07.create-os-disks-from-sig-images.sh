@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. ./step0.variables.sh
+. ./step00.variables.sh
 
 # Get Shared Image Gallery (SIG) Version References
 sigImageReference1="$(az sig image-version show --subscription "$subscriptionId" -g "$rgNameSigLocation1" --gallery-name "$sigName" --gallery-image-definition "$imageDefinition1" --gallery-image-version "$imageVersion1" -o tsv --query "id")"

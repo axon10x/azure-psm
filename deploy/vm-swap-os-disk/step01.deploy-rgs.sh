@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. ./step0.variables.sh
+. ./step00.variables.sh
 
 echo "Create Resource Groups"
 az group create --subscription "$subscriptionId" -n "$rgNameSigLocation1" -l "$location1" --verbose

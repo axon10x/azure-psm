@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. ./step0.variables.sh
+. ./step00.variables.sh
 
 echo "Create Shared Image Gallery"
 # https://docs.microsoft.com/cli/azure/sig?view=azure-cli-latest#az_sig_create
