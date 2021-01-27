@@ -23,6 +23,8 @@ These are provided for convenience to create the baseline environment. If you ha
 
 [step01.deploy-rgs.sh](step01.deploy-rgs.sh): deploys resource groups used for this deployment.
 
+[step02.deploy-uami.sh](step02.deploy-uami.sh): deploys a User-Assigned Managed Identity (UAMI). Use this to configure the VM in step 09 with a UAMI. To use an existing UAMI you already have, don't run step 02; instead, update step 09 to retrieve your UAMI ID.
+
 [step03.deploy-network.sh](step03.deploy-network.sh): deploys network resources - Network Security Group (NSG), Virtual Network (VNet), and Subnet.
 
 [step04.deploy-sig.sh](step04.deploy-sig.sh): deploys a [Shared Image Gallery](https://docs.microsoft.com/azure/virtual-machines/shared-image-galleries). This is where custom VM images need to be stored, as the source to later create OS disk images.
