@@ -29,11 +29,18 @@ az deployment group create --subscription "$subscriptionId" -n "VM3-NIC-""$locat
 	publicIpName="$vm3PipNameLocation1" \
 	ipConfigName="$ipConfigName"
 
+# If a Managed Identity Name was provided, get its Resource ID
+if [ ! -z $userNameUAMILocation1 -a ! -z $rgNameUAMILocation1 ]
+then
+	uamiResourceId="$(az identity show --subscription ""$subscriptionId"" -g ""$rgNameUAMILocation1"" --name ""$userNameUAMILocation1"" -o tsv --query 'id')"
+fi
+
 echo "Deploy VM"
 az deployment group create --subscription "$subscriptionId" -n "VM3-""$location1" --verbose \
 	-g "$rgNameDeployLocation1" --template-file "$templateVirtualMachine" \
 	--parameters \
 	location="$location1" \
+	userAssignedManagedIdentityResourceId="$uamiResourceId" \
 	virtualMachineName="$vm3NameLocation1" \
 	virtualMachineSize="$vmSize" \
 	imageResourceId="" \

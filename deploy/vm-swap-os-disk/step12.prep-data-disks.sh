@@ -16,7 +16,7 @@ sudo mkfs.xfs /dev/sdd1
 sudo partprobe /dev/sdd1
 
 # Create some test filesystem things so we can reboot or swap OS disks and check that the data disks behave "as expected".
-# This is only needed the first time a data disk is mounted, as these filesystem things will persiste across different OS disk swaps.
+# This is only needed the first time a data disk is mounted, as these filesystem things will persist across different OS disk swaps.
 sudo mkdir /sdc1/azure_was_here
 sudo mkdir /sdd1/azure_was_here
 # ##########

@@ -23,25 +23,25 @@ These are provided for convenience to create the baseline environment. If you ha
 
 [step01.deploy-rgs.sh](step01.deploy-rgs.sh): deploys resource groups used for this deployment.
 
-[step02.deploy-network.sh](step02.deploy-network.sh): deploys network resources - Network Security Group (NSG), Virtual Network (VNet), and Subnet.
+[step03.deploy-network.sh](step03.deploy-network.sh): deploys network resources - Network Security Group (NSG), Virtual Network (VNet), and Subnet.
 
-[step03.deploy-sig.sh](step03.deploy-sig.sh): deploys a [Shared Image Gallery](https://docs.microsoft.com/azure/virtual-machines/shared-image-galleries). This is where custom VM images need to be stored, as the source to later create OS disk images.
+[step04.deploy-sig.sh](step04.deploy-sig.sh): deploys a [Shared Image Gallery](https://docs.microsoft.com/azure/virtual-machines/shared-image-galleries). This is where custom VM images need to be stored, as the source to later create OS disk images.
 
 #### Periodic / Image Creation
 
-[step04.deploy-source-vms.sh](step04.deploy-source-vms.sh): deploys two virtual machines, and associated network interfaces and public IP addresses, which will be used to capture OS images. This only needs to be run when new images need to be created, for example as part of a periodic new OS image generation process, or to generate multiple distinct test OS images, etc. The choice of two VMs is arbitrary and can be adjusted to create as many, or as few, source VMs as needed.
+[step05.deploy-source-vms.sh](step05.deploy-source-vms.sh): deploys two virtual machines, and associated network interfaces and public IP addresses, which will be used to capture OS images. This only needs to be run when new images need to be created, for example as part of a periodic new OS image generation process, or to generate multiple distinct test OS images, etc. The choice of two VMs is arbitrary and can be adjusted to create as many, or as few, source VMs as needed.
 
-[step05.deploy-sig-image-definitions.sh](step05.deploy-sig-image-definitions.sh): deploys two Shared Image Gallery Image Definitions, corresponding to the two source VMs deployed in step 4. These Image Definitions are not, themselves, usable to create VM OS disks.
+[step06.deploy-sig-image-definitions.sh](step06.deploy-sig-image-definitions.sh): deploys two Shared Image Gallery Image Definitions, corresponding to the two source VMs deployed in step 4. These Image Definitions are not, themselves, usable to create VM OS disks.
 
-[step06.capture-vms.sh](step06.capture-vms.sh): stops and captures _generalized_ VMs. **You must generalize the source VM(s) BEFORE running this script!** (Depending on the OS to capture, you may be able to add generalization to this script. See note in the script.) After capturing the source VMs, the script creates VM images, then creates Shared Image Gallery Image Versions from the VM images and associates each Image Version to the corresponding Image Definition created in step 5. *The Shared Image Gallery Image Versions are the source artifact for later OS disk creation.*
+[step07.capture-vms.sh](step07.capture-vms.sh): stops and captures _generalized_ VMs. **You must generalize the source VM(s) BEFORE running this script!** (Depending on the OS to capture, you may be able to add generalization to this script. See note in the script.) After capturing the source VMs, the script creates VM images, then creates Shared Image Gallery Image Versions from the VM images and associates each Image Version to the corresponding Image Definition created in step 06. *The Shared Image Gallery Image Versions are the source artifact for later OS disk creation.*
 
-[step07.create-os-disks-from-sig-images.sh](step07.create-os-disks-from-sig-images.sh): creates OS disks from Shared Image Gallery Image Versions. The created OS disks can be attached to VMs.
+[step08.create-os-disks-from-sig-images.sh](step08.create-os-disks-from-sig-images.sh): creates OS disks from Shared Image Gallery Image Versions. The created OS disks can be attached to VMs.
 
 #### As Needed
 
-[step08.deploy-dest-vms.sh](step08.deploy-dest-vms.sh): deploys a VM on which OS disk swap will be done. This is a basic VM deployment and can be customized as needed.
+[step09.deploy-dest-vms.sh](step09.deploy-dest-vms.sh): deploys a VM on which OS disk swap will be done. This is a basic VM deployment and can be customized as needed.
 
-[step09.swap-os-disk.sh](step09.swap-os-disk.sh): Deallocates the VM deployed in step 8 and swaps its OS disk. The script is set for three OS disks: the OS disk deployed with the VM in step 8, whose disk ID is stored in variable `$vm3OsDiskIdVersion0`, and the two OS disks created in step 7, stored in variables `$vm3OsDiskIdVersion1` and `$vm3OsDiskIdVersion2`. You can set any of these three variables to the `az vm update` CLI command's `--os-disk` parameter, in order to swap the corresponding OS disk onto the VM.
+[step10.swap-os-disk.sh](step10.swap-os-disk.sh): Deallocates the VM deployed in step 09 and swaps its OS disk. The script is set for three OS disks: the OS disk deployed with the VM in step 09, whose disk ID is stored in variable `$vm3OsDiskIdVersion0`, and the two OS disks created in step 08, stored in variables `$vm3OsDiskIdVersion1` and `$vm3OsDiskIdVersion2`. You can set any of these three variables to the `az vm update` CLI command's `--os-disk` parameter, in order to swap the corresponding OS disk onto the VM.
 
 ### Deployment
 
@@ -49,12 +49,12 @@ Edit [step00.variables.sh](step00.variables.sh) and set values for the variables
 
 If you need to deploy the basic infrastructure for the later scripts, run the scripts in "One Time / Initial Setup" in sequential order.
 
-If you are creating source images, run the scripts in "Periodic / Image Creation" in sequential order. _Reminder: don't forget to run VM generalization inside your source VM(s) before running Step 06._
+If you are creating source images, run the scripts in "Periodic / Image Creation" in sequential order. _Reminder: don't forget to run VM generalization inside your source VM(s) before running Step 07._
 Reference: [Linux](https://docs.microsoft.com/azure/virtual-machines/linux/capture-image#step-1-deprovision-the-vm) [Windows](https://docs.microsoft.com/azure/virtual-machines/windows/capture-image-resource)
 
-To create a VM on which to test OS disk swap, run Step 08.
+To create a VM on which to test OS disk swap, run Step 09.
 
-To swap OS disks, run Step 09 as needed. _Reminder: set the disk ID to use on `az vm update --os-disk` to the correct OS disk ID._
+To swap OS disks, run Step 10 as needed. _Reminder: set the disk ID to use on `az vm update --os-disk` to the correct OS disk ID._
 
 ### Post-Deployment: New Admin User
 
@@ -62,7 +62,7 @@ What if you need to create a new admin user on a VM after swapping to a new OS d
 
 The [VMAccess Extension](https://docs.microsoft.com/azure/virtual-machines/extensions/vmaccess) can be used to perform this task, as well as several other administrative tasks. The extension is installed by the [az vm user update](https://docs.microsoft.com/cli/azure/vm/user?view=azure-cli-latest#az_vm_user_update) Azure CLI command.
 
-This is shown in [step10.create-admin-user.sh](step10.create-admin-user.sh).
+This is shown in [step11.create-admin-user.sh](step11.create-admin-user.sh).
 
 ### Post-Deployment: Data Disks
 
@@ -70,7 +70,7 @@ What if a VM has data disks in addition to an OS disk? Data disks do not need to
 
 However, you may still need to take appropriate steps inside the guest OS, when swapping a new OS disk onto a VM where you previously had data disks mounted. For example, you may need to create persistent filesystem mounts for the data disks, in order to access the file systems on the data disks. For details, review the Azure docs for managing Azure disks on [Linux](https://docs.microsoft.com/azure/virtual-machines/linux/tutorial-manage-disks#prepare-data-disks) or [Windows](https://docs.microsoft.com/azure/virtual-machines/windows/tutorial-manage-data-disk).
 
-These steps are laid out in [step11.prep-data-disks.sh](step11.prep-data-disks.sh), which covers one-time data disk preparation tasks as well as tasks to perform once whenever a new OS disk is swapped in for the first time.
+These steps are laid out in [step12.prep-data-disks.sh](step12.prep-data-disks.sh), which covers one-time data disk preparation tasks as well as tasks to perform once whenever a new OS disk is swapped in for the first time.
 
 ### NOTE
 

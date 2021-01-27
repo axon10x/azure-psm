@@ -1,10 +1,16 @@
 #!/bin/bash
 
 # Provide at least these values
-subscriptionId="PROVIDE"
-nsgRuleInbound100Src="PROVIDE"
+nsgRuleInbound100Src="PROVIDE" # Leave empty to not add an inbound NSG rule for dev/test
 adminUsername="PROVIDE"
-adminPublicKey="PROVIDE"
+adminPublicKey="PROVIDE" # In the form single-line, 'ssh-rsa key== username'
+
+# Subscription ID. Can be hard-coded, OR can use az account show to get the default subscription in current authentication context.
+# subscriptionId="PROVIDE (HARDCODE)"
+subscriptionId="$(az account show -o tsv --query 'id')"
+
+# Get Tenant ID for Subscription. Need this to create User-Assigned Managed Identity.
+tenantId="$(az account show --subscription ""$subscriptionId"" -o tsv --query 'tenantId')"
 
 # Change this as desired. Suggest making it indicative of the VM OS publisher configured below.
 osInfix="rhel"
@@ -35,6 +41,7 @@ templateSubnet="../../template/net.vnet.subnet.json"
 templatePublicIp="../../template/net.public-ip.json"
 templateNetworkInterface="../../template/net.network-interface.json"
 templateVirtualMachine="../../template/vm.linux.json"
+templateUami="../../template/identity.user-assigned-mi.json"
 
 # VM
 hyperVGeneration="V1"
@@ -66,8 +73,8 @@ enableAcceleratedNetworking="true" # This is not supported for all VM Sizes - ch
 provisionVmAgent="true"
 vmSize="Standard_D4s_v3"
 
-vmPublicIpType="Static" # Static or Dynamic - Standard SKU requires Static
-vmPublicIpSku="Standard" # Basic or Standard
+vmPublicIpType="Dynamic" # Static or Dynamic - Standard SKU requires Static
+vmPublicIpSku="Basic" # Basic or Standard
 
 privateIpAllocationMethod="Dynamic"
 ipConfigName="ipConfig1"
@@ -77,7 +84,7 @@ vmTimeZoneLocation1="Eastern Standard Time"
 osDiskStorageType="Premium_LRS" # Accepted values: Premium_LRS, StandardSSD_LRS, Standard_LRS, UltraSSD_LRS
 osDiskSizeInGB=64
 dataDiskStorageType="Premium_LRS" # Accepted values: Premium_LRS, StandardSSD_LRS, Standard_LRS, UltraSSD_LRS
-dataDiskCount=2
+dataDiskCount=0
 dataDiskSizeInGB=32
 vmAutoShutdownTime="1800"
 enableAutoShutdownNotification="Disabled"
@@ -100,6 +107,10 @@ vm3OsDiskNameVersion0="$vm3NameLocation1""-os-2101"
 vm3OsDiskNameVersion1="$vm3NameLocation1""-os-2102"
 vm3OsDiskNameVersion2="$vm3NameLocation1""-os-2103"
 
+# Destination VM User-Assigned Managed Identity
+rgNameUAMILocation1=$rgNameDeployLocation1 # Resource Group where the UAMI was/will be deployed
+userNameUAMILocation1="uami-paelaz-vm-""$location1"
+
 #SIG
 sigName="sig"
 osType="Linux"
@@ -113,4 +124,5 @@ vm2ImageName="$vm2NameLocation1""-image"
 
 # New VM
 newAdminUsername="newAdmin"
-sshPubKeyPath="~/.ssh/id_rsa.pub"
+newAdminSshKeyPath="~/.ssh/id_rsa.pub"
+
