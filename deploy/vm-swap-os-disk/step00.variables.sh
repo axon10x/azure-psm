@@ -1,16 +1,19 @@
 #!/bin/bash
 
 # Provide at least these values
-nsgRuleInbound100Src="PROVIDE" # Leave empty to not add an inbound NSG rule for dev/test
+nsgRuleInbound100Src="PROVIDE" # Leave empty to not add an inbound NSG rule for dev/test - see the net.nsg template
 adminUsername="PROVIDE"
 adminPublicKey="PROVIDE" # In the form single-line, 'ssh-rsa key== username'
 
-# Subscription ID. Can be hard-coded, OR can use az account show to get the default subscription in current authentication context.
-# subscriptionId="PROVIDE (HARDCODE)"
+# Subscription ID. Can be hard-coded (first line), OR can use az account show (second line) to get the default subscription in current authentication context.
+# subscriptionId="PROVIDE"
 subscriptionId="$(az account show -o tsv --query 'id')"
 
-# Get Tenant ID for Subscription. Need this to create User-Assigned Managed Identity.
+# Get Tenant ID for Subscription. Need this to create User-Assigned Managed Identity and Key Vault.
 tenantId="$(az account show --subscription ""$subscriptionId"" -o tsv --query 'tenantId')"
+
+# Get current user context object ID. Need this to set initial Key Vault Access Policy so secrets etc. can be set/read in these scripts.
+userObjectId="$(az ad signed-in-user show -o tsv --query 'objectId')"
 
 # Change this as desired. Suggest making it indicative of the VM OS publisher configured below.
 osInfix="rhel"
@@ -19,11 +22,23 @@ osInfix="rhel"
 location1="eastus2"
 location2="centralus"
 
+resourceNamingInfix="pz"
+
 # Resource Groups
+rgNameSecurityLocation1="vm-security-""$location1"
 rgNameSigLocation1="vm-sig-""$location1"
 rgNameNetLocation1="vm-net-""$location1"
 rgNameSourceLocation1="vm-source-""$location1"
 rgNameDeployLocation1="vm-deploy-""$location1"
+
+# User-Assigned Managed Identity
+userNameUAMILocation1="$resourceNamingInfix""-vm-uami-""$location1"
+
+# Key Vault
+keyVaultSkuName="Standard"
+keyVaultNameLocation1="kv-""$resourceNamingInfix""-""$location1"
+keyVaultSecretNameAdminUsername="vmAdminUsername"
+keyVaultSecretNameAdminSshPublicKey="vmAdminSshPublicKey"
 
 # Network
 nsgNameLocation1="vm-test-nsg-""$location1"
@@ -35,13 +50,15 @@ subnetPrefixLocation1="10.4.1.0/24"
 subnetPrefixLocation2="10.8.1.0/24"
 
 # ARM Templates
+templateUami="../../template/identity.user-assigned-mi.json"
+templateKeyVault="../../template/key-vault.json"
+templateKeyVaultSecret="../../template/key-vault.secret.json"
 templateNsg="../../template/net.nsg.json"
 templateVnet="../../template/net.vnet.json"
 templateSubnet="../../template/net.vnet.subnet.json"
 templatePublicIp="../../template/net.public-ip.json"
 templateNetworkInterface="../../template/net.network-interface.json"
 templateVirtualMachine="../../template/vm.linux.json"
-templateUami="../../template/identity.user-assigned-mi.json"
 
 # VM
 hyperVGeneration="V1"
@@ -107,10 +124,6 @@ vm3OsDiskNameVersion0="$vm3NameLocation1""-os-2101"
 vm3OsDiskNameVersion1="$vm3NameLocation1""-os-2102"
 vm3OsDiskNameVersion2="$vm3NameLocation1""-os-2103"
 
-# Destination VM User-Assigned Managed Identity
-rgNameUAMILocation1=$rgNameDeployLocation1 # Resource Group where the UAMI was/will be deployed
-userNameUAMILocation1="uami-paelaz-vm-""$location1"
-
 #SIG
 sigName="sig"
 osType="Linux"
@@ -122,7 +135,5 @@ imageVersion2="1.0.0"
 vm1ImageName="$vm1NameLocation1""-image"
 vm2ImageName="$vm2NameLocation1""-image"
 
-# New VM
+# New VM admin user in step13
 newAdminUsername="newAdmin"
-newAdminSshKeyPath="~/.ssh/id_rsa.pub"
-

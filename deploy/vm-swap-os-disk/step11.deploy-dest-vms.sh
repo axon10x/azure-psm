@@ -30,10 +30,19 @@ az deployment group create --subscription "$subscriptionId" -n "VM3-NIC-""$locat
 	ipConfigName="$ipConfigName"
 
 # If a Managed Identity Name was provided, get its Resource ID
-if [ ! -z $userNameUAMILocation1 -a ! -z $rgNameUAMILocation1 ]
+if [ ! -z $userNameUAMILocation1 ]
 then
-	uamiResourceId="$(az identity show --subscription ""$subscriptionId"" -g ""$rgNameUAMILocation1"" --name ""$userNameUAMILocation1"" -o tsv --query 'id')"
+	uamiResourceId="$(az identity show --subscription ""$subscriptionId"" -g ""$rgNameSecurityLocation1"" --name ""$userNameUAMILocation1"" -o tsv --query 'id')"
 fi
+
+echo "Retrieve Admin Username and SSH Public Key from Key Vault"
+# Note, while we defined these in step00, THAT was just to put them INTO Key Vault in step04.
+# This retrieval could equally well work if you just run this step / use your own Key Vault info.
+vmAdminUsername="$(az keyvault secret show --subscription "$subscriptionId" --vault-name "$keyVaultNameLocation1" --name "$keyVaultSecretNameAdminUsername" -o tsv --query 'value')"
+vmAdminUserSshPublicKey="$(az keyvault secret show --subscription "$subscriptionId" --vault-name "$keyVaultNameLocation1" --name "$keyVaultSecretNameAdminSshPublicKey" -o tsv --query 'value')"
+#echo $vmAdminUsername
+#echo $vmAdminUserSshPublicKey
+
 
 echo "Deploy VM"
 az deployment group create --subscription "$subscriptionId" -n "VM3-""$location1" --verbose \
@@ -49,8 +58,8 @@ az deployment group create --subscription "$subscriptionId" -n "VM3-""$location1
 	sku="$vm3Sku" \
 	version="$vmVersion" \
 	provisionVmAgent="$provisionVmAgent" \
-	adminUsername="$adminUsername" \
-	adminPublicKey="$adminPublicKey" \
+	adminUsername="$vmAdminUsername" \
+	adminPublicKey="$vmAdminUserSshPublicKey" \
 	virtualMachineTimeZone="$vmTimeZoneLocation1" \
 	osDiskName="$vm3OsDiskNameVersion0" \
 	osDiskStorageType="$osDiskStorageType" \
