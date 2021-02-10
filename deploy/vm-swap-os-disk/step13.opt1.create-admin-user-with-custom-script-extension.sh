@@ -22,7 +22,8 @@ sudo useradd ""$vmNewAdminUsername"";
 sudo usermod -aG wheel ""$vmNewAdminUsername"";
 sudo mkdir -p /home/""$vmNewAdminUsername""/.ssh;
 sudo echo \"""$vmNewAdminUserSshPublicKey""\"  > ""$vmNewAdminUsername"".txt;
-sudo cp ./""$vmNewAdminUsername"".txt /home/""$vmNewAdminUsername""/.ssh/authorized_keys
+sudo cp ./""$vmNewAdminUsername"".txt /home/""$vmNewAdminUsername""/.ssh/authorized_keys;
+sudo rm ""$vmNewAdminUsername"".txt;
 sudo chmod 700 /home/""$vmNewAdminUsername""/.ssh;
 sudo chmod 600 /home/""$vmNewAdminUsername""/.ssh/authorized_keys;
 sudo chown -R ""$vmNewAdminUsername"":""$vmNewAdminUsername"" /home/""$vmNewAdminUsername""/.ssh;
