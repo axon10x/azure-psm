@@ -2,32 +2,13 @@
 
 . ./step00.variables.sh
 
-echo "Deploy Destination VM to use for OS disk swaps"
+echo "Get the resource IDs of the OS disks"
+vm3OsDiskIdVersion0="$(az disk show --subscription "$subscriptionId" -g "$rgNameDeployLocation1" -n "$vm3OsDiskNameVersion0" -o tsv --query "id")"
+vm3OsDiskIdVersion1="$(az disk show --subscription "$subscriptionId" -g "$rgNameDeployLocation1" -n "$vm3OsDiskNameVersion1" -o tsv --query "id")"
+vm3OsDiskIdVersion2="$(az disk show --subscription "$subscriptionId" -g "$rgNameDeployLocation1" -n "$vm3OsDiskNameVersion2" -o tsv --query "id")"
 
-echo "Deploy Public IP"
-az deployment group create --subscription "$subscriptionId" -n "VM3-PIP-""$location1" --verbose \
-	-g "$rgNameDeployLocation1" --template-file "$templatePublicIp" \
-	--parameters \
-	location="$location1" \
-	publicIpName="$vm3PipNameLocation1" \
-	publicIpType="$vmPublicIpType" \
-	publicIpSku="$vmPublicIpSku" \
-	domainNameLabel="$vm3NameLocation1"
-
-echo "Deploy Network Interface"
-az deployment group create --subscription "$subscriptionId" -n "VM3-NIC-""$location1" --verbose \
-	-g "$rgNameDeployLocation1" --template-file "$templateNetworkInterface" \
-	--parameters \
-	location="$location1" \
-	networkInterfaceName="$vm3NicNameLocation1" \
-	vnetResourceGroup="$rgNameNetLocation1" \
-	vnetName="$vnetNameLocation1" \
-	subnetName="$subnetName" \
-	enableAcceleratedNetworking="$enableAcceleratedNetworking" \
-	privateIpAllocationMethod="$privateIpAllocationMethod" \
-	publicIpResourceGroup="$rgNameDeployLocation1" \
-	publicIpName="$vm3PipNameLocation1" \
-	ipConfigName="$ipConfigName"
+echo "Deallocate the existing VM so we can swap in a different OS disk"
+az vm deallocate --subscription "$subscriptionId" -g "$rgNameDeployLocation1" --name "$vm3NameLocation1" --verbose
 
 # If a Managed Identity Name was provided, get its Resource ID
 if [ ! -z $userNameUAMILocation1 ]
@@ -41,7 +22,6 @@ echo "Retrieve Admin Username and SSH Public Key from Key Vault"
 vmAdminUsername="$(az keyvault secret show --subscription "$subscriptionId" --vault-name "$keyVaultNameLocation1" --name "$keyVaultSecretNameAdminUsername" -o tsv --query 'value')"
 vmAdminUserSshPublicKey="$(az keyvault secret show --subscription "$subscriptionId" --vault-name "$keyVaultNameLocation1" --name "$keyVaultSecretNameAdminSshPublicKey" -o tsv --query 'value')"
 
-echo "Deploy VM"
 az deployment group create --subscription "$subscriptionId" -n "VM3-""$location1" --verbose \
 	-g "$rgNameDeployLocation1" --template-file "$templateVirtualMachine" \
 	--parameters \
@@ -57,9 +37,7 @@ az deployment group create --subscription "$subscriptionId" -n "VM3-""$location1
 	adminUsername="$vmAdminUsername" \
 	adminPublicKey="$vmAdminUserSshPublicKey" \
 	virtualMachineTimeZone="$vmTimeZoneLocation1" \
-	osDiskName="$vm3OsDiskNameVersion0" \
-	osDiskStorageType="$osDiskStorageType" \
-	osDiskSizeInGB="$osDiskSizeInGB" \
+	osDiskId="$vm3OsDiskIdVersion0" \
 	dataDiskStorageType="$dataDiskStorageType" \
 	dataDiskCount="$dataDiskCount" \
 	dataDiskSizeInGB="$dataDiskSizeInGB" \
@@ -70,4 +48,7 @@ az deployment group create --subscription "$subscriptionId" -n "VM3-""$location1
 	resourceGroupNameNetworkInterface="$rgNameDeployLocation1" \
 	networkInterfaceName="$vm3NicNameLocation1"
 
-echo "Destination VM deployed"
+
+echo "Start the VM"
+az vm start --subscription "$subscriptionId" -g "$rgNameDeployLocation1" --verbose \
+	-n "$vm3NameLocation1"

@@ -114,9 +114,21 @@
 			"type": "bool",
 			"defaultValue": true
 		},
+		"osDiskId": {
+			"type": "string",
+			"defaultValue": "",
+			"metadata": {
+				"displayName": "OS disk resource ID",
+				"description": "OS disk ID for an EXISTING OS disk. Use this ONLY to swap an existing OS disk onto the VM. Specifying this results in all other osDisk* params being ignored"
+			}
+		},
 		"osDiskName": {
 			"type": "string",
-			"defaultValue": "[concat(parameters('virtualMachineName'), '-os')]"
+			"defaultValue": "[concat(parameters('virtualMachineName'), '-os')]",
+			"metadata": {
+				"displayName": "OS disk name",
+				"description": "OS disk name for new VM. Cannot be changed for updates. Will be ignored if osDiskId is specified."
+			}
 		},
 		"osDiskStorageType": {
 			"type": "string",
@@ -127,7 +139,7 @@
 			"defaultValue": "Premium_LRS",
 			"metadata": {
 				"displayName": "OS disk storage type",
-				"description": ""
+				"description": "Will be ignored if osDiskId is specified."
 			}
 		},
 		"osDiskSizeInGB": {
@@ -137,7 +149,7 @@
 			"maxValue": 1023,
 			"metadata": {
 				"displayName": "OS disk size in GB",
-				"description": ""
+				"description": "Will be ignored if osDiskId is specified."
 			}
 		},
 		"dataDiskNameInfix": {
@@ -252,6 +264,24 @@
 				array(parameters('availabilityZone'))
 			)
 		]",
+		"osDisk":
+		"[
+			if
+			(
+				empty(trim(parameters('osDiskId'))),
+				createObject
+				(
+					'createOption', 'FromImage',
+					'name', parameters('osDiskName'),
+					'diskSizeGB', parameters('osDiskSizeInGB'),
+					'managedDisk', createObject('storageAccountType', parameters('osDiskStorageType'))
+				),
+				createObject
+				(
+					'managedDisk', createObject('id', parameters('osDiskId'))
+				)
+			)
+		]",
 		"networkInterfaceId": "[resourceId(parameters('resourceGroupNameNetworkInterface'), 'Microsoft.Network/networkInterfaces', parameters('networkInterfaceName'))]",
 		"imageReference": "[
 			if
@@ -310,14 +340,7 @@
 				},
 				"storageProfile": {
 					"imageReference": "[variables('imageReference')]",
-					"osDisk": {
-						"createOption": "FromImage",
-						"name": "[parameters('osDiskName')]",
-						"diskSizeGB": "[parameters('osDiskSizeInGB')]",
-						"managedDisk": {
-							"storageAccountType": "[parameters('osDiskStorageType')]"
-						}
-					},
+					"osDisk": "[variables('osDisk')]",
 					"copy": [
 						{
 							"name": "dataDisks",

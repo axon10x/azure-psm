@@ -3,7 +3,8 @@
 # Provide at least these values
 nsgRuleInbound100Src="PROVIDE" # Leave empty to not add an inbound NSG rule for dev/test - see the net.nsg template
 adminUsername="PROVIDE"
-adminPublicKey="PROVIDE" # In the form single-line, 'ssh-rsa key== username'
+# In the form single-line, 'ssh-rsa key== username'
+adminPublicKey="PROVIDE"
 
 # Subscription ID. Can be hard-coded (first line), OR can use az account show (second line) to get the default subscription in current authentication context.
 # subscriptionId="PROVIDE"

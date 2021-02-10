@@ -142,9 +142,21 @@
 				"description": "Possible values can be TimeZoneInfo.Id (https://docs.microsoft.com/dotnet/api/system.timezoneinfo.id) value from time zones returned by TimeZoneInfo.GetSystemTimeZones. See https://docs.microsoft.com/dotnet/api/system.timezoneinfo.getsystemtimezones"
 			}
 		},
+		"osDiskId": {
+			"type": "string",
+			"defaultValue": "",
+			"metadata": {
+				"displayName": "OS disk resource ID",
+				"description": "OS disk ID for an EXISTING OS disk. Use this ONLY to swap an existing OS disk onto the VM. Specifying this results in all other osDisk* params being ignored"
+			}
+		},
 		"osDiskName": {
 			"type": "string",
-			"defaultValue": "[concat(parameters('virtualMachineName'), '-os')]"
+			"defaultValue": "[concat(parameters('virtualMachineName'), '-os')]",
+			"metadata": {
+				"displayName": "OS disk name",
+				"description": "OS disk name for new VM. Cannot be changed for updates. Will be ignored if osDiskId is specified."
+			}
 		},
 		"osDiskStorageType": {
 			"type": "string",
@@ -155,7 +167,7 @@
 			"defaultValue": "Premium_LRS",
 			"metadata": {
 				"displayName": "OS disk storage type",
-				"description": ""
+				"description": "Will be ignored if osDiskId is specified."
 			}
 		},
 		"osDiskSizeInGB": {
@@ -165,8 +177,12 @@
 			"maxValue": 1023,
 			"metadata": {
 				"displayName": "OS disk size in GB",
-				"description": ""
+				"description": "Will be ignored if osDiskId is specified."
 			}
+		},
+		"dataDiskNameInfix": {
+			"type": "string",
+			"defaultValue": "[concat(parameters('virtualMachineName'), '-data-')]"
 		},
 		"dataDiskStorageType": {
 			"type": "string",
@@ -267,7 +283,33 @@
 				createObject(parameters('userAssignedManagedIdentityResourceId'), json('{}'))
 			)
 		]",
-		"dataDiskNamePrefix": "[concat(parameters('virtualMachineName'), '-data-')]",
+		"zones":
+		"[
+			if
+			(
+				empty(trim(parameters('availabilityZone'))),
+				json('[]'),
+				array(parameters('availabilityZone'))
+			)
+		]",
+		"osDisk":
+		"[
+			if
+			(
+				empty(trim(parameters('osDiskId'))),
+				createObject
+				(
+					'createOption', 'FromImage',
+					'name', parameters('osDiskName'),
+					'diskSizeGB', parameters('osDiskSizeInGB'),
+					'managedDisk', createObject('storageAccountType', parameters('osDiskStorageType'))
+				),
+				createObject
+				(
+					'managedDisk', createObject('id', parameters('osDiskId'))
+				)
+			)
+		]",
 		"networkInterfaceId": "[resourceId(parameters('resourceGroupNameNetworkInterface'), 'Microsoft.Network/networkInterfaces', parameters('networkInterfaceName'))]",
 		"imageReference": "[
 			if
@@ -303,14 +345,7 @@
 				"type": "[variables('identityType')]",
 				"userAssignedIdentities": "[variables('userAssignedIdentities')]"
 			},
-			"zones": "[
-				if
-				(
-					empty(trim(parameters('availabilityZone'))),
-					json('[]'),
-					array(parameters('availabilityZone'))
-				)
-			]",
+			"zones": "[variables('zones')]",
 			"properties": {
 				"osProfile": {
 					"computerName": "[parameters('virtualMachineName')]",
@@ -327,14 +362,7 @@
 				},
 				"storageProfile": {
 					"imageReference": "[variables('imageReference')]",
-					"osDisk": {
-						"createOption": "FromImage",
-						"diskSizeGB": "[parameters('osDiskSizeInGB')]",
-						"name": "[parameters('osDiskName')]",
-						"managedDisk": {
-							"storageAccountType": "[parameters('osDiskStorageType')]"
-						}
-					},
+					"osDisk": "[variables('osDisk')]",
 					"copy": [
 						{
 							"name": "dataDisks",
@@ -342,7 +370,7 @@
 							"input": {
 								"lun": "[copyIndex('dataDisks')]",
 								"createOption": "Empty",
-								"name": "[concat(variables('dataDiskNamePrefix'), copyIndex('dataDisks', 1))]",
+								"name": "[concat(parameters('dataDiskNameInfix'), copyIndex('dataDisks', 1))]",
 								"diskSizeGB": "[parameters('dataDiskSizeInGB')]",
 								"managedDisk": {
 									"storageAccountType": "[parameters('dataDiskStorageType')]"
