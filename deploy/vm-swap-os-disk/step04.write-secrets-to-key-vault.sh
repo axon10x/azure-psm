@@ -24,3 +24,23 @@ az deployment group create --subscription "$subscriptionId" -n "KV-""$location1"
 	secretName="$keyVaultSecretNameAdminSshPublicKey" \
 	secretValue="$adminPublicKey" \
 	expirationDate="$expirationDate"
+
+#echo "Write New VM Admin Username to Key Vault"
+az deployment group create --subscription "$subscriptionId" -n "KV-""$location1" --verbose \
+	-g "$rgNameSecurityLocation1" --template-file "$templateKeyVaultSecret" \
+	--parameters \
+	location="$location1" \
+	keyVaultName="$keyVaultNameLocation1" \
+	secretName="$keyVaultSecretNameNewAdminUsername" \
+	secretValue="$newAdminUsername" \
+	expirationDate="$expirationDate"
+
+#echo "Write New VM Admin SSH Public Key to Key Vault"
+az deployment group create --subscription "$subscriptionId" -n "KV-""$location1" --verbose \
+	-g "$rgNameSecurityLocation1" --template-file "$templateKeyVaultSecret" \
+	--parameters \
+	location="$location1" \
+	keyVaultName="$keyVaultNameLocation1" \
+	secretName="$keyVaultSecretNameNewAdminSshPublicKey" \
+	secretValue="$newAdminPublicSshKey" \
+	expirationDate="$expirationDate"

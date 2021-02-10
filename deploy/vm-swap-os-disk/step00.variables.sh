@@ -2,9 +2,22 @@
 
 # Provide at least these values
 nsgRuleInbound100Src="PROVIDE" # Leave empty to not add an inbound NSG rule for dev/test - see the net.nsg template
+# Initial admin username
 adminUsername="PROVIDE"
+# New admin user to be added to VM in step13
+newAdminUsername="PROVIDE"
+# The actual key part - for convenience, using this in public keys for both deploy admin user as well as the new admin user
+# that will be created on new VM post-deploy (see step 13)
+sshPublicKeyInfix="PROVIDE=="
+
 # In the form single-line, 'ssh-rsa key== username'
-adminPublicKey="PROVIDE"
+# Public SSH key for initial admin user
+adminPublicKey="ssh-rsa ""$sshPublicKeyInfix"" ""$adminUsername"
+
+# In the form single-line, 'ssh-rsa key== username'
+# Public SSH key for new admin user for step 13
+# For convenience, re-using the same public key as above for initial deploy user... you will likely want to set a different public SSH key per user.
+newAdminPublicSshKey="ssh-rsa ""$sshPublicKeyInfix"" ""$newAdminUsername"
 
 # Subscription ID. Can be hard-coded (first line), OR can use az account show (second line) to get the default subscription in current authentication context.
 # subscriptionId="PROVIDE"
@@ -40,6 +53,8 @@ keyVaultSkuName="Standard"
 keyVaultNameLocation1="kv-""$resourceNamingInfix""-""$location1"
 keyVaultSecretNameAdminUsername="vmAdminUsername"
 keyVaultSecretNameAdminSshPublicKey="vmAdminSshPublicKey"
+keyVaultSecretNameNewAdminUsername="vmNewAdminUsername"
+keyVaultSecretNameNewAdminSshPublicKey="vmNewAdminSshPublicKey"
 
 # Network
 nsgNameLocation1="vm-test-nsg-""$location1"
@@ -60,6 +75,7 @@ templateSubnet="../../template/net.vnet.subnet.json"
 templatePublicIp="../../template/net.public-ip.json"
 templateNetworkInterface="../../template/net.network-interface.json"
 templateVirtualMachine="../../template/vm.linux.json"
+templateVirtualMachineExtensionCustomScript="../../template/vm.extension.custom-script.json"
 
 # VM
 hyperVGeneration="V1"
@@ -135,6 +151,3 @@ imageVersion2="1.0.0"
 
 vm1ImageName="$vm1NameLocation1""-image"
 vm2ImageName="$vm2NameLocation1""-image"
-
-# New VM admin user in step13
-newAdminUsername="newAdmin"

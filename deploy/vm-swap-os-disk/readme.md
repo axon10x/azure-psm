@@ -49,9 +49,15 @@ These are provided for convenience to create the baseline environment. If you ha
 
 **NOTE** Run _EITHER_ step12.opt1.swap-os-disk-with-arm-template.sh _OR_ step12.opt2.swap-os-disk-with-azure-cli.sh. They do the same thing, but use different approaches. The first uses an ARM template to swap the VM OS disk; the second uses an Azure CLI command to swap the VM OS disk.
 
-[step12.opt1.swap-os-disk-with-arm-template.sh](step12.opt2.swap-os-disk-with-arm-template.sh): Deallocates the VM deployed in step 11 and swaps its OS disk. This script uses the same VM ARM template used in earlier steps to deploy VMs, but in this case an OS disk Azure resource ID is passed with the `osDiskId` parameter so that an OS disk swap occurs. This approach is for situations where you prefer ARM templates to Azure CLI commands, but note that you must run the VM ARM template with all the parameters you used to deploy it. In step11, the VM is deployed with a user-assigned managed identity and an SSH username and public key, and that has to be repeated here, meaning more complexity just to swap an OS disk. The script is set for three OS disks: the OS disk deployed with the VM in step 11, whose disk ID is stored in variable `$vm3OsDiskIdVersion0`, and the two OS disks created in step 10, stored in variables `$vm3OsDiskIdVersion1` and `$vm3OsDiskIdVersion2`. You can set any of these three variables to the `osDiskId` parameter on the `az deployment group create` command, in order to swap the corresponding OS disk onto the VM.
+[step12.opt1.swap-os-disk-with-arm-template.sh](step12.opt2.swap-os-disk-with-arm-template.sh): Deallocates the VM deployed in step 11 and swaps its OS disk. This script uses the same VM ARM template used in earlier steps to deploy VMs, but in this case an OS disk Azure resource ID is passed with the `osDiskId` parameter so that an OS disk swap occurs.
 
-[step12.opt2.swap-os-disk-with-azure-cli.sh](step12.opt2.swap-os-disk-with-azure-cli.sh): Deallocates the VM deployed in step 11 and swaps its OS disk. This script uses the Azure CLI command `az vm update` to set a new OS disk on the VM. This approach has the advantage of simplicity, but it may not be suitable if you can only run ARM templates, such as in a constrained CI/CD pipeline. The script is set for three OS disks: the OS disk deployed with the VM in step 11, whose disk ID is stored in variable `$vm3OsDiskIdVersion0`, and the two OS disks created in step 10, stored in variables `$vm3OsDiskIdVersion1` and `$vm3OsDiskIdVersion2`. You can set any of these three variables to the `az vm update` CLI command's `--os-disk` parameter, in order to swap the corresponding OS disk onto the VM.
+This approach is for situations where you prefer ARM templates to Azure CLI commands, but note that you must run the VM ARM template with the same parameters you used to deploy the VM originally, so that the VM config is preserved. In step11, the VM is deployed with a user-assigned managed identity and an SSH username and public key, and that has to be repeated here, meaning more complexity just to swap an OS disk.
+
+The script is set for three OS disks: the OS disk deployed with the VM in step 11, whose disk ID is stored in variable `$vm3OsDiskIdVersion0`, and the two OS disks created in step 10, stored in variables `$vm3OsDiskIdVersion1` and `$vm3OsDiskIdVersion2`. You can set any of these three variables to the `osDiskId` parameter on the `az deployment group create` command, in order to swap the corresponding OS disk onto the VM.
+
+[step12.opt2.swap-os-disk-with-azure-cli.sh](step12.opt2.swap-os-disk-with-azure-cli.sh): Deallocates the VM deployed in step 11 and swaps its OS disk. This script uses the Azure CLI command `az vm update` to set a new OS disk on the VM. This approach has the advantage of simplicity, but it may not be suitable if you can only run ARM templates.
+
+The script is set for three OS disks: the OS disk deployed with the VM in step 11, whose disk ID is stored in variable `$vm3OsDiskIdVersion0`, and the two OS disks created in step 10, stored in variables `$vm3OsDiskIdVersion1` and `$vm3OsDiskIdVersion2`. You can set any of these three variables to the `az vm update` CLI command's `--os-disk` parameter, in order to swap the corresponding OS disk onto the VM.
 
 ### Deployment
 
@@ -70,9 +76,13 @@ To swap OS disks, run Step 12 as needed. _Reminder: set the disk ID to use on `a
 
 What if you need to create a new admin user on a VM after swapping to a new OS disk?
 
-The [VMAccess Extension](https://docs.microsoft.com/azure/virtual-machines/extensions/vmaccess) can be used to perform this task, as well as several other administrative tasks. The extension is installed by the [az vm user update](https://docs.microsoft.com/cli/azure/vm/user?view=azure-cli-latest#az_vm_user_update) Azure CLI command.
+**NOTE** Run _EITHER_ step13.opt1.create-admin-user-with-custom-script-extension.sh _OR_ step13.opt2.create-admin-user-with-azure-cli.sh. They do the same thing, but use different approaches.
 
-This is shown in [step13.create-admin-user.sh](step13.create-admin-user.sh).
+[step13.opt1.create-admin-user-with-custom-script-extension.sh](step13.opt1.create-admin-user-with-custom-script-extension.sh) uses the Azure Custom Script Extension to run a script on the VM. The script is prepared inline, but the Custom Script Extension also supports retrieving a script file from remote locations like Azure Storage. For this purpose, step13.opt1.create-admin-user-with-custom-script-extension.sh also retrieves the managed identity (if one was configured) and sets it onto the extension deployment, so that files can be retrieved from locations where the managed identity has been granted RBAC access.
+
+[step13.opt2.create-admin-user-with-azure-cli.sh](step13.opt2.create-admin-user-with-azure-cli.sh) uses the [az vm user update](https://docs.microsoft.com/cli/azure/vm/user?view=azure-cli-latest#az_vm_user_update) Azure CLI command, which installs and uses the [VMAccess Extension](https://docs.microsoft.com/azure/virtual-machines/extensions/vmaccess). This extension can be used to perform this task, as well as several other administrative tasks.
+
+The option 2 script, which uses `az vm user update`, is much simpler than option 1, which uses the Custom Script Extension. Both options are provided in case one extension is disallowed in your environment.
 
 ### Post-Deployment: Data Disks
 
