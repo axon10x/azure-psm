@@ -12,7 +12,6 @@ az deployment group create --subscription "$subscriptionId" -n "KV-""$location1"
 	skuName="$keyVaultSkuName"
 
 echo "Assign permissions to current authentication context to get/set/list secrets and keys"
-echo "Adjust permissions in CLI command as needed"
 # https://docs.microsoft.com/cli/azure/keyvault?view=azure-cli-latest#az_keyvault_set_policy
 az keyvault set-policy --subscription "$subscriptionId" --verbose \
 	-g "$rgNameSecurityLocation1" -n "$keyVaultNameLocation1" \
@@ -24,14 +23,11 @@ az keyvault set-policy --subscription "$subscriptionId" --verbose \
 if [ ! -z $userNameUAMILocation1 ]
 then
 	echo "Assign permissions to UAMI to get/set/list secrets and keys"
-	echo "Adjust permissions in CLI command as needed"
 
 	# Get UAMI principal ID first
 	uamiPrincipalId="$(az identity show --subscription ""$subscriptionId"" -g ""$rgNameSecurityLocation1"" --name ""$userNameUAMILocation1"" -o tsv --query 'principalId')"
 	# Now get the UAMI object ID from the principal ID
 	uamiObjectId="$(az ad sp show --id ""$uamiPrincipalId"" -o tsv --query 'objectId')"
-
-	#echo $uamiObjectId
 
 	az keyvault set-policy --subscription "$subscriptionId" --verbose \
 		-g "$rgNameSecurityLocation1" -n "$keyVaultNameLocation1" \

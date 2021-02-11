@@ -2,7 +2,7 @@
 
 . ./step00.variables.sh
 
-# Expiration date in 1 year
+# Expiration date in 1 year from "today" - adust as needed
 expirationDate="$(date +%s -d "$(date) + 1 year")"
 
 #echo "Write VM Admin Username to Key Vault"

@@ -37,11 +37,10 @@ fi
 
 echo "Retrieve Admin Username and SSH Public Key from Key Vault"
 # Note, while we defined these in step00, THAT was just to put them INTO Key Vault in step04.
-# This retrieval could equally well work if you just run this step / use your own Key Vault info.
 vmAdminUsername="$(az keyvault secret show --subscription "$subscriptionId" --vault-name "$keyVaultNameLocation1" --name "$keyVaultSecretNameAdminUsername" -o tsv --query 'value')"
 vmAdminUserSshPublicKey="$(az keyvault secret show --subscription "$subscriptionId" --vault-name "$keyVaultNameLocation1" --name "$keyVaultSecretNameAdminSshPublicKey" -o tsv --query 'value')"
 
-echo "Deploy VM"
+echo "Deploy VM ARM Template"
 az deployment group create --subscription "$subscriptionId" -n "VM3-""$location1" --verbose \
 	-g "$rgNameDeployLocation1" --template-file "$templateVirtualMachine" \
 	--parameters \
