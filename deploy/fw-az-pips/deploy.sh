@@ -1,6 +1,7 @@
 #!/bin/bash
 
-subscriptionId="PROVIDE"
+subscriptionId="$(az account show -o tsv --query 'id')"
+
 nsgRuleInbound100Src="PROVIDE"
 
 # ARM Templates
