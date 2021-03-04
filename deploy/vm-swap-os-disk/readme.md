@@ -119,9 +119,9 @@ The option 2 script, which uses `az vm user update`, is much simpler than option
 
 ##### Step 14
 
-What if a VM has data disks in addition to an OS disk? Data disks do not need to be detached and re-attached from VMs to swap the OS disk; the step12 script will still work.
+What if a VM has data disks in addition to an OS disk? Data disks do not need to be detached and re-attached from VMs to swap the OS disk; the step12 script will still work. _Please note_ that you should thoroughly test in your scenario, especially if you use data disks > 1023 GB. You may need to adapt, and detach data disks before swapping OS disk, then re-attach data disks. Test, test, test.
 
-However, you may still need to take appropriate steps inside the guest OS, when swapping a new OS disk onto a VM where you previously had data disks mounted. For example, you may need to create persistent filesystem mounts for the data disks, in order to access the file systems on the data disks. For details, review the Azure docs for managing Azure disks on [Linux](https://docs.microsoft.com/azure/virtual-machines/linux/tutorial-manage-disks#prepare-data-disks) or [Windows](https://docs.microsoft.com/azure/virtual-machines/windows/tutorial-manage-data-disk).
+After swapping a new OS disk on for the first time, you will need to take appropriate steps inside the guest OS. For example, you may need to create persistent filesystem mounts for the data disks, in order to access the file systems on the data disks. For details, review the Azure docs for managing Azure disks on [Linux](https://docs.microsoft.com/azure/virtual-machines/linux/tutorial-manage-disks#prepare-data-disks) or [Windows](https://docs.microsoft.com/azure/virtual-machines/windows/tutorial-manage-data-disk).
 
 These steps are laid out in [step14.prep-data-disks.sh](step14.prep-data-disks.sh), which covers one-time data disk preparation tasks as well as tasks to perform once whenever a new OS disk is swapped in for the first time.
 

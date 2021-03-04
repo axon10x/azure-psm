@@ -95,7 +95,7 @@
 				"description": ""
 			}
 		},
-		"adminPublicKey": {
+		"adminSshPublicKey": {
 			"type": "string",
 			"metadata": {
 				"displayName": "VM administrator SSH public key",
@@ -329,7 +329,7 @@
 							"publicKeys": [
 								{
 									"path": "[concat('/home/', parameters('adminUsername'), '/.ssh/authorized_keys')]",
-									"keyData": "[parameters('adminPublicKey')]"
+									"keyData": "[parameters('adminSshPublicKey')]"
 								}
 							]
 						}

@@ -5,19 +5,19 @@ nsgRuleInbound100Src="PROVIDE" # Leave empty to not add an inbound NSG rule for 
 # Initial admin username
 adminUsername="PROVIDE"
 # New admin user to be added to VM in step13
-newAdminUsername="PROVIDE"
+newAdminUsername="newAdmin"
 # The actual key part - for convenience, using this in public keys for both deploy admin user as well as the new admin user
 # that will be created on new VM post-deploy (see step 13)
 sshPublicKeyInfix="PROVIDE=="
 
 # In the form single-line, 'ssh-rsa key== username'
 # Public SSH key for initial admin user
-adminPublicKey="ssh-rsa ""$sshPublicKeyInfix"" ""$adminUsername"
+adminSshPublicKey="ssh-rsa ""$sshPublicKeyInfix"" ""$adminUsername"
 
 # In the form single-line, 'ssh-rsa key== username'
 # Public SSH key for new admin user for step 13
 # For convenience, re-using the same public key as above for initial deploy user... you will likely want to set a different public SSH key per user.
-newAdminPublicSshKey="ssh-rsa ""$sshPublicKeyInfix"" ""$newAdminUsername"
+newAdminSshPublicKey="ssh-rsa ""$sshPublicKeyInfix"" ""$newAdminUsername"
 
 # Subscription ID. Can be hard-coded (first line), OR can use az account show (second line) to get the default subscription in current authentication context.
 # subscriptionId="PROVIDE"
@@ -119,7 +119,7 @@ osDiskStorageType="Premium_LRS" # Accepted values: Premium_LRS, StandardSSD_LRS,
 osDiskSizeInGB=64
 dataDiskStorageType="Premium_LRS" # Accepted values: Premium_LRS, StandardSSD_LRS, Standard_LRS, UltraSSD_LRS
 dataDiskCount=0
-dataDiskSizeInGB=32
+dataDiskSizeInGB=1023
 vmAutoShutdownTime="1800"
 enableAutoShutdownNotification="Disabled"
 autoShutdownNotificationWebhookURL="" # Provide if set enableAutoShutdownNotification="Enabled"

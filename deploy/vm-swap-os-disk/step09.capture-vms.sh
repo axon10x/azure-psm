@@ -11,6 +11,10 @@
 # ##################################################
 # DID YOU READ THE ABOVE? YOU REALLY SHOULD.
 # ##################################################
+# NOTE The following will fail if you generalized a VM with data disks > 1023 GB. If you have data disks > 1023 GB,
+# detach the data disks before generalizing and proceeding. You will need to modify later steps to detach data disks
+# before OS disk swap, then swap OS disk, then re-attach large data disks.
+# ##################################################
 
 vm1Id="$(az vm show --subscription "$subscriptionId" -g "$rgNameSourceLocation1" -n "$vm1NameLocation1" -o tsv --query "id")"
 vm2Id="$(az vm show --subscription "$subscriptionId" -g "$rgNameSourceLocation1" -n "$vm2NameLocation1" -o tsv --query "id")"
@@ -34,11 +38,11 @@ az vm generalize --subscription "$subscriptionId" -g "$rgNameSourceLocation1" --
 # https://docs.microsoft.com/cli/azure/image?view=azure-cli-latest#az_image_create
 echo "Create Source VM1 Image"
 az image create --subscription "$subscriptionId" -g "$rgNameSigLocation1" --verbose \
-	-n "$vm1ImageName" --source "$vm1Id"
+	-n "$vm1ImageName" --source "$vm1Id" --os-type "$osType" --storage-sku "$osDiskStorageType"
 
 echo "Create Source VM2 Image"
 az image create --subscription "$subscriptionId" -g "$rgNameSigLocation1" --verbose \
-	-n "$vm2ImageName" --source "$vm2Id"
+	-n "$vm2ImageName" --source "$vm2Id" --os-type "$osType" --storage-sku "$osDiskStorageType"
 
 
 # Get VM Image IDs for SIG Image Version Creation

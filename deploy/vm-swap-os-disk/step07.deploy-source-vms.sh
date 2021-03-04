@@ -60,6 +60,9 @@ echo "Retrieve Admin Username and SSH Public Key from Key Vault"
 vmAdminUsername="$(az keyvault secret show --subscription "$subscriptionId" --vault-name "$keyVaultNameLocation1" --name "$keyVaultSecretNameAdminUsername" -o tsv --query 'value')"
 vmAdminUserSshPublicKey="$(az keyvault secret show --subscription "$subscriptionId" --vault-name "$keyVaultNameLocation1" --name "$keyVaultSecretNameAdminSshPublicKey" -o tsv --query 'value')"
 
+#echo $vmAdminUsername
+#echo $vmAdminUserSshPublicKey
+
 echo "Deploy Source VM1"
 az deployment group create --subscription "$subscriptionId" -n "VM1-""$location1" --verbose \
 	-g "$rgNameSourceLocation1" --template-file "$templateVirtualMachine" \
@@ -74,7 +77,7 @@ az deployment group create --subscription "$subscriptionId" -n "VM1-""$location1
 	version="$vmVersion" \
 	provisionVmAgent="$provisionVmAgent" \
 	adminUsername="$vmAdminUsername" \
-	adminPublicKey="$vmAdminUserSshPublicKey" \
+	adminSshPublicKey="$vmAdminUserSshPublicKey" \
 	virtualMachineTimeZone="$vmTimeZoneLocation1" \
 	osDiskStorageType="$osDiskStorageType" \
 	osDiskSizeInGB="$osDiskSizeInGB" \
@@ -102,7 +105,7 @@ az deployment group create --subscription "$subscriptionId" -n "VM2-""$location1
 	version="$vmVersion" \
 	provisionVmAgent="$provisionVmAgent" \
 	adminUsername="$vmAdminUsername" \
-	adminPublicKey="$vmAdminUserSshPublicKey" \
+	adminSshPublicKey="$vmAdminUserSshPublicKey" \
 	virtualMachineTimeZone="$vmTimeZoneLocation1" \
 	osDiskStorageType="$osDiskStorageType" \
 	osDiskSizeInGB="$osDiskSizeInGB" \

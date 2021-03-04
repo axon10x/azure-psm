@@ -35,7 +35,7 @@ az deployment group create --subscription "$subscriptionId" -n "VM3-""$location1
 	version="$vmVersion" \
 	provisionVmAgent="$provisionVmAgent" \
 	adminUsername="$vmAdminUsername" \
-	adminPublicKey="$vmAdminUserSshPublicKey" \
+	adminSshPublicKey="$vmAdminUserSshPublicKey" \
 	virtualMachineTimeZone="$vmTimeZoneLocation1" \
 	osDiskId="$vm3OsDiskIdVersion0" \
 	dataDiskStorageType="$dataDiskStorageType" \
