@@ -1,0 +1,36 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "value": ""
+        },
+        "server_name": {
+            "value": ""
+        },
+        "db_name": {
+            "value": ""
+        },
+        "db_sku": {
+            "value": ""
+        },
+        "db_tier": {
+            "value": ""
+        },
+        "db_max_size_bytes": {
+            "value": 0
+        },
+        "db_read_scale": {
+            "value": ""
+        },
+        "db_zone_redundant": {
+            "value": false
+        },
+        "audit_storage_account_name": {
+            "value": ""
+        },
+        "audit_storage_account_key": {
+            "value": ""
+        }
+    }
+}

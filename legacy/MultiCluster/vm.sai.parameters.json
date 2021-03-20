@@ -1,0 +1,57 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "value": ""
+        },
+        "zone": {
+            "value": ""
+        },
+        "nic_name": {
+            "value": ""
+        },
+        "os_publisher": {
+            "value": ""
+        },
+        "os_offer": {
+            "value": ""
+        },
+        "os_sku": {
+            "value": ""
+        },
+        "vm_name": {
+            "value": ""
+        },
+        "vm_size": {
+            "value": ""
+        },
+        "admin_username": {
+            "value": ""
+        },
+        "admin_public_key": {
+            "value": null
+        },
+        "data_disk_1_size_in_gb": {
+            "value": 0
+        },
+        "data_disk_2_size_in_gb": {
+            "value": 0
+        },
+        "script_url": {
+            "value": ""
+        },
+        "script_file_name": {
+            "value": ""
+        },
+        "storage_account_name": {
+            "value": ""
+        },
+        "storage_account_key": {
+            "value": ""
+        },
+        "storage_account_diag_name": {
+            "value": ""
+        }
+    }
+}

@@ -1,0 +1,47 @@
+param(
+ [string]
+ $subscriptionId = '',
+
+ [string]
+ $resourceGroupName = '',
+
+ [string]
+ $resourceGroupLocation = 'eastus',
+
+ [string]
+ $deploymentName = 'VM',
+
+ [string]
+ $templateFilePath = 'azuredeploy.template.json',
+
+ [string]
+ $parametersFilePath = 'azuredeploy.parameters.sql2017.json'
+)
+
+Login-AzureRmAccount;
+
+Select-AzureRmSubscription -SubscriptionID $subscriptionId;
+
+#Create or check for existing resource group
+$resourceGroup = Get-AzureRmResourceGroup -Name $resourceGroupName -ErrorAction SilentlyContinue
+
+if(!$resourceGroup)
+{
+    Write-Host "Resource group '$resourceGroupName' does not exist. To create a new resource group, please enter a location.";
+    if(!$resourceGroupLocation) {
+        $resourceGroupLocation = Read-Host "resourceGroupLocation";
+    }
+    Write-Host "Creating resource group '$resourceGroupName' in location '$resourceGroupLocation'";
+    New-AzureRmResourceGroup -Name $resourceGroupName -Location $resourceGroupLocation
+}
+else{
+    Write-Host "Using existing resource group '$resourceGroupName'";
+}
+
+# Test the deployment
+Write-Host "Testing deployment...";
+Test-AzureRmResourceGroupDeployment -ResourceGroupName $resourceGroupName -TemplateFile $templateFilePath -TemplateParameterFile $parametersFilePath -Verbose
+
+# Start the deployment
+Write-Host "Starting deployment...";
+New-AzureRmResourceGroupDeployment -ResourceGroupName $resourceGroupName -TemplateFile $templateFilePath -TemplateParameterFile $parametersFilePath -DeploymentDebugLogLevel All

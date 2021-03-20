@@ -1,0 +1,62 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"location": {
+			"defaultValue": "",
+			"type": "String",
+			"metadata": {
+				"displayName": "Azure region",
+				"description": "The Azure region within which to deploy. See https://azure.microsoft.com/regions/."
+			}
+		},
+		"vnet_name": {
+			"defaultValue": "",
+			"type": "String",
+			"metadata": {
+				"displayName": "VNet Name",
+				"description": "Name for the Virtual Network"
+			}
+		},
+		"vnet_address_space": {
+			"defaultValue": "10.0.0.0/16",
+			"type": "String",
+			"metadata": {
+				"displayName": "VNet Address Space",
+				"description": "Overall address space for the entire Virtual Network"
+			}
+		},
+		"enable_vm_protection": {
+			"defaultValue": false,
+			"type": "Bool",
+			"metadata": {
+				"displayName": "Enable VM protection",
+				"description": "Whether to enable VM protection for the VNet"
+			}
+		}
+	},
+	"variables": {
+		"api_version_network": "2019-09-01"
+	},
+	"resources": [
+		{
+			"type": "Microsoft.Network/virtualNetworks",
+			"apiVersion": "[variables('api_version_network')]",
+			"name": "[parameters('vnet_name')]",
+			"location": "[parameters('location')]",
+			"tags": {
+			},
+			"properties": {
+				"addressSpace": {
+					"addressPrefixes": [
+						"[parameters('vnet_address_space')]"
+					]
+				},
+				"virtualNetworkPeerings": [
+				],
+				"enableDdosProtection": false,
+				"enableVmProtection": "[parameters('enable_vm_protection')]"
+			}
+		}
+	]
+}

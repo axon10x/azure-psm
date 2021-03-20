@@ -1,0 +1,33 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "value": ""
+        },
+        "server_name": {
+            "value": ""
+        },
+        "server_admin_username": {
+            "value": ""
+        },
+        "server_admin_password": {
+            "value": ""
+        },
+        "alerts_email_address": {
+            "value": ""
+        },
+        "audit_storage_account_name": {
+            "value": ""
+        },
+        "audit_storage_account_key": {
+            "value": ""
+        },
+        "firewall_rule_start_ip": {
+            "value": ""
+        },
+        "firewall_rule_end_ip": {
+            "value": ""
+        }
+    }
+}

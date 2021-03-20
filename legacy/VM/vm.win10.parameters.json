@@ -1,0 +1,87 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "value": ""
+        },
+        "resourceGroupNameVM": {
+            "value": ""
+        },
+        "virtualMachineName": {
+            "value": ""
+        },
+        "virtualMachineSize": {
+            "value": "Standard_D4s_v3"
+        },
+        "publisher": {
+            "value": "MicrosoftWindowsDesktop"
+        },
+        "offer": {
+            "value": "Windows-10"
+        },
+        "sku": {
+            "value": "rs6-pro"
+        },
+        "version": {
+            "value": "latest"
+        },
+        "licenseType": {
+            "value": "Windows_Client"
+        },
+        "adminUsername": {
+            "value": ""
+        },
+        "adminPassword": {
+            "value": ""
+        },
+        "osDiskStorageType": {
+            "value": "Premium_LRS"
+        },
+        "osDiskSizeInGB": {
+            "value": 128
+        },
+        "dataDiskStorageType": {
+            "value": "Premium_LRS"
+        },
+        "dataDiskCount": {
+            "value": 1
+        },
+        "dataDiskSizeInGB": {
+            "value": 256
+        },
+        "publicIpAddressType": {
+            "value": "Dynamic"
+        },
+        "publicIpAddressSku": {
+            "value": "Basic"
+        },
+        "resourceGroupNameNetwork": {
+            "value": ""
+        },
+        "virtualNetworkName": {
+            "value": ""
+        },
+        "subnetName": {
+            "value": ""
+        },
+        "vmTimeZone": {
+            "value": "Eastern Standard Time"
+        },
+        "vmAutoShutdownTime": {
+            "value": "1900"
+        },
+        "enableAutoShutdownNotification": {
+            "value": "Disabled"
+        },
+        "autoShutdownNotificationWebhookURL": {
+            "value": ""
+        },
+        "autoShutdownNotificationMinutesBefore": {
+            "value": 15
+        },
+        "diagnosticsStorageAccountName": {
+            "value": ""
+        }
+    }
+}

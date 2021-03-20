@@ -1,0 +1,87 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "value": ""
+        },
+        "resource_group_name_vm": {
+            "value": ""
+        },
+        "availability_set_name": {
+            "value": ""
+        },
+        "virtual_machine_name": {
+            "value": ""
+        },
+        "virtual_machine_size": {
+            "value": ""
+        },
+        "publisher": {
+            "value": ""
+        },
+        "offer": {
+            "value": ""
+        },
+        "sku": {
+            "value": ""
+        },
+        "version": {
+            "value": ""
+        },
+        "license_type": {
+            "value": "Windows_Server"
+        },
+        "admin_username": {
+            "value": ""
+        },
+        "admin_password": {
+            "value": ""
+        },
+        "os_disk_storage_type": {
+            "value": "Premium_LRS"
+        },
+        "os_disk_size_gb": {
+            "value": 127
+        },
+        "data_disk_storage_type": {
+            "value": "Premium_LRS"
+        },
+        "data_disk_count": {
+            "value": 1
+        },
+        "data_disk_size_gb": {
+            "value": 512
+        },
+        "virtual_machine_time_zone": {
+            "value": "Eastern Standard Time"
+        },
+        "virtual_machine_auto_shutdown_time": {
+            "value": "9999"
+        },
+        "enable_auto_shutdown_notification": {
+            "value": "Disabled"
+        },
+        "auto_shutdown_notification_webhook_url": {
+            "value": ""
+        },
+        "auto_shutdown_notification_minutes_before": {
+            "value": 15
+        },
+        "public_ip_address_type": {
+            "value": "Static"
+        },
+        "public_ip_address_sku": {
+            "value": "Basic"
+        },
+        "resource_group_name_network": {
+            "value": ""
+        },
+        "vnet_name": {
+            "value": ""
+        },
+        "subnet_name": {
+            "value": ""
+        }
+    }
+}

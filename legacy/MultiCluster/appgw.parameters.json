@@ -1,0 +1,39 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "value": ""
+        },
+        "vnet_name": {
+            "value": ""
+        },
+        "subnet_name": {
+            "value": ""
+        },
+        "public_ip_name": {
+            "value": ""
+        },
+        "appgw_name": {
+            "value": ""
+        },
+        "appgw_sku_name": {
+            "value": ""
+        },
+        "appgw_sku_tier": {
+            "value": ""
+        },
+        "appgw_enable_http2": {
+            "value": ""
+        },
+        "appgw_autoscale_instances_min": {
+            "value": ""
+        },
+        "appgw_autoscale_instances_max": {
+            "value": ""
+        },
+        "appgw_back_end_pool_name": {
+            "value": ""
+        }
+    }
+}
