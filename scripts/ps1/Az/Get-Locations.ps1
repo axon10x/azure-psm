@@ -1,0 +1,1 @@
+Get-AzLocation | select Location, DisplayName

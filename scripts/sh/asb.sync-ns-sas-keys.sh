@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# This script synchronizes Azure Service Bus namespace keys from a source to a destination namespace.
+# Why use this? In case you have a scenario (e.g. active/active or active/passive) and you cannot refer to each namespace by individual connection string or key.
+# Example: JMS client failover-enabled connection string does not allow for specification of individual keys for each targeted namespace; only one key can be specified.
+
 subscriptionId="$(az account show -o tsv --query 'id')"
 resourceGroupName="tm"
 asbNamespaceNameSource="pz-asb-eus2"
