@@ -14,21 +14,21 @@
 			}
 		},
 		"vnetResourceGroup": {
-			"type": "String",
+			"type": "string",
 			"metadata": {
 				"displayName": "Virtual Network Resource Group",
 				"description": ""
 			}
 		},
 		"vnetName": {
-			"type": "String",
+			"type": "string",
 			"metadata": {
 				"displayName": "Virtual Network Name",
 				"description": ""
 			}
 		},
 		"firewallName": {
-			"type": "String",
+			"type": "string",
 			"metadata": {
 				"displayName": "",
 				"description": ""

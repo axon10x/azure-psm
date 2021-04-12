@@ -7,7 +7,7 @@
 			"defaultValue": "[utcNow('u')]"
 		},
 		"location": {
-			"type": "String",
+			"type": "string",
 			"defaultValue": "",
 			"metadata": {
 				"displayName": "Azure region",
@@ -15,28 +15,28 @@
 			}
 		},
 		"networkInterfaceName": {
-			"type": "String",
+			"type": "string",
 			"metadata": {
 				"displayName": "Network Interface Name",
 				"description": ""
 			}
 		},
 		"vnetResourceGroup": {
-			"type": "String",
+			"type": "string",
 			"metadata": {
 				"displayName": "Virtual Network Resource Group",
 				"description": ""
 			}
 		},
 		"vnetName": {
-			"type": "String",
+			"type": "string",
 			"metadata": {
 				"displayName": "Virtual Network Name",
 				"description": ""
 			}
 		},
 		"subnetName": {
-			"type": "String",
+			"type": "string",
 			"metadata": {
 				"displayName": "Subnet Name",
 				"description": ""
@@ -51,7 +51,7 @@
 			}
 		},
 		"privateIpAllocationMethod": {
-			"type": "String",
+			"type": "string",
 			"defaultValue": "Dynamic",
 			"allowedValues": [
 				"Dynamic",
@@ -63,21 +63,21 @@
 			}
 		},
 		"publicIpResourceGroup": {
-			"type": "String",
+			"type": "string",
 			"metadata": {
 				"displayName": "Public IP Address Resource Group",
 				"description": "If not specified, this NIC will be deployed without a public IP"
 			}
 		},
 		"publicIpName": {
-			"type": "String",
+			"type": "string",
 			"metadata": {
 				"displayName": "Public IP Address Name",
 				"description": "If not specified, this NIC will be deployed without a public IP"
 			}
 		},
 		"ipConfigName": {
-			"type": "String",
+			"type": "string",
 			"defaultValue": "ipConfig1",
 			"metadata": {
 				"displayName": "IP Configuration Name",

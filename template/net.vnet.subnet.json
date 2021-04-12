@@ -58,7 +58,7 @@
 				"Disabled"
 			],
 			"metadata": {
-				"displayName": "Private Link Serivce Network Policies State",
+				"displayName": "Private Link Service Network Policies State",
 				"description": "Enable or Disable apply network policies on private link service in the subnet."
 			}
 		}
