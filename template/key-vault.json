@@ -14,7 +14,7 @@
 			}
 		},
         "tenantId": {
-            "type": "String",
+            "type": "string",
 			"metadata": {
 				"displayName": "Azure AD Tenant ID",
 				"description": ""

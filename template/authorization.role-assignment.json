@@ -7,7 +7,7 @@
 			"defaultValue": "[newGuid()]",
 			"metadata": {
 				"displayName": "Role Assignment Name",
-				"description": ""
+				"description": "Must be a GUID"
 			}
 		},
 		"roleDefinitionId": {
@@ -20,11 +20,7 @@
 		},
 		"principalId": {
 			"type": "String",
-			"defaultValue": "",
-			"metadata": {
-				"displayName": "Principal ID for the User-Assigned Identity",
-				"description": ""
-			}
+			"defaultValue": ""
 		},
 		"scopeId": {
 			"type": "String",
@@ -36,17 +32,18 @@
 		}
 	},
 	"variables": {
-		"apiVersionAuthRoleAssignment": "2020-04-01-preview"
+		"roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', parameters('roleDefinitionId'))]",
+		"apiVersionAuthRoleAssignment": "2021-04-01-preview"
 	},
 	"resources": [
 		{
 			"type": "Microsoft.Authorization/roleAssignments",
 			"name": "[parameters('roleAssignmentName')]",
 			"apiVersion": "[variables('apiVersionAuthRoleAssignment')]",
+			"scope": "[parameters('scopeId')]",
 			"properties": {
-				"roleDefinitionId": "[parameters('roleDefinitionId')]",
-				"principalId": "[parameters('principalId')]",
-				"scope": "[parameters('scopeId')]"
+				"roleDefinitionId": "[variables('roleDefinitionId')]",
+				"principalId": "[parameters('principalId')]"
 			}
 		}
 	]
