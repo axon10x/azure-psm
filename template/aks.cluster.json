@@ -30,14 +30,14 @@
 		},
 		"managedIdentityType": {
 			"type": "string",
-			"defaultValue": "SystemAssigned",
+			"defaultValue": "None",
 			"allowedValues": [
 				"SystemAssigned",
 				"UserAssigned",
 				"None"
 			]
 		},
-		"userAssignedIdentityResourceId": {
+		"identityResourceId": {
 			"type": "string",
 			"defaultValue": "",
 			"metadata": {
@@ -91,9 +91,49 @@
 			"metadata": {
 				"description": "The type of node operating system."
 			}
+		},
+		"vnetSubnetResourceId": {
+			"type": "string",
+			"defaultValue": ""
+		},
+		"networkPlugin": {	
+			"type": "string",
+			"defaultValue": "kubenet",
+			"allowedValues": [
+				"azure",
+				"kubenet"
+			]
+		},
+		"serviceCidr": {
+			"type": "string",
+			"defaultValue": "10.1.0.0/16"
+		},
+		"dnsServiceIP": {
+			"type": "string",
+			"defaultValue": "10.1.0.10"
+		},
+		"podCidr": {
+			"type": "string",
+			"defaultValue": "10.241.0.0/16"
+		},
+		"dockerBridgeCidr": {
+			"type": "string",
+			"defaultValue": "172.17.0.1/16"
 		}
 	},
 	"variables": {
+		"userAssignedIdentities": "[
+			if
+			(
+				equals(toLower(parameters('managedIdentityType')), 'userassigned'),
+				createObject
+				(
+					parameters('identityResourceId'),
+					createObject()
+				),
+				json('null')
+			)
+		]",
 		"resourceTags": {
 			"Timestamp": "[parameters('timestamp')]"
 		},
@@ -106,6 +146,10 @@
 			"name": "[parameters('clusterName')]",
 			"location": "[parameters('location')]",
 			"tags": "[variables('resourceTags')]",
+			"identity": {
+				"type": "[parameters('managedIdentityType')]",
+				"userAssignedIdentities": "[variables('userAssignedIdentities')]"
+			},
 			"properties": {
 				"kubernetesVersion": "[parameters('k8sversion')]",
 				"dnsPrefix": "[parameters('dnsPrefix')]",
@@ -117,7 +161,8 @@
 						"vmSize": "[parameters('nodeVmSize')]",
 						"osType": "[parameters('osType')]",
 						"storageProfile": "ManagedDisks",
-						"mode": "System"
+						"mode": "System",
+						"vnetSubnetID": "[if(empty(parameters('vnetSubnetResourceId')), json('null'),  parameters('vnetSubnetResourceId'))]"
 					}
 				],
 				"linuxProfile": {
@@ -129,18 +174,17 @@
 							}
 						]
 					}
+				},
+				"networkProfile": {
+					"networkPlugin": "[parameters('networkPlugin')]",
+					"serviceCidr": "[if(empty(parameters('serviceCidr')), json('null'), parameters('serviceCidr'))]",
+					"dnsServiceIP": "[if(empty(parameters('dnsServiceIP')), json('null'), parameters('dnsServiceIP'))]",
+					"podCidr": "[if(empty(parameters('podCidr')), json('null'), parameters('podCidr'))]",
+					"dockerBridgeCidr": "[if(empty(parameters('dockerBridgeCidr')), json('null'), parameters('dockerBridgeCidr'))]"
+				},
+				"servicePrincipalProfile": {
+					"clientId": "msi"
 				}
-			},
-			"identity": {
-				"type": "[parameters('managedIdentityType')]",
-				"userAssignedIdentities": "[
-					if
-					(
-						equals(toLower(parameters('managedIdentityType')), 'userassigned'),
-						json(parameters('userAssignedIdentityResourceId')),
-						json('null')
-					)
-				]"
 			}
 		}
 	],
