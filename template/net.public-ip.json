@@ -7,23 +7,23 @@
 			"defaultValue": "[utcNow('u')]"
 		},
 		"location": {
-			"type": "String",
+			"type": "string",
 			"defaultValue": "",
 			"metadata": {
 				"displayName": "Azure region",
 				"description": "See https://azure.microsoft.com/regions/."
 			}
 		},
-		"availabilityZone": {
+		"availabilityZones": {
 			"type": "string",
 			"defaultValue": "",
 			"metadata": {
-				"displayName": "Azure availability zone (AZ)",
-				"description": "Optional; if not provided, a non-zonal PIP will be deployed. The Azure AZ within which to deploy. See https://azure.microsoft.com/regions/ for which regions support AZs."
+				"displayName": "Azure availability zone(s) (AZs)",
+				"description": "Optional. One or more AZs, comma-delimited. Example: 1,2,3. If not provided, a non-zonal PIP will be deployed. See https://azure.microsoft.com/regions/ for which regions support AZs."
 			}
 		},
 		"publicIpName": {
-			"type": "String",
+			"type": "string",
 			"metadata": {
 				"displayName": "Public IP Address Name",
 				"description": "Public IP Address Name"
@@ -66,7 +66,7 @@
 		"resourceTags": {
 			"Timestamp": "[parameters('timestamp')]"
 		},
-		"apiVersionNetwork": "2020-07-01"
+		"apiVersionNetwork": "2020-11-01"
 	},
 	"resources": [
 		{
@@ -87,9 +87,9 @@
 			"zones": "[
 				if
 				(
-					empty(trim(parameters('availabilityZone'))),
+					empty(parameters('availabilityZones')),
 					json('[]'),
-					array(parameters('availabilityZone'))
+					split(parameters('availabilityZones'), ',')
 				)
 			]"
 		}
