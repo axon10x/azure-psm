@@ -11,7 +11,7 @@ az deployment group create --subscription "$subscriptionId" -n "KV-""$location1"
 	keyVaultName="$keyVaultNameLocation1" \
 	skuName="$keyVaultSkuName"
 
-echo "Assign permissions to current authentication context to get/set/list secrets and keys"
+echo "Grant permissions to current authentication context to get/set/list certs, secrets and keys"
 # https://docs.microsoft.com/cli/azure/keyvault?view=azure-cli-latest#az_keyvault_set_policy
 az keyvault set-policy --subscription "$subscriptionId" --verbose \
 	-g "$rgNameSecurityLocation1" -n "$keyVaultNameLocation1" \
