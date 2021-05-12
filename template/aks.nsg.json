@@ -20,10 +20,19 @@
                 "displayName": "Source for dev/test inbound rule",
                 "description": "Optional. If provided, a priority 100 rule will be created to allow inbound access from this source. Useful for dev/test/debug etc. but likely not appropriate to provide in production."
             }
+        },
+        "ingressRuleInbound110Src": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "displayName": "Source for ingress inbound rule",
+                "description": ""
+            }
         }
     },
     "variables": {
         "rule100Name": "DevTestInbound",
+        "rule110Name": "IngressInbound",
         "apiVersionNet": "2020-07-01"
     },
     "resources": [
@@ -59,7 +68,20 @@
                                 )
                             )
                         )
-                    ]"
+                    ]",
+                    {
+                        "name": "[variables('rule110Name')]",
+                        "properties": {
+                            "protocol": "*",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "*",
+                            "sourceAddressPrefix": "[parameters('ingressRuleInbound110Src')]",
+                            "destinationAddressPrefix": "VirtualNetwork",
+                            "access": "Allow",
+                            "priority": 110,
+                            "direction": "Inbound"
+                        }
+                    }
                 ]
             }
         }
