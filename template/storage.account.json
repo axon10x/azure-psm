@@ -2,10 +2,6 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-		"timestamp": {
-			"type": "string",
-			"defaultValue": "[utcNow('u')]"
-		},
         "location": {
             "defaultValue": "[resourceGroup().location]",
             "type": "String"
@@ -136,10 +132,7 @@
             )
         ]",
         "subnetAccessAction": "Allow",
-		"resourceTags": {
-			"Timestamp": "[parameters('timestamp')]"
-		},
-        "apiVersionStorage": "2020-08-01-preview"
+        "apiVersionStorage": "2021-04-01"
     },
     "resources": [
         {
@@ -147,7 +140,6 @@
             "apiVersion": "[variables('apiVersionStorage')]",
             "name": "[parameters('storageAccountName')]",
             "location": "[parameters('location')]",
-            "tags": "[variables('resourceTags')]",
             "sku": {
                 "name": "[parameters('skuName')]",
                 "tier": "[parameters('skuTier')]"

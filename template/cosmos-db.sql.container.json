@@ -26,28 +26,7 @@
             "defaultValue": "",
             "metadata": {
                 "displayName": "Partition Key Path",
-                "description": "Specify a partition key path, starting with /. See https://docs.microsoft.com/azure/cosmos-db/partitioning-overview#choose-partitionkey"
-            }
-        },
-        "automaticIndexing": {
-            "type": "bool",
-            "defaultValue": true
-        },
-        "indexingMode": {
-            "type": "string",
-            "defaultValue": "consistent",
-            "allowedValues": [
-                "consistent",
-                "lazy",
-                "none"
-            ]
-        },
-        "includedIndexingPaths": {
-            "type": "string",
-            "defaultValue": "",
-            "metadata": {
-                "displayName": "Included indexing paths",
-                "description": "Paths to index. By default, the whole document will be indexed. If specifying parts of doc, pass as comma-delimited string of paths. Example: /vin/?,/state/?,/model/?"
+                "description": "Specify a partition key path. See https://docs.microsoft.com/azure/cosmos-db/partitioning-overview#choose-partitionkey"
             }
         },
         "provisionedThroughput": {
@@ -70,15 +49,37 @@
                 "description": "Set to >=4000 to specify max autoscale throughput for the database. Leave at 0 for no autoscale."
             }
         },
-        "defaultTtl": {
-            "type": "int",
-            "defaultValue": -1,
-            "minValue": -1
+        "indexingMode": {
+            "type": "string",
+            "defaultValue": "none",
+            "allowedValues": [
+                "none",
+                "consistent"
+            ]
+        },
+        "indexingAutomatic": {
+            "type": "bool",
+            "defaultValue": false
         }
     },
     "variables": {
-        "includedIndexingPaths": "[split(parameters('includedIndexingPaths'), ',')]",
-        "apiVersionCosmosDb": "2021-03-01-preview"
+        "includedPaths": "[
+            if
+            (
+                equals(parameters('indexingMode'), 'none'),
+                json('[]'),
+                json('[]')
+            )
+        ]",
+        "excludedPaths": "[
+            if
+            (
+                equals(parameters('indexingMode'), 'none'),
+                json('[]'),
+                json('[{\"path\": \"/*\"}]')
+            )
+        ]",
+        "apiVersionCosmosDb": "2021-04-15"
     },
     "resources": [
         {
@@ -90,31 +91,19 @@
                 "resource": {
                     "id": "[parameters('containerName')]",
                     "indexingPolicy": {
-                        "automatic": "[parameters('automaticIndexing')]",
                         "indexingMode": "[parameters('indexingMode')]",
-                        "copy": [
-                            {
-                                "name": "includedPaths",
-                                "count": "[length(variables('includedIndexingPaths'))]",
-                                "input": {
-                                    "path": "[trim(variables('includedIndexingPaths')[copyIndex('includedPaths')])]"
-                                }
-                            }
-                        ],
-                        "excludedPaths": [
-                            {
-                                "path": "/*"
-                            },
-                            {
-                                "path": "/\"_etag\"/?"
-                            }
-                        ]
+                        "automatic": "[parameters('indexingAutomatic')]",
+                        "includedPaths": "[variables('includedPaths')]",
+                        "excludedPaths": "[variables('excludedPaths')]"
                     },
                     "partitionKey": {
                         "paths": [ "[parameters('partitionKeyPath')]" ],
                         "kind": "Hash"
                     },
-                    "defaultTtl": "[parameters('defaultTtl')]"
+                    "conflictResolutionPolicy": {
+                        "mode": "LastWriterWins",
+                        "conflictResolutionPath": "/_ts"
+                    }
                 },
                 "options": "[
                     if

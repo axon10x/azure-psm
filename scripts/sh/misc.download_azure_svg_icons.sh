@@ -3,7 +3,7 @@
 # How to download SVGs from https://azure.microsoft.com/en-us/patterns/styles/glyphs-icons/ since there is conveniently no zip or other batch download...
 # You will likely need to sudo
 
-cd ~
+# cd ~
 mkdir azure-svgs
 cd azure-svgs
 

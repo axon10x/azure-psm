@@ -93,6 +93,14 @@
 		"subnetResourceId": {
 			"type": "string",
 			"defaultValue": ""
+		},
+		"nodeLabels": {
+			"type": "string",
+			"defaultValue": "",
+			"metadata": {
+				"displayName": "Node labels",
+				"description": "Comma-delimited string with sequence of keys and values. Example: key1, value1, key2, value2, key3, value3."
+			}
 		}
 	},
 	"variables": {
@@ -104,6 +112,14 @@
 				split(parameters('availabilityZones'), ',')
 			)
 		]",
+		"nodeLabels": "[
+			if
+			(
+				empty(parameters('nodeLabels')),
+				json(''),
+				json(parameters('nodeLabels'))
+			)
+		]",
 		"poolBase": {
 			"mode": "[parameters('nodePoolMode')]",
 			"name": "[parameters('nodePoolName')]",
@@ -113,6 +129,7 @@
 			"storageProfile": "ManagedDisks",
 			"osDiskSizeGB": "[parameters('osDiskSizeGB')]",
 			"enableAutoScaling": "[parameters('enableNodeAutoscale')]",
+			"type": "VirtualMachineScaleSets",
 			"count": "[
 				if
 				(
@@ -122,7 +139,8 @@
 				)
 			]",
 			"minCount": "[if(parameters('enableNodeAutoscale'), parameters('nodeCountMin'), json('null'))]",
-			"maxCount": "[if(parameters('enableNodeAutoscale'), parameters('nodeCountMax'), json('null'))]"
+			"maxCount": "[if(parameters('enableNodeAutoscale'), parameters('nodeCountMax'), json('null'))]",
+			"nodeLabels": "[variables('nodeLabels')]"
 		},
 		"customSubnetOn": {
 			"availabilityZones": "[variables('availabilityZones')]",
