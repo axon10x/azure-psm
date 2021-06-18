@@ -2,10 +2,6 @@
 	"$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
 	"contentVersion": "1.0.0.0",
 	"parameters": {
-		"timestamp": {
-			"type": "string",
-			"defaultValue": "[utcNow('u')]"
-		},
 		"location": {
 			"type": "string",
 			"metadata": {
@@ -34,9 +30,6 @@
 		}
 	},
 	"variables": {
-		"resourceTags": {
-			"Timestamp": "[parameters('timestamp')]"
-		},
 		"managedIdentity": "[
 			if
 			(
@@ -53,7 +46,6 @@
             "type": "Microsoft.Compute/virtualMachines/extensions",
 			"apiVersion": "[variables('apiVersion')]",
 			"location": "[parameters('location')]",
-			"tags": "[variables('resourceTags')]",
 			"properties": {
 				"autoUpgradeMinorVersion": true,
 				"publisher": "Microsoft.Azure.Extensions",

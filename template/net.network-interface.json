@@ -2,10 +2,6 @@
 	"$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
 	"contentVersion": "1.0.0.0",
 	"parameters": {
-		"timestamp": {
-			"type": "string",
-			"defaultValue": "[utcNow('u')]"
-		},
 		"location": {
 			"type": "string",
 			"defaultValue": "",
@@ -88,10 +84,7 @@
 	"variables": {
 		"vnetId": "[resourceId(parameters('vnetResourceGroup'), 'Microsoft.Network/virtualNetworks/', parameters('vnetName'))]",
 		"subnetId": "[concat(variables('vnetId'), '/subnets/', parameters('subnetName'))]",
-		"resourceTags": {
-			"Timestamp": "[parameters('timestamp')]"
-		},
-		"apiVersionNetwork": "2020-07-01"
+		"apiVersionNetwork": "2020-11-01"
 	},
 	"resources": [
 		{
@@ -99,7 +92,6 @@
 			"apiVersion": "[variables('apiVersionNetwork')]",
 			"name": "[parameters('networkInterfaceName')]",
 			"location": "[parameters('location')]",
-			"tags": "[variables('resourceTags')]",
 			"properties": {
 				"ipConfigurations": [
 					{
