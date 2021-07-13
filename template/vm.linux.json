@@ -18,7 +18,7 @@
 			"defaultValue": "",
 			"metadata": {
 				"displayName": "Azure availability zone (AZ)",
-				"description": "The Azure AZ within which to deploy. Examples: 'eastus2', 'centralus', etc. See https://azure.microsoft.com/regions/ for which regions support AZs."
+				"description": "The Azure AZ within which to deploy. See https://azure.microsoft.com/regions/ for which regions support AZs."
 			}
 		},
 		"userAssignedManagedIdentityResourceId": {
