@@ -48,6 +48,10 @@
 				"None"
 			]
 		},
+		"identityName": {
+			"type": "string",
+			"defaultValue": ""
+		},
 		"identityResourceId": {
 			"type": "string",
 			"defaultValue": "",
@@ -79,6 +83,10 @@
 				"displayName": "(Optional) Node resource group name",
 				"description": "Resource group name for node pool resources. If not provided, the default (MC_resource-group-name_cluster-name_location) will be used."
 			}
+		},
+		"enableRBAC": {
+			"type": "bool",
+			"defaultValue": true
 		},
 		"systemPoolName": {
 			"type": "string",
@@ -266,7 +274,7 @@
 				)
 			)
 		]",
-		"apiVersionAks": "2021-03-01"
+		"apiVersionAks": "2021-05-01"
 	},
 	"resources": [
 		{
@@ -286,6 +294,7 @@
 				"kubernetesVersion": "[parameters('k8sversion')]",
 				"dnsPrefix": "[parameters('dnsPrefix')]",
 				"nodeResourceGroup": "[if(empty(parameters('nodeResourceGroup')), json('null'), parameters('nodeResourceGroup'))]",
+				"enableRBAC": "[parameters('enableRBAC')]",
 				"servicePrincipalProfile": {
 					"clientId": "msi"
 				},
@@ -298,19 +307,7 @@
 				},
 				"podIdentityProfile": {
 					"enabled": "[parameters('podIdentityEnabled')]",
-					"allowNetworkPluginKubenet": "[parameters('podIdentityKubenetEnabled')]",
-					"userAssignedIdentities": [
-						{
-							"name": "[reference(parameters('identityResourceId')).name]",
-							"namespace": "[parameters('podIdentityNamespace')]",
-							"bindingSelector": "[parameters('podIdentityBindingSelector')]",
-							"identity": {
-								"resourceId": "[parameters('identityResourceId')]",
-								"clientId": "[parameters('identityClientId')]",
-								"objectId": "[parameters('identityObjectId')]"
-							}
-						}
-					]
+					"allowNetworkPluginKubenet": "[parameters('podIdentityKubenetEnabled')]"
 				},
 				"linuxProfile": {
 					"adminUsername": "[parameters('nodeAdminUsername')]",
