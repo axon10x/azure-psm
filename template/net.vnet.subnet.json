@@ -3,16 +3,13 @@
 	"contentVersion": "1.0.0.0",
 	"parameters": {
 		"vnetName": {
-			"type": "string",
-			"defaultValue": ""
+			"type": "string"
 		},
 		"subnetName": {
-			"type": "string",
-			"defaultValue": ""
+			"type": "string"
 		},
 		"subnetPrefix": {
-			"type": "string",
-			"defaultValue": ""
+			"type": "string"
 		},
 		"nsgResourceGroup": {
 			"type": "string",
@@ -73,7 +70,7 @@
 				array(createObject('name', replace(parameters('delegationService'), '/', '.'), 'properties', createObject('serviceName', parameters('delegationService'))))
 			)
 		]",
-		"apiVersionVnet": "2020-11-01"
+		"apiVersionVnet": "2021-02-01"
 	},
 	"resources": [
 		{

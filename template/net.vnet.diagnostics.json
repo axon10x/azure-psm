@@ -3,10 +3,9 @@
 	"contentVersion": "1.0.0.1",
 	"parameters": {
 		"vnetName": {
-			"type": "string",
-			"defaultValue": ""
+			"type": "string"
 		},
-        "settingName": {
+    "settingName": {
 			"type": "string",
 			"defaultValue": "diag"
 		},

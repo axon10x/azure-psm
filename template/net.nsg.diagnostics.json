@@ -6,7 +6,7 @@
 			"type": "string",
 			"defaultValue": ""
 		},
-        "settingName": {
+    "settingName": {
 			"type": "string",
 			"defaultValue": "diag"
 		},

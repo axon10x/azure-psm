@@ -6,7 +6,7 @@
 			"type": "string",
 			"defaultValue": ""
 		},
-        "settingName": {
+		"settingName": {
 			"type": "string",
 			"defaultValue": "diag"
 		},
@@ -19,13 +19,13 @@
 		"apiVersionDiagnostics": "2017-05-01-preview"
 	},
 	"resources": [
-        {
-            "name": "[concat(parameters('workspaceName'), '/Microsoft.Insights/', parameters('settingName'))]",
-            "type": "Microsoft.OperationalInsights/workspaces/providers/diagnosticSettings",
-            "apiVersion": "[variables('apiVersionDiagnostics')]",
-            "properties": {
-                "workspaceId": "[parameters('logAnalyticsWorkspaceResourceId')]",
-                "metrics": [
+		{
+			"name": "[concat(parameters('workspaceName'), '/Microsoft.Insights/', parameters('settingName'))]",
+			"type": "Microsoft.OperationalInsights/workspaces/providers/diagnosticSettings",
+			"apiVersion": "[variables('apiVersionDiagnostics')]",
+			"properties": {
+				"workspaceId": "[parameters('logAnalyticsWorkspaceResourceId')]",
+				"metrics": [
 					{
 						"category": "AllMetrics",
 						"timeGrain": "PT1M",
@@ -36,13 +36,13 @@
 						}
 					}
 				],
-                "logs": [
-                    {
-                        "category": "Audit",
-                        "enabled": true
-                    }
-                ]
-            }
-        }
+				"logs": [
+					{
+						"category": "Audit",
+						"enabled": true
+					}
+				]
+			}
+		}
 	]
 }

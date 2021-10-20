@@ -17,7 +17,7 @@
 			"type": "string",
 			"defaultValue": ""
 		},
-		"publicNetworkAccessForIngestion": {
+		"publicNetworkAccessForIngest": {
 			"type": "string",
 			"defaultValue": "Enabled",
 			"allowedValues": [
@@ -35,7 +35,7 @@
 		}
 	},
 	"variables": {
-		"apiVersionAppInsights": "2020-02-02-preview",
+		"apiVersionAppInsights": "2020-02-02",
 		"apiVersionAppInsightsDetection": "2018-05-01-preview"
 	},
 	"resources": [
@@ -50,7 +50,7 @@
                 "Flow_Type": "Redfield",
                 "IngestionMode": "LogAnalytics",
                 "WorkspaceResourceId": "[parameters('logAnalyticsWorkspaceResourceId')]",
-                "publicNetworkAccessForIngestion": "[parameters('publicNetworkAccessForIngestion')]",
+                "publicNetworkAccessForIngest": "[parameters('publicNetworkAccessForIngest')]",
                 "publicNetworkAccessForQuery": "[parameters('publicNetworkAccessForQuery')]"
             }
         },

@@ -50,7 +50,7 @@
 		}
 	},
 	"variables": {
-		"apiVersionLogAnalytics": "2020-10-01"
+		"apiVersionLogAnalytics": "2021-06-01"
 	},
 	"resources": [
         {

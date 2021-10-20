@@ -10,8 +10,7 @@
             }
         },
         "nsgName": {
-            "type": "string",
-            "defaultValue": ""
+            "type": "string"
         },
         "nsgRuleInbound100Src": {
             "type": "string",
@@ -24,7 +23,7 @@
     },
     "variables": {
         "rule100Name": "DevTestInbound",
-        "apiVersionNet": "2020-11-01"
+        "apiVersionNet": "2021-02-01"
     },
     "resources": [
         {

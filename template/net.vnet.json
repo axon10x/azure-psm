@@ -10,12 +10,10 @@
 			}
 		},
 		"vnetName": {
-			"type": "string",
-			"defaultValue": ""
+			"type": "string"
 		},
 		"vnetPrefix": {
-			"type": "string",
-			"defaultValue": ""
+			"type": "string"
 		},
 		"enableDdosProtection": {
 			"type": "bool",
@@ -35,7 +33,7 @@
 		}
 	},
 	"variables": {
-		"apiVersionVnet": "2020-11-01"
+		"apiVersionVnet": "2021-02-01"
 	},
 	"resources": [
 		{
