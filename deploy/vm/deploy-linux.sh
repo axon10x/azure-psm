@@ -23,7 +23,6 @@ vnetPrefix="10.0.0.0/16"
 subnetName="subnet1"
 subnetPrefix="10.0.1.0/24"
 
-
 vmName="pz-ao-ops-1"
 
 vmPublisher="Canonical"

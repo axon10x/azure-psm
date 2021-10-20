@@ -84,7 +84,7 @@
 	"variables": {
 		"vnetId": "[resourceId(parameters('vnetResourceGroup'), 'Microsoft.Network/virtualNetworks/', parameters('vnetName'))]",
 		"subnetId": "[concat(variables('vnetId'), '/subnets/', parameters('subnetName'))]",
-		"apiVersionNetwork": "2020-11-01"
+		"apiVersionNetwork": "2021-02-01"
 	},
 	"resources": [
 		{

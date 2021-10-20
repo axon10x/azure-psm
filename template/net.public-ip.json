@@ -59,7 +59,7 @@
 		}
 	},
 	"variables": {
-		"apiVersionNetwork": "2020-11-01"
+		"apiVersionNetwork": "2021-02-01"
 	},
 	"resources": [
 		{
