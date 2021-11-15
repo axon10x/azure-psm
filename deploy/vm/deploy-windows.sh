@@ -10,20 +10,20 @@ templateVirtualMachine="../../template/vm.windows.json"
 
 tenantId="$(az account show -o tsv --query 'tenantId')"
 subscriptionId="$(az account show -o tsv --query 'id')"
-resourceGroup="always-on-ops"
+resourceGroup="vm"
 location="eastus2"
 
-uamiName="pz-ao-ops"
+uamiName="uami"
 
-nsgName="ao-ops"
+nsgName="vm-nsg"
 nsgRuleInbound100Src="75.68.47.183"
 
-vnetName="ao-ops"
+vnetName="vm-vnet"
 vnetPrefix="10.0.0.0/16"
 subnetName="subnet1"
 subnetPrefix="10.0.1.0/24"
 
-vmName="pz-ao-ops-3"
+vmName="vm1"
 
 vmPublisher="MicrosoftWindowsServer"
 vmOffer="WindowsServer"
@@ -51,7 +51,7 @@ enableAutoShutdownNotification="Disabled"
 autoShutdownNotificationWebhookURL="" # Provide if set enableAutoShutdownNotification="Enabled"
 autoShutdownNotificationMinutesBefore=15
 
-vmAdminUsername="pelazem"
+vmAdminUsername="vmadmin"
 vmAdminPassword=""
 
 vmPublicIpType="Dynamic" # Static or Dynamic - Standard SKU requires Static
@@ -136,7 +136,7 @@ az deployment group create --subscription "$subscriptionId" -n "VM-""$location" 
 	-g "$resourceGroup" --template-file "$templateVirtualMachine" \
 	--parameters \
 	location="$location" \
-  userAssignedManagedIdentityResourceId="$uamiId" \
+  	userAssignedManagedIdentityResourceId="$uamiId" \
 	virtualMachineName="$vmName" \
 	virtualMachineSize="$vmSize" \
 	imageResourceId="" \
