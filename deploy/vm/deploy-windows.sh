@@ -10,18 +10,17 @@ templateVirtualMachine="../../template/vm.windows.json"
 
 tenantId="$(az account show -o tsv --query 'tenantId')"
 subscriptionId="$(az account show -o tsv --query 'id')"
-resourceGroup="vm"
 location="eastus2"
 
-uamiName="uami"
+infix="core"
 
-nsgName="vm-nsg"
-nsgRuleInbound100Src="75.68.47.183"
+resourceGroupName="$infix""-vm"
 
-vnetName="vm-vnet"
-vnetPrefix="10.0.0.0/16"
+uamiName="$infix""-uami"
+
+netResourceGroupName="$infix""-net"
+vnetName="net10"
 subnetName="subnet1"
-subnetPrefix="10.0.1.0/24"
 
 vmName="vm1"
 
@@ -63,50 +62,19 @@ vmNicName="$vmName""-nic"
 # ==================================================
 
 echo "RG"
-az group create --subscription "$subscriptionId" -n "$resourceGroup" -l "$location" --verbose
+az group create --subscription "$subscriptionId" -n "$resourceGroupName" -l "$location" --verbose
 
 echo "UAMI"
 az deployment group create --subscription "$subscriptionId" -n "UAMI-""$location" --verbose \
-  -g "$resourceGroup" --template-file "$templateUami" \
+  -g "$resourceGroupName" --template-file "$templateUami" \
   --parameters \
   location="$location" \
   tenantId="$tenantId" \
   identityName="$uamiName"
 
-echo "NSG"
-az deployment group create --subscription "$subscriptionId" -n "NSG-""$location" --verbose \
-	-g "$resourceGroup" --template-file "$templateNsg" \
-	--parameters \
-	location="$location" \
-	nsgName="$nsgName" \
-	nsgRuleInbound100Src="$nsgRuleInbound100Src"
-
-echo "VNet"
-az deployment group create --subscription "$subscriptionId" -n "VNet-""$location" --verbose \
-	-g "$resourceGroup" --template-file "$templateVnet" \
-	--parameters \
-	location="$location" \
-	vnetName="$vnetName" \
-	vnetPrefix="$vnetPrefix" \
-	enableDdosProtection="false" \
-	enableVmProtection="false"
-
-echo "Subnet"
-az deployment group create --subscription "$subscriptionId" -n "VNet-Subnet-""$location" --verbose \
-	-g "$resourceGroup" --template-file "$templateSubnet" \
-	--parameters \
-	vnetName="$vnetName" \
-	subnetName="$subnetName" \
-	subnetPrefix="$subnetPrefix" \
-	nsgResourceGroup="$resourceGroup" \
-	nsgName="$nsgName" \
-	serviceEndpoints="" \
-	privateEndpointNetworkPolicies="Enabled" \
-	privateLinkServiceNetworkPolicies="Enabled"
-
 echo "VM Public IP"
 az deployment group create --subscription "$subscriptionId" -n "VM-PIP-""$location" --verbose \
-	-g "$resourceGroup" --template-file "$templatePublicIp" \
+	-g "$resourceGroupName" --template-file "$templatePublicIp" \
 	--parameters \
 	location="$location" \
 	publicIpName="$vmPipName" \
@@ -116,24 +84,24 @@ az deployment group create --subscription "$subscriptionId" -n "VM-PIP-""$locati
 
 echo "VM Network Interface"
 az deployment group create --subscription "$subscriptionId" -n "VM-NIC-""$location" --verbose \
-	-g "$resourceGroup" --template-file "$templateNetworkInterface" \
+	-g "$resourceGroupName" --template-file "$templateNetworkInterface" \
 	--parameters \
 	location="$location" \
 	networkInterfaceName="$vmNicName" \
-	vnetResourceGroup="$resourceGroup" \
+	vnetResourceGroup="$netResourceGroupName" \
 	vnetName="$vnetName" \
 	subnetName="$subnetName" \
 	enableAcceleratedNetworking="$enableAcceleratedNetworking" \
 	privateIpAllocationMethod="$privateIpAllocationMethod" \
-	publicIpResourceGroup="$resourceGroup" \
+	publicIpResourceGroup="$resourceGroupName" \
 	publicIpName="$vmPipName" \
 	ipConfigName="$ipConfigName"
 
-uamiId="$(az identity show --subscription ""$subscriptionId"" -g ""$resourceGroup"" -n ""$uamiName"" -o tsv --query 'id')"
+uamiId="$(az identity show --subscription ""$subscriptionId"" -g ""$resourceGroupName"" -n ""$uamiName"" -o tsv --query 'id')"
 
 echo "VM"
 az deployment group create --subscription "$subscriptionId" -n "VM-""$location" --verbose \
-	-g "$resourceGroup" --template-file "$templateVirtualMachine" \
+	-g "$resourceGroupName" --template-file "$templateVirtualMachine" \
 	--parameters \
 	location="$location" \
   	userAssignedManagedIdentityResourceId="$uamiId" \
@@ -157,5 +125,5 @@ az deployment group create --subscription "$subscriptionId" -n "VM-""$location" 
 	enableAutoShutdownNotification="$enableAutoShutdownNotification" \
 	autoShutdownNotificationWebhookURL="$autoShutdownNotificationWebhookURL" \
 	autoShutdownNotificationMinutesBefore="$autoShutdownNotificationMinutesBefore" \
-	resourceGroupNameNetworkInterface="$resourceGroup" \
+	resourceGroupNameNetworkInterface="$resourceGroupName" \
 	networkInterfaceName="$vmNicName"
