@@ -1,9 +1,6 @@
 #!/bin/bash
 
 templateUami="../../template/identity.user-assigned-mi.json"
-templateNsg="../../template/net.nsg.json"
-templateVnet="../../template/net.vnet.json"
-templateSubnet="../../template/net.vnet.subnet.json"
 templatePublicIp="../../template/net.public-ip.json"
 templateNetworkInterface="../../template/net.network-interface.json"
 templateVirtualMachine="../../template/vm.windows.json"
@@ -22,11 +19,15 @@ netResourceGroupName="$infix""-net"
 vnetName="net10"
 subnetName="subnet1"
 
-vmName="vm1"
+vmName="$infix""-vm2"
 
-vmPublisher="MicrosoftWindowsServer"
-vmOffer="WindowsServer"
-vmSku="2022-datacenter-smalldisk"
+vmPublisher="MicrosoftWindowsDesktop"
+vmOffer="Windows-11"
+vmSku="win11-21h2-pron"
+#vmPublisher="MicrosoftWindowsServer"
+#vmOffer="WindowsServer"
+#vmSku="2022-datacenter-smalldisk"
+
 vmVersion="latest"
 
 enableAcceleratedNetworking="true" # This is not supported for all VM Sizes - check your VM Size!
@@ -41,7 +42,7 @@ ipConfigName="ipConfig1"
 vmTimeZone="Eastern Standard Time"
 
 osDiskStorageType="Premium_LRS" # Accepted values: Premium_LRS, StandardSSD_LRS, Standard_LRS, UltraSSD_LRS
-osDiskSizeInGB=64
+osDiskSizeInGB=127
 dataDiskStorageType="Premium_LRS" # Accepted values: Premium_LRS, StandardSSD_LRS, Standard_LRS, UltraSSD_LRS
 dataDiskCount=0
 dataDiskSizeInGB=1023
@@ -51,7 +52,7 @@ autoShutdownNotificationWebhookURL="" # Provide if set enableAutoShutdownNotific
 autoShutdownNotificationMinutesBefore=15
 
 vmAdminUsername="vmadmin"
-vmAdminPassword=""
+vmAdminPassword="YOUR_PASSWORD_HERE"
 
 vmPublicIpType="Dynamic" # Static or Dynamic - Standard SKU requires Static
 vmPublicIpSku="Basic" # Basic or Standard
@@ -65,7 +66,7 @@ echo "RG"
 az group create --subscription "$subscriptionId" -n "$resourceGroupName" -l "$location" --verbose
 
 echo "UAMI"
-az deployment group create --subscription "$subscriptionId" -n "UAMI-""$location" --verbose \
+az deployment group create --subscription "$subscriptionId" -n "$uamiName" --verbose \
   -g "$resourceGroupName" --template-file "$templateUami" \
   --parameters \
   location="$location" \
@@ -73,7 +74,7 @@ az deployment group create --subscription "$subscriptionId" -n "UAMI-""$location
   identityName="$uamiName"
 
 echo "VM Public IP"
-az deployment group create --subscription "$subscriptionId" -n "VM-PIP-""$location" --verbose \
+az deployment group create --subscription "$subscriptionId" -n "$vmPipName" --verbose \
 	-g "$resourceGroupName" --template-file "$templatePublicIp" \
 	--parameters \
 	location="$location" \
@@ -83,7 +84,7 @@ az deployment group create --subscription "$subscriptionId" -n "VM-PIP-""$locati
 	domainNameLabel="$vmName"
 
 echo "VM Network Interface"
-az deployment group create --subscription "$subscriptionId" -n "VM-NIC-""$location" --verbose \
+az deployment group create --subscription "$subscriptionId" -n "$vmNicName" --verbose \
 	-g "$resourceGroupName" --template-file "$templateNetworkInterface" \
 	--parameters \
 	location="$location" \
@@ -100,11 +101,11 @@ az deployment group create --subscription "$subscriptionId" -n "VM-NIC-""$locati
 uamiId="$(az identity show --subscription ""$subscriptionId"" -g ""$resourceGroupName"" -n ""$uamiName"" -o tsv --query 'id')"
 
 echo "VM"
-az deployment group create --subscription "$subscriptionId" -n "VM-""$location" --verbose \
+az deployment group create --subscription "$subscriptionId" -n "$vmName" --verbose \
 	-g "$resourceGroupName" --template-file "$templateVirtualMachine" \
 	--parameters \
 	location="$location" \
-  	userAssignedManagedIdentityResourceId="$uamiId" \
+  userAssignedManagedIdentityResourceId="$uamiId" \
 	virtualMachineName="$vmName" \
 	virtualMachineSize="$vmSize" \
 	imageResourceId="" \
