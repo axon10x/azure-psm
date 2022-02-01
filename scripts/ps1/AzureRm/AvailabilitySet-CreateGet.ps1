@@ -1,4 +1,4 @@
-﻿# ##############################
+# ##############################
 # Purpose: Create/get an availability set
 #
 # Author: Patrick El-Azem

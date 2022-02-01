@@ -1,4 +1,4 @@
-﻿# ##############################
+# ##############################
 # Purpose: Create an RM web app
 #
 # Author: Patrick El-Azem

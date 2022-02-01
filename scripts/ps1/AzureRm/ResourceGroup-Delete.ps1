@@ -1,4 +1,4 @@
-﻿# ##############################
+# ##############################
 # Purpose: Delete a resource group.
 #
 # Author: Patrick El-Azem

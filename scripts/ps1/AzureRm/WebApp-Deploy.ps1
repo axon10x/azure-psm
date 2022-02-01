@@ -1,4 +1,4 @@
-﻿# ##############################
+# ##############################
 # Purpose: Create a new RG, SA, ASP, and web app
 #
 # Author: Patrick El-Azem

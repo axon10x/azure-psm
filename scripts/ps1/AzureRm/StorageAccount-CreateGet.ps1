@@ -1,4 +1,4 @@
-﻿# ##############################
+# ##############################
 # Purpose: Create a storage account
 #
 # Author: Patrick El-Azem

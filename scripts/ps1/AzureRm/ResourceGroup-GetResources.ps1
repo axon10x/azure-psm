@@ -1,4 +1,4 @@
-﻿# ##############################
+# ##############################
 # Purpose: Get all resources in a resource group
 #
 # Author: Patrick El-Azem

@@ -1,1 +1,1 @@
-﻿Get-Module -Name Azure
+Get-Module -Name Azure

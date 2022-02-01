@@ -1,4 +1,4 @@
-﻿# Arguments with defaults
+# Arguments with defaults
 param
 (
     [string]$SubscriptionId = '',

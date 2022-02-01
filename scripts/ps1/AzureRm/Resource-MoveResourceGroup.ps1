@@ -1,4 +1,4 @@
-﻿# ##############################
+# ##############################
 # Purpose: Move a resource from a source to a target resource group
 #
 # Author: Patrick El-Azem

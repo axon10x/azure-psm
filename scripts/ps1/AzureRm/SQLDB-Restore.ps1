@@ -1,4 +1,4 @@
-﻿$ResourceGroupName = ''
+$ResourceGroupName = ''
 $ServerName = ''
 $DatabaseName = ''
 $RestoredDatabaseName = ''

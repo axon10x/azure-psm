@@ -1,4 +1,4 @@
-﻿# ##############################
+# ##############################
 # Purpose: Create or get an NSG
 #
 # Author: Patrick El-Azem

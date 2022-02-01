@@ -1,4 +1,4 @@
-﻿# ##############################
+# ##############################
 # Purpose: Update an existing CDN profile to a different pricing SKU
 #
 # Author: Patrick El-Azem

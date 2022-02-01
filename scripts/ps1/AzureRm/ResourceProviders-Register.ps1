@@ -1,4 +1,4 @@
-﻿Function RegisterRP {
+Function RegisterRP {
     Param(
         [string]$ResourceProviderNamespace
     )

@@ -1,4 +1,4 @@
-﻿# ##############################
+# ##############################
 # Purpose: Get a resource group. Create if it doesn't exist.
 #
 # Author: Patrick El-Azem

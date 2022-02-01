@@ -1,4 +1,4 @@
-﻿# ##############################
+# ##############################
 # Purpose: Create NSG and rules
 #
 # Author: Patrick El-Azem

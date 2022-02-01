@@ -1,4 +1,4 @@
-﻿# ##############################
+# ##############################
 # Purpose: Update an availability set and all VMs in it to managed disks.
 #
 # Author: Patrick El-Azem

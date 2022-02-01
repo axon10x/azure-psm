@@ -1,4 +1,4 @@
-﻿# ##############################
+# ##############################
 # Purpose: Add alerts to an existing RM VM. This script adds some specific ones; customize as needed.
 #
 # Author: Patrick El-Azem

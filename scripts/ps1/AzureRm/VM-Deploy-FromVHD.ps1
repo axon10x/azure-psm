@@ -1,4 +1,4 @@
-﻿# ##############################
+# ##############################
 # Purpose: Deploy RM VM from a generalized VHD file
 # Assumption: the VHD has been separately specialized. This script is NOT for building a VM from a generalized (sysprepped) image.
 # 

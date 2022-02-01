@@ -1,4 +1,4 @@
-﻿# ##############################
+# ##############################
 # Purpose: Create an Azure SQL Server.
 #
 # Author: Patrick El-Azem

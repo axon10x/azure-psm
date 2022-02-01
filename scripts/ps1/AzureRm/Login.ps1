@@ -1,4 +1,4 @@
-﻿# ##############################
+# ##############################
 # Purpose: Check whether an Azure login context already exists. If not, invoke the login UI/process.
 #
 # Author: Patrick El-Azem

@@ -1,4 +1,4 @@
-﻿$ResourceGroupName = ''
+$ResourceGroupName = ''
 $ServerName = ''
 $DatabaseName = ''
 $TargetServerName = '' # this does NOT work at this point

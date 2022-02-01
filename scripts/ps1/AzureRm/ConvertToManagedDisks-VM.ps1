@@ -1,4 +1,4 @@
-﻿# ##############################
+# ##############################
 # Purpose: Update a VM using unmanaged VHD disks to managed disks.
 #
 # Author: Patrick El-Azem

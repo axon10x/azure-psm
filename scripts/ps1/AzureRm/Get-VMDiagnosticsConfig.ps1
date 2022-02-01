@@ -1,4 +1,4 @@
-﻿$ResourceGroupName = ''
+$ResourceGroupName = ''
 $VMName = ''
 $DiagXMLFilePath = '.\diagnostics.xml'
 

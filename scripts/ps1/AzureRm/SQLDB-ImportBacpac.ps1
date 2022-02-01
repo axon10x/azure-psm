@@ -1,4 +1,4 @@
-﻿# ########################################
+# ########################################
 # Purpose: Restore an Azure SQL DB from bacpac in blob storage
 #
 # Author: Patrick El-Azem

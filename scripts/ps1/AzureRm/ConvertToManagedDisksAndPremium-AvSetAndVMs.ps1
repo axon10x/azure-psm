@@ -1,4 +1,4 @@
-﻿# ##############################
+# ##############################
 # Purpose: Update an availability set and all VMs in it to managed disks and upgrade from Standard to Premium storage.
 # 
 # Author: Patrick El-Azem

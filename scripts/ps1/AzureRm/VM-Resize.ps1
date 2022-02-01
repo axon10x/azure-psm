@@ -1,4 +1,4 @@
-﻿# ##############################
+# ##############################
 # Purpose: Deploy RM VM - Managed Disks
 #
 # Author: Patrick El-Azem

@@ -1,4 +1,4 @@
-﻿# ##############################
+# ##############################
 # Purpose: Create an Azure CDN with two endpoints. Origins are assumed to exist!
 #
 # Author: Patrick El-Azem

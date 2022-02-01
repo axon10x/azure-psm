@@ -1,4 +1,4 @@
-﻿# ##############################
+# ##############################
 # Purpose: Create an app service plan
 #
 # Author: Patrick El-Azem

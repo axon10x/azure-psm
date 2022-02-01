@@ -1,4 +1,4 @@
-﻿# ##############################
+# ##############################
 # Purpose: Apply script extension to Azure VM and run a script
 #
 # Author: Patrick El-Azem

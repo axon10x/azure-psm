@@ -1,4 +1,4 @@
-﻿# ##############################
+# ##############################
 # Purpose: Create VNet + Subnet
 #
 # Author: Patrick El-Azem

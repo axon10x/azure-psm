@@ -1,4 +1,4 @@
-﻿# ##############################
+# ##############################
 # Purpose: Add diagnostics to an existing RM VM
 #
 # Author: Patrick El-Azem

@@ -1,4 +1,4 @@
-﻿# ########################################
+# ########################################
 # Purpose: Export an Azure SQL DB to bacpac in blob storage
 #
 # Author: Patrick El-Azem
