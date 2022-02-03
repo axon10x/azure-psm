@@ -358,7 +358,7 @@
 		"resourceTags": {
 			"Timestamp": "[parameters('timestamp')]"
 		},
-		"apiVersionCompute": "2021-04-01",
+		"apiVersionCompute": "2021-07-01",
 		"apiVersionDevTestLabSchedule": "2018-09-15"
 	},
 	"resources": [
