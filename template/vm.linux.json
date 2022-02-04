@@ -287,12 +287,17 @@
 			if
 			(
 				empty(trim(parameters('imageResourceId'))),
-				createObject
+				if
 				(
-					'publisher', parameters('publisher'),
-					'offer', parameters('offer'),
-					'sku', parameters('sku'),
-					'version', parameters('version')
+					empty(parameters('osDiskId')),
+					createObject
+					(
+						'publisher', parameters('publisher'),
+						'offer', parameters('offer'),
+						'sku', parameters('sku'),
+						'version', parameters('version')
+					),
+					null()
 				),
 				createObject
 				(
