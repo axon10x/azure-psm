@@ -54,7 +54,7 @@
 		},
 		"publisher": {
 			"type": "string",
-			"defaultValue": "Canonical",
+			"defaultValue": "",
 			"metadata": {
 				"displayName": "Publisher",
 				"description": "CLI: az vm image list-publishers -l [Azure region]"
@@ -62,7 +62,7 @@
 		},
 		"offer": {
 			"type": "string",
-			"defaultValue": "UbuntuServer",
+			"defaultValue": "",
 			"metadata": {
 				"displayName": "Offer",
 				"description": "CLI: az vm image list-offers -l [Azure region] --publisher [Publisher]"
@@ -70,7 +70,7 @@
 		},
 		"sku": {
 			"type": "string",
-			"defaultValue": "20.04",
+			"defaultValue": "",
 			"metadata": {
 				"displayName": "SKU",
 				"description": "CLI: az vm image list-skus -l [Azure region] --publisher [Publisher] --offer [Offer]"
