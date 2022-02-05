@@ -297,7 +297,7 @@
 						'sku', parameters('sku'),
 						'version', parameters('version')
 					),
-					null()
+					createObject()
 				),
 				createObject
 				(
