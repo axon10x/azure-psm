@@ -279,23 +279,6 @@
 			)
 		]",
 		"networkInterfaceId": "[resourceId(parameters('resourceGroupNameNetworkInterface'), 'Microsoft.Network/networkInterfaces', parameters('networkInterfaceName'))]",
-		"imageReference": "[
-			if
-			(
-				empty(trim(parameters('imageResourceId'))),
-				createObject
-				(
-					'publisher', parameters('publisher'),
-					'offer', parameters('offer'),
-					'sku', parameters('sku'),
-					'version', parameters('version')
-				),
-				createObject
-				(
-					'id', parameters('imageResourceId')
-				)
-			)
-		]",
 		"apiVersionCompute": "2021-07-01",
 		"apiVersionDevTestLabSchedule": "2018-09-15"
 	},
@@ -331,7 +314,28 @@
 					"vmSize": "[parameters('virtualMachineSize')]"
 				},
 				"storageProfile": {
-					"imageReference": "[variables('imageReference')]",
+					"imageReference": "[
+						if
+						(
+							empty(parameters('imageResourceId')),
+							if
+							(
+								empty(parameters('osDiskId')),
+								createObject
+								(
+									'publisher', parameters('publisher'),
+									'offer', parameters('offer'),
+									'sku', parameters('sku'),
+									'version', parameters('version')
+								),
+								json('null')
+							),
+							createObject
+							(
+								'id', parameters('imageResourceId')
+							)
+						)
+					]",
 					"osDisk": "[variables('osDisk')]",
 					"copy": [
 						{
