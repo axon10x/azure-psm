@@ -90,6 +90,7 @@
 		},
 		"adminUsername": {
 			"type": "string",
+			"defaultValue": "",
 			"metadata": {
 				"displayName": "VM administrator username",
 				"description": ""
@@ -97,6 +98,7 @@
 		},
 		"adminSshPublicKey": {
 			"type": "string",
+			"defaultValue": "",
 			"metadata": {
 				"displayName": "VM administrator SSH public key",
 				"description": "VM administrator SSH public key in form 'ssh-rsa {key}'"
