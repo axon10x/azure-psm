@@ -304,15 +304,36 @@
 			"properties": {
 				"osProfile": {
 					"computerName": "[parameters('virtualMachineName')]",
-					"adminUsername": "[parameters('adminUsername')]",
+					"adminUsername": "[
+						if
+						(
+							empty(parameters('adminUsername')),
+							json('null'),
+							createObject('adminUsername', parameters('adminUsername'))
+						)
+					]",
 					"linuxConfiguration": {
 						"provisionVMAgent": "[parameters('provisionVmAgent')]",
 						"disablePasswordAuthentication": "[parameters('disablePasswordAuthentication')]",
 						"ssh": {
 							"publicKeys": [
 								{
-									"path": "[concat('/home/', parameters('adminUsername'), '/.ssh/authorized_keys')]",
-									"keyData": "[parameters('adminSshPublicKey')]"
+									"path": "[
+										if
+										(
+											or(empty(parameters('adminUsername')), empty(parameters('adminSshPublicKey'))),
+											json('null'),
+											concat('/home/', parameters('adminUsername'), '/.ssh/authorized_keys')
+										)
+									]",
+									"keyData": "[
+										if
+										(
+											or(empty(parameters('adminUsername')), empty(parameters('adminSshPublicKey'))),
+											json('null'),
+											parameters('adminSshPublicKey')
+										)
+									]"
 								}
 							]
 						}
