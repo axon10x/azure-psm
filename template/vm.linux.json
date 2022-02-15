@@ -90,7 +90,6 @@
 		},
 		"adminUsername": {
 			"type": "string",
-			"defaultValue": "",
 			"metadata": {
 				"displayName": "VM administrator username",
 				"description": ""
@@ -98,7 +97,6 @@
 		},
 		"adminSshPublicKey": {
 			"type": "string",
-			"defaultValue": "",
 			"metadata": {
 				"displayName": "VM administrator SSH public key",
 				"description": "VM administrator SSH public key in form 'ssh-rsa {key}'"
@@ -306,36 +304,15 @@
 			"properties": {
 				"osProfile": {
 					"computerName": "[parameters('virtualMachineName')]",
-					"adminUsername": "[
-						if
-						(
-							empty(parameters('adminUsername')),
-							json('null'),
-							createObject('adminUsername', parameters('adminUsername'))
-						)
-					]",
+					"adminUsername": "[parameters('adminUsername')]",
 					"linuxConfiguration": {
 						"provisionVMAgent": "[parameters('provisionVmAgent')]",
 						"disablePasswordAuthentication": "[parameters('disablePasswordAuthentication')]",
 						"ssh": {
 							"publicKeys": [
 								{
-									"path": "[
-										if
-										(
-											or(empty(parameters('adminUsername')), empty(parameters('adminSshPublicKey'))),
-											json('null'),
-											concat('/home/', parameters('adminUsername'), '/.ssh/authorized_keys')
-										)
-									]",
-									"keyData": "[
-										if
-										(
-											or(empty(parameters('adminUsername')), empty(parameters('adminSshPublicKey'))),
-											json('null'),
-											parameters('adminSshPublicKey')
-										)
-									]"
+									"path": "[concat('/home/', parameters('adminUsername'), '/.ssh/authorized_keys')]",
+									"keyData": "[parameters('adminSshPublicKey')]"
 								}
 							]
 						}
