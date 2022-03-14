@@ -32,10 +32,7 @@
 			"apiVersion": "[variables('apiVersion')]",
 			"location": "[parameters('location')]",
 			"properties": {
-				"description": "[parameters('description')]",
-				"softDeletePolicy": {
-					"isSoftDeleteEnabled": "[parameters('softDeleteEnabled')]"
-				}
+				"description": "[parameters('description')]"
 			}
 		}
 	]
