@@ -1,0 +1,42 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"location": {
+			"type": "string",
+			"metadata": {
+				"displayName": "Azure region",
+				"description": "The Azure region within which to deploy. Examples: 'eastus2', 'centralus', etc. See https://azure.microsoft.com/regions/."
+			}
+		},
+		"name": {
+			"type": "string",
+			"defaultValue": ""
+		},
+		"description": {
+			"type": "string",
+			"defaultValue": ""
+		},
+		"softDeleteEnabled": {
+			"type": "bool",
+			"defaultValue": false
+		}
+	},
+	"variables": {
+		"apiVersion": "2021-10-01"
+	},
+	"resources": [
+		{
+			"name": "[parameters('name')]",
+			"type": "Microsoft.Compute/galleries",
+			"apiVersion": "[variables('apiVersion')]",
+			"location": "[parameters('location')]",
+			"properties": {
+				"description": "[parameters('description')]",
+				"softDeletePolicy": {
+					"isSoftDeleteEnabled": "[parameters('softDeleteEnabled')]"
+				}
+			}
+		}
+	]
+}
