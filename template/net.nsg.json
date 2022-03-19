@@ -11,18 +11,9 @@
         },
         "nsgName": {
             "type": "string"
-        },
-        "nsgRuleInbound100Src": {
-            "type": "string",
-            "defaultValue": "",
-            "metadata": {
-                "displayName": "Source for dev/test inbound rule",
-                "description": "Optional. If provided, a priority 100 rule will be created to allow inbound access from this source. Useful for dev/test/debug etc. but likely not appropriate to provide in production."
-            }
         }
     },
     "variables": {
-        "rule100Name": "DevTestInbound",
         "apiVersionNet": "2021-05-01"
     },
     "resources": [
@@ -30,37 +21,7 @@
             "type": "Microsoft.Network/networkSecurityGroups",
             "apiVersion": "[variables('apiVersionNet')]",
             "name": "[parameters('nsgName')]",
-            "location": "[parameters('location')]",
-            "properties": {
-                "securityRules": [
-                    "[
-                        if
-                        (
-                            empty(trim(parameters('nsgRuleInbound100Src'))),
-                            json('null'),
-                            createObject
-                            (
-                                'name', variables('rule100Name'),
-                                'properties', createObject
-                                (
-                                    'protocol', '*',
-                                    'sourcePortRange', '*',
-                                    'destinationPortRange', '*',
-                                    'sourceAddressPrefix', parameters('nsgRuleInbound100Src'),
-                                    'destinationAddressPrefix', 'VirtualNetwork',
-                                    'access', 'Allow',
-                                    'priority', 100,
-                                    'direction', 'Inbound',
-                                    'sourcePortRanges', json('[]'),
-                                    'destinationPortRanges', json('[]'),
-                                    'sourceAddressPrefixes', json('[]'),
-                                    'destinationAddressPrefixes', json('[]')
-                                )
-                            )
-                        )
-                    ]"
-                ]
-            }
+            "location": "[parameters('location')]"
         }
     ]
 }
