@@ -15,7 +15,7 @@
         }
     },
     "variables": {
-        "apiVersionNet": "2020-11-01"
+        "apiVersionNet": "2021-05-01"
     },
     "resources": [
         {

@@ -94,7 +94,7 @@
 		"resourceTags": {
 			"Timestamp": "[parameters('timestamp')]"
 		},
-		"apiVersionNetwork": "2020-07-01"
+		"apiVersionNetwork": "2021-05-01"
 	},
 	"resources": [
 		{
