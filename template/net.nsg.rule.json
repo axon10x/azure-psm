@@ -1,0 +1,90 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "nsgName": {
+            "type": "string"
+        },
+        "nsgRuleName": {
+            "type": "string"
+        },
+        "priority": {
+            "type": "int",
+            "minValue": 100,
+            "maxValue": 4096,
+            "defaultValue": 100
+        },
+        "direction": {
+            "type": "string",
+            "allowedValues": [
+                "Inbound",
+                "Outbound"
+            ],
+            "defaultValue": "Inbound"
+        },
+        "access": {
+            "type": "string",
+            "allowedValues": [
+                "Allow",
+                "Deny"
+            ],
+            "defaultValue": "Deny"
+        },
+        "protocol": {
+            "type": "string",
+            "allowedValues": [
+                "*",
+                "Ah",
+                "Esp",
+                "Icmp",
+                "Tcp",
+                "Udp"
+            ],
+            "defaultValue": "Tcp"
+        },
+        "sourceAddressPrefix": {
+            "type": "string",
+            "metadata": {
+                "description": "Source IP range or Azure tag such as 'AzureCloud', 'VirtualNetwork', 'AzureLoadBalancer', or 'Internet'."
+            }
+        },
+        "sourcePortRange": {
+            "type": "string",
+            "defaultValue": "*"
+        },
+        "destinationAddressPrefix": {
+            "type": "string",
+            "metadata": {
+                "description": "Destination IP range or Azure tag such as 'AzureCloud', 'VirtualNetwork', 'AzureLoadBalancer', or 'Internet'."
+            }
+        },
+        "destinationPortRange": {
+             "type": "string",
+            "defaultValue": "*"
+        }
+    },
+    "variables": {
+        "apiVersionNet": "2021-05-01"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Network/networkSecurityGroups/securityRules",
+            "apiVersion": "[variables('apiVersionNet')]",
+            "name": "[concat(parameters('nsgName'), '/', parameters('nsgRuleName'))]",
+            "properties": {
+                "priority": "[parameters('priority')]",
+                "direction": "[parameters('direction')]",
+                "access": "[parameters('access')]",
+                "protocol": "[parameters('protocol')]",
+                "sourceAddressPrefix": "[parameters('sourceAddressPrefix')]",
+                "sourceAddressPrefixes": [],
+                "sourcePortRange": "[parameters('sourcePortRange')]",
+                "sourcePortRanges": [],
+                "destinationAddressPrefix": "[parameters('destinationAddressPrefix')]",
+                "destinationAddressPrefixes": [],
+                "destinationPortRange": "[parameters('destinationPortRange')]",
+                "destinationPortRanges": []
+            }
+        }
+    ]
+}
