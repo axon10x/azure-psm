@@ -6,6 +6,10 @@
 			"type": "string",
 			"defaultValue": "[utcNow('u')]"
 		},
+		"tags": {
+			"type": "object",
+			"defaultValue": null
+		},
 		"location": {
 			"type": "string",
 			"metadata": {
@@ -255,8 +259,7 @@
 				createObject(parameters('userAssignedManagedIdentityResourceId'), json('{}'))
 			)
 		]",
-		"zones":
-		"[
+		"zones": "[
 			if
 			(
 				empty(trim(parameters('availabilityZone'))),
@@ -264,8 +267,7 @@
 				array(parameters('availabilityZone'))
 			)
 		]",
-		"osDisk":
-		"[
+		"osDisk": "[
 			if
 			(
 				empty(trim(parameters('osDiskId'))),
@@ -283,9 +285,10 @@
 			)
 		]",
 		"networkInterfaceId": "[resourceId(parameters('resourceGroupNameNetworkInterface'), 'Microsoft.Network/networkInterfaces', parameters('networkInterfaceName'))]",
-		"resourceTags": {
+		"timeStampTag": {
 			"Timestamp": "[parameters('timestamp')]"
 		},
+		"tags": "[union(parameters('tags'), variables('timeStampTag'))]",
 		"apiVersionCompute": "2021-07-01",
 		"apiVersionDevTestLabSchedule": "2018-09-15"
 	},
@@ -295,7 +298,7 @@
 			"type": "Microsoft.Compute/virtualMachines",
 			"apiVersion": "[variables('apiVersionCompute')]",
 			"location": "[parameters('location')]",
-			"tags": "[variables('resourceTags')]",
+			"tags": "[variables('tags')]",
 			"identity": {
 				"type": "[variables('identityType')]",
 				"userAssignedIdentities": "[variables('userAssignedIdentities')]"
