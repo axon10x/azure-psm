@@ -8,7 +8,7 @@
 		},
 		"tags": {
 			"type": "object",
-			"defaultValue": "[createObject('', '')]"
+			"defaultValue": "[null()]"
 		},
 		"location": {
 			"type": "string",
