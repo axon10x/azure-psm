@@ -16,3 +16,4 @@ jobs:
         uses: bridgecrewio/checkov-action@master
         with:
           directory: template
+          output_format: cli
