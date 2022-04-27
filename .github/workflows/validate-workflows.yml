@@ -18,6 +18,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - uses: cschleiden/actions-linter@v1
+      - name: Run Action Linting
+        uses: cfy9/action-linting@main
         with:
-          workflows: '[".github/workflows/*.yml"]'
+          additional_arguments: "-color"
