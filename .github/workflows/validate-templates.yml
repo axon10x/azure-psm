@@ -16,4 +16,3 @@ jobs:
         uses: bridgecrewio/checkov-action@master
         with:
           directory: template
-          log_level: DEBUG
