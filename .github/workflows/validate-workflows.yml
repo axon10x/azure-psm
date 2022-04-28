@@ -1,10 +1,10 @@
 name: Validate GHA Workflows
+
 on:
   workflow_dispatch:
   push:
     branches:
-      - main
-      - 'release/*'
+      - 'feature/*'
   pull_request:
     branches:
       - main
