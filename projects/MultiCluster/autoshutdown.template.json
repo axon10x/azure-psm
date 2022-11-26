@@ -1,114 +1,114 @@
 {
-	"$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-	"contentVersion": "1.0.0.0",
-	"parameters": {
-		"location": {
-			"type": "String",
-			"defaultValue": "",
-			"metadata": {
-				"displayName": "Azure region",
-				"description": "Reference: https://azure.microsoft.com/regions/."
-			}
-		},
-		"vm_name": {
-			"type": "String",
-			"defaultValue": "",
-			"metadata": {
-				"displayName": "",
-				"description": ""
-			}
-		},
-		"shutdown_timezone": {
-			"type": "String",
-			"defaultValue": "UTC",
-			"metadata": {
-				"displayName": "",
-				"description": ""
-			}
-		},
-		"shutdown_time": {
-			"type": "string",
-			"defaultValue": "9999",
-			"minLength": 4,
-			"maxLength": 4,
-			"metadata": {
-				"displayName": "",
-				"description": "The time at which VMs will be automatically shutdown (24h HHmm format). Set value to '9999' to NOT configure auto shutdown."
-			}
-		},
-		"notification_state": {
-			"type": "string",
-			"defaultValue": "Enabled",
-			"allowedValues": [
-				"Enabled",
-				"Disabled"
-			],
-			"metadata": {
-				"displayName": "Enable Auto-shutdown Notification?",
-				"description": "Specify whether a notification should be sent before VM auto-shutdown."
-			}
-		},
-		"notification_web_hook_url": {
-			"type": "string",
-			"defaultValue": "",
-			"metadata": {
-				"displayName": "Auto-shutdown Notification Webhook URL",
-				"description": "Auto-shutdown Notification Webhook URL"
-			}
-		},
-		"notification_email": {
-			"type": "string",
-			"defaultValue": "",
-			"metadata": {
-				"displayName": "Auto-shutdown Notification Email",
-				"description": "Auto-shutdown Notification Email"
-			}
-		},
-		"notification_minutes_before": {
-			"type": "int",
-			"defaultValue": 15,
-			"metadata": {
-				"displayName": "Auto-shutdown Notification minutes in advance",
-				"description": "Auto-shutdown Notification minutes in advance"
-			}
-		},
-		"notification_locale": {
-			"type": "string",
-			"defaultValue": "en",
-			"metadata": {
-				"displayName": "",
-				"description": ""
-			}
-		}
-	},
-	"variables": {
-		"api_version": "2018-09-15",
-		"schedule_name": "[concat('shutdown-computevm-', parameters('vm_name'))]",   
-		"vm_id": "[resourceId(resourceGroup().name, 'Microsoft.Compute/virtualMachines', parameters('vm_name'))]"
-	},
-	"resources": [
-		{
-			"condition": "[not(equals(parameters('shutdown_time'), '9999'))]",
-			"type": "microsoft.devtestlab/schedules",
-			"apiVersion": "[variables('api_version')]",
-			"name": "[variables('schedule_name')]",
-			"location": "[parameters('location')]",
-			"properties": {
-				"status": "Enabled",
-				"taskType": "ComputeVmShutdownTask",
-				"dailyRecurrence": {
-					"time": "[parameters('shutdown_time')]"
-				},
-				"timeZoneId": "[parameters('shutdown_timezone')]",
-				"notificationSettings": {
-					"status": "[parameters('notification_state')]",
-					"timeInMinutes": "[parameters('notification_minutes_before')]",
-					"webhookUrl": "[parameters('notification_web_hook_url')]",
-					"emailRecipient": "[parameters('notification_email')]",
-					"notificationLocale": "[parameters('notification_locale')]"
-				},
-				"targetResourceId": "[variables('vm_id')]"
-			}
-		}
-	]
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": {
+      "type": "String",
+      "defaultValue": "",
+      "metadata": {
+        "displayName": "Azure region",
+        "description": "Reference: https://azure.microsoft.com/regions/."
+      }
+    },
+    "vm_name": {
+      "type": "String",
+      "defaultValue": "",
+      "metadata": {
+        "displayName": "",
+        "description": ""
+      }
+    },
+    "shutdown_timezone": {
+      "type": "String",
+      "defaultValue": "UTC",
+      "metadata": {
+        "displayName": "",
+        "description": ""
+      }
+    },
+    "shutdown_time": {
+      "type": "string",
+      "defaultValue": "9999",
+      "minLength": 4,
+      "maxLength": 4,
+      "metadata": {
+        "displayName": "",
+        "description": "The time at which VMs will be automatically shutdown (24h HHmm format). Set value to '9999' to NOT configure auto shutdown."
+      }
+    },
+    "notification_state": {
+      "type": "string",
+      "defaultValue": "Enabled",
+      "allowedValues": [
+        "Enabled",
+        "Disabled"
+      ],
+      "metadata": {
+        "displayName": "Enable Auto-shutdown Notification?",
+        "description": "Specify whether a notification should be sent before VM auto-shutdown."
+      }
+    },
+    "notification_web_hook_url": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "displayName": "Auto-shutdown Notification Webhook URL",
+        "description": "Auto-shutdown Notification Webhook URL"
+      }
+    },
+    "notification_email": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "displayName": "Auto-shutdown Notification Email",
+        "description": "Auto-shutdown Notification Email"
+      }
+    },
+    "notification_minutes_before": {
+      "type": "int",
+      "defaultValue": 15,
+      "metadata": {
+        "displayName": "Auto-shutdown Notification minutes in advance",
+        "description": "Auto-shutdown Notification minutes in advance"
+      }
+    },
+    "notification_locale": {
+      "type": "string",
+      "defaultValue": "en",
+      "metadata": {
+        "displayName": "",
+        "description": ""
+      }
+    }
+  },
+  "variables": {
+    "api_version": "2018-09-15",
+    "schedule_name": "[concat('shutdown-computevm-', parameters('vm_name'))]",   
+    "vm_id": "[resourceId(resourceGroup().name, 'Microsoft.Compute/virtualMachines', parameters('vm_name'))]"
+  },
+  "resources": [
+    {
+      "condition": "[not(equals(parameters('shutdown_time'), '9999'))]",
+      "type": "microsoft.devtestlab/schedules",
+      "apiVersion": "[variables('api_version')]",
+      "name": "[variables('schedule_name')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "status": "Enabled",
+        "taskType": "ComputeVmShutdownTask",
+        "dailyRecurrence": {
+          "time": "[parameters('shutdown_time')]"
+        },
+        "timeZoneId": "[parameters('shutdown_timezone')]",
+        "notificationSettings": {
+          "status": "[parameters('notification_state')]",
+          "timeInMinutes": "[parameters('notification_minutes_before')]",
+          "webhookUrl": "[parameters('notification_web_hook_url')]",
+          "emailRecipient": "[parameters('notification_email')]",
+          "notificationLocale": "[parameters('notification_locale')]"
+        },
+        "targetResourceId": "[variables('vm_id')]"
+      }
+    }
+  ]
 }

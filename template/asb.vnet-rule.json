@@ -1,34 +1,46 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-    "contentVersion": "1.0.0.0",
-    "parameters": {
-        "namespaceName": {
-            "type": "string"
-        },
-        "vnetName": {
-            "type": "string"
-        },
-        "subnetName": {
-            "type": "string"
-        },
-        "resourceGroupNameNetwork": {
-            "type": "string"
-        }
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "timestamp": {
+      "type": "string",
+      "defaultValue": "[utcNow('u')]"
     },
-    "variables": {
-        "apiVersionServiceBusVnetRules": "2018-01-01-preview",
-        "ruleName": "[concat(parameters('namespaceName'), '/', parameters('vnetName'), '-', parameters('subnetName'))]",
-        "vnetId": "[resourceId(parameters('resourceGroupNameNetwork'), 'Microsoft.Network/virtualNetworks', parameters('vnetName'))]",
-        "subnetId": "[concat(variables('vnetId'), '/subnets/', parameters('subnetName'))]"
+    "namespaceName": {
+      "type": "string"
     },
-    "resources": [
-        {
-            "type": "Microsoft.ServiceBus/namespaces/VirtualNetworkRules",
-            "apiVersion": "[variables('apiVersionServiceBusVnetRules')]",
-            "name": "[variables('ruleName')]",
-            "properties": {
-                "virtualNetworkSubnetId": "[variables('subnetId')]"
-            }
-        }
-    ]
+    "vnetName": {
+      "type": "string"
+    },
+    "subnetName": {
+      "type": "string"
+    },
+    "resourceGroupNameNetwork": {
+      "type": "string"
+    },
+    "tags": {
+      "type": "object",
+      "defaultValue": "[createObject()]"
+    }
+  },
+  "variables": {
+    "timeStampTag": {
+      "Timestamp": "[parameters('timestamp')]"
+    },
+    "tags": "[union(parameters('tags'), variables('timeStampTag'))]",
+    "apiVersionServiceBusVnetRules": "2018-01-01-preview",
+    "ruleName": "[concat(parameters('namespaceName'), '/', parameters('vnetName'), '-', parameters('subnetName'))]",
+    "vnetId": "[resourceId(parameters('resourceGroupNameNetwork'), 'Microsoft.Network/virtualNetworks', parameters('vnetName'))]",
+    "subnetId": "[concat(variables('vnetId'), '/subnets/', parameters('subnetName'))]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.ServiceBus/namespaces/VirtualNetworkRules",
+      "apiVersion": "[variables('apiVersionServiceBusVnetRules')]",
+      "name": "[variables('ruleName')]",
+      "properties": {
+        "virtualNetworkSubnetId": "[variables('subnetId')]"
+      }
+    }
+  ]
 }

@@ -1,0 +1,68 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "timestamp": {
+      "type": "string",
+      "defaultValue": "[utcNow('u')]"
+    },
+    "roleDefinitionId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "displayName": "Role Definition ID",
+        "description": "See https://docs.microsoft.com/azure/role-based-access-control/built-in-roles"
+      }
+    },
+    "principalId": {
+      "type": "string",
+      "defaultValue": ""
+    },
+    "principalType": {
+      "type": "string",
+      "defaultValue": "ServicePrincipal",
+      "allowedValues": [
+        "Device",
+        "ForeignGroup",
+        "Group",
+        "ServicePrincipal",
+        "User"
+      ]
+    },
+    "resourceType": {
+      "type": "string",
+      "defaultValue": ""
+    },
+    "resourceName": {
+      "type": "string",
+      "defaultValue": ""
+    },
+    "tags": {
+      "type": "object",
+      "defaultValue": "[createObject()]"
+    }
+  },
+  "variables": {
+    "timeStampTag": {
+      "Timestamp": "[parameters('timestamp')]"
+    },
+    "tags": "[union(parameters('tags'), variables('timeStampTag'))]",
+    "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', parameters('roleDefinitionId'))]",
+    "roleAssignmentName": "[guid(subscription().id, resourceGroup().name, parameters('roleDefinitionId'), parameters('principalId'), parameters('resourceType'), parameters('resourceName'))]",
+    "scopeId": "[if(or(empty(parameters('resourceType')), empty(parameters('resourceName'))), subscription().id, concat(parameters('resourceType'), '/', parameters('resourceName')))]",
+    "apiVersionAuthRoleAssignment": "2021-04-01-preview"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Authorization/roleAssignments",
+      "name": "[variables('roleAssignmentName')]",
+      "apiVersion": "[variables('apiVersionAuthRoleAssignment')]",
+      "scope": "[variables('scopeId')]",
+      "properties": {
+        "roleDefinitionId": "[variables('roleDefinitionId')]",
+        "principalId": "[parameters('principalId')]",
+        "principalType": "[parameters('principalType')]"
+      }
+    }
+  ]
+}

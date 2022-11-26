@@ -1,183 +1,135 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-    "contentVersion": "1.0.0.0",
-    "parameters": {
-		"location": {
-			"type": "string",
-			"defaultValue": "",
-			"metadata": {
-				"displayName": "Azure region",
-				"description": "See https://azure.microsoft.com/regions/."
-			}
-		},
-        "apimServiceName": {
-            "type": "string",
-            "defaultValue": ""
-        },
-        "skuName": {
-            "type": "string",
-            "defaultValue": "Premium",
-            "allowedValues": [
-                "Basic",
-                "Consumption",
-                "Developer",
-                "Premium",
-                "Standard"
-            ]
-        },
-		"availabilityZones": {
-			"type": "string",
-			"defaultValue": "",
-			"metadata": {
-				"displayName": "Azure availability zone(s) (AZs)",
-				"description": "Optional. One or more AZs, comma-delimited. Example: 1,2,3. If not provided, a non-zonal App GW will be deployed. See https://azure.microsoft.com/regions/ for which regions support AZs."
-			}
-		},
-        "scaleUnits": {
-            "type": "int",
-            "defaultValue": 1,
-            "minValue": 0,
-            "maxValue": 10
-        },
-		"managedIdentityType": {
-			"type": "string",
-			"defaultValue": "None",
-			"allowedValues": [
-				"SystemAssigned",
-				"UserAssigned",
-				"None"
-			]
-		},
-		"identityResourceId": {
-			"type": "string",
-			"defaultValue": "",
-			"metadata": {
-				"displayName": "User-Assigned Identity Resource ID",
-				"description": "If Identity Type set to UserAssigned, provide the UAI Resource ID here in ARM format, i.e. /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/{identityName}"
-			}
-		},
-        "publisherName": {
-            "type": "string",
-            "defaultValue": "pz"
-        },
-        "publisherEmail": {
-            "type": "string",
-            "defaultValue": "paelaz@microsoft.com"
-        },
-		"publicIpResourceGroup": {
-            "type": "string",
-			"defaultValue": ""
-		},
-		"publicIpName": {
-            "type": "string",
-			"defaultValue": ""
-		},
-        "virtualNetworkType": {
-            "type": "string",
-			"defaultValue": "External",
-            "allowedValues": [
-                "None",
-                "External",
-                "Internal"
-            ]
-        },
-		"subnetResourceId": {
-			"type": "string",
-			"defaultValue": ""
-		},
-        "enableHttp2": {
-            "type": "bool",
-			"defaultValue": true
-        },
-        "disableGateway": {
-            "type": "bool",
-			"defaultValue": false
-        }
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "timestamp": {
+      "type": "string",
+      "defaultValue": "[utcNow('u')]"
     },
-    "variables": {
-        "zones": "[
-            if
-            (
-                or(empty(parameters('availabilityZones')), not(equals(parameters('skuName'), 'Premium'))),
-                json('[]'),
-                split(parameters('availabilityZones'), ',')
-            )
-        ]",
-        "scaleUnits": "[
-            if
-            (
-                equals(parameters('skuName'), 'Premium'),
-                parameters('scaleUnits'),
-                if
-                (
-                    equals(parameters('skuName'), 'Standard'),
-                    min(parameters('scaleUnits'), 4),
-                    if
-                    (
-                        equals(parameters('skuName'), 'Basic'),
-                        min(parameters('scaleUnits'), 2),
-                        if
-                        (
-                            equals(parameters('skuName'), 'Developer'),
-                            min(parameters('scaleUnits'), 1),
-                            0
-                        )
-                    )
-                )
-            )
-        ]",
-		"userAssignedIdentities": "[
-			if
-			(
-				equals(toLower(parameters('managedIdentityType')), 'userassigned'),
-				createObject
-				(
-					parameters('identityResourceId'),
-					createObject()
-				),
-				json('null')
-			)
-		]",
-		"publicIpId": "[resourceId(parameters('publicIpResourceGroup'), 'Microsoft.Network/publicIPAddresses', parameters('publicIpName'))]",
-		"apiVersionApim": "2021-01-01-preview"
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "metadata": {
+        "displayName": "Azure region",
+        "description": "See https://azure.microsoft.com/regions/."
+      }
     },
-    "resources": [
-        {
-            "type": "Microsoft.ApiManagement/service",
-            "apiVersion": "[variables('apiVersionApim')]",
-            "name": "[parameters('apimServiceName')]",
-            "location": "[parameters('location')]",
-			"zones": "[variables('zones')]",
-            "sku": {
-                "name": "[parameters('skuName')]",
-                "capacity": "[variables('scaleUnits')]"
-            },
-			"identity": {
-				"type": "[parameters('managedIdentityType')]",
-				"userAssignedIdentities": "[variables('userAssignedIdentities')]"
-			},
-            "properties": {
-                "publisherEmail": "[parameters('publisherEmail')]",
-                "publisherName": "[parameters('publisherName')]",
-                "hostnameConfigurations": [
-                    {
-                        "type": "Proxy",
-                        "hostName": "[concat(parameters('apimServiceName'), '.azure-api.net')]",
-                        "negotiateClientCertificate": false,
-                        "defaultSslBinding": true
-                    }
-                ],
-                "virtualNetworkConfiguration": {
-                    "subnetResourceId": "[if(empty(parameters('subnetResourceId')), json('null'), parameters('subnetResourceId'))]"
-                },
-                "customProperties": {
-                    "Microsoft.WindowsAzure.ApiManagement.Gateway.Protocols.Server.Http2": "[parameters('enableHttp2')]"
-                },
-                "virtualNetworkType": "[parameters('virtualNetworkType')]",
-                "publicIpAddressId": "[variables('publicIpId')]",
-                "disableGateway": "[parameters('disableGateway')]",
-                "apiVersionConstraint": {}
-            }
-        }
-    ]
+    "apimServiceName": {
+      "type": "string"
+    },
+    "skuName": {
+      "type": "string",
+      "defaultValue": "Premium",
+      "allowedValues": [
+        "Basic",
+        "Consumption",
+        "Developer",
+        "Premium",
+        "Standard"
+      ]
+    },
+    "availabilityZones": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "displayName": "Azure availability zone(s) (AZs)",
+        "description": "Optional. One or more AZs, comma-delimited. Example: 1,2,3. If not provided, a non-zonal App GW will be deployed. See https://azure.microsoft.com/regions/ for which regions support AZs."
+      }
+    },
+    "scaleUnits": {
+      "type": "int",
+      "defaultValue": 1,
+      "minValue": 0,
+      "maxValue": 10
+    },
+    "assignSystemIdentity": {
+      "type": "bool",
+      "defaultValue": false
+    },
+    "userAssignedIdentityResourceId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "displayName": "User-Assigned Managed Identity Resource ID",
+        "description": "Optional. Can be retrieved for an existing UAMI using az identity show -o tsv --query 'id'."
+      }
+    },
+    "publisherName": {
+      "type": "string",
+      "defaultValue": "CPO-NG"
+    },
+    "publisherEmail": {
+      "type": "string",
+      "defaultValue": "cpong@ses.com"
+    },
+    "publicNetworkAccess": {
+      "type": "string",
+      "defaultValue": "Enabled",
+      "allowedValues": [
+        "Enabled",
+        "Disabled"
+      ]
+    },
+    "virtualNetworkType": {
+      "type": "string",
+      "defaultValue": "None",
+      "allowedValues": [
+        "None",
+        "Internal",
+        "External"
+      ]
+    },
+    "enableHttp2": {
+      "type": "bool",
+      "defaultValue": true
+    },
+    "disableGateway": {
+      "type": "bool",
+      "defaultValue": false
+    },
+    "tags": {
+      "type": "object",
+      "defaultValue": "[createObject()]"
+    }
+  },
+  "variables": {
+    "timeStampTag": {
+      "Timestamp": "[parameters('timestamp')]"
+    },
+    "tags": "[union(parameters('tags'), variables('timeStampTag'))]",
+    "zones": "[if(or(empty(parameters('availabilityZones')), not(equals(parameters('skuName'), 'Premium'))), json('[]'), split(parameters('availabilityZones'), ','))]",
+    "scaleUnits": "[if(equals(parameters('skuName'), 'Premium'), parameters('scaleUnits'), if(equals(parameters('skuName'), 'Standard'), min(parameters('scaleUnits'), 4), if(equals(parameters('skuName'), 'Basic'), min(parameters('scaleUnits'), 2), if(equals(parameters('skuName'), 'Developer'), min(parameters('scaleUnits'), 1), 0))))]",
+    "assignUserIdentity": "[not(empty(trim(parameters('userAssignedIdentityResourceId'))))]",
+    "identityType": "[if(and(not(parameters('assignSystemIdentity')), not(variables('assignUserIdentity'))), 'None', if(and(parameters('assignSystemIdentity'), variables('assignUserIdentity')), 'SystemAssigned,UserAssigned', if(parameters('assignSystemIdentity'), 'SystemAssigned', 'UserAssigned')))]",
+    "userAssignedIdentities": "[if(empty(trim(parameters('userAssignedIdentityResourceId'))), json('null'), createObject(parameters('userAssignedIdentityResourceId'), json('{}')))]",
+    "apiVersionApim": "2021-12-01-preview"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.ApiManagement/service",
+      "apiVersion": "[variables('apiVersionApim')]",
+      "name": "[parameters('apimServiceName')]",
+      "location": "[parameters('location')]",
+      "tags": "[variables('tags')]",
+      "identity": {
+        "type": "[variables('identityType')]",
+        "userAssignedIdentities": "[variables('userAssignedIdentities')]"
+      },
+      "zones": "[variables('zones')]",
+      "sku": {
+        "name": "[parameters('skuName')]",
+        "capacity": "[variables('scaleUnits')]"
+      },
+      "properties": {
+        "publisherEmail": "[parameters('publisherEmail')]",
+        "publisherName": "[parameters('publisherName')]",
+        "customProperties": {
+          "Microsoft.WindowsAzure.ApiManagement.Gateway.Protocols.Server.Http2": "[parameters('enableHttp2')]"
+        },
+        "disableGateway": "[parameters('disableGateway')]",
+        "publicNetworkAccess": "[parameters('publicNetworkAccess')]",
+        "virtualNetworkType": "[parameters('virtualNetworkType')]"
+      }
+    }
+  ]
 }

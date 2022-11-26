@@ -1,64 +1,64 @@
 {
-	"$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-	"contentVersion": "1.0.0.0",
-	"parameters": {
-		"location": {
-			"defaultValue": "",
-			"type": "String",
-			"metadata": {
-				"displayName": "Azure region",
-				"description": "The Azure region within which to deploy. See https://azure.microsoft.com/regions/."
-			}
-		},
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": {
+      "defaultValue": "",
+      "type": "String",
+      "metadata": {
+        "displayName": "Azure region",
+        "description": "The Azure region within which to deploy. See https://azure.microsoft.com/regions/."
+      }
+    },
         "nic_name": {
             "type": "String",
-			"metadata": {
-				"displayName": "",
-				"description": ""
-			}
+      "metadata": {
+        "displayName": "",
+        "description": ""
+      }
         },
-		"vnet_name": {
+    "vnet_name": {
             "type": "String",
-			"metadata": {
-				"displayName": "",
-				"description": ""
-			}
+      "metadata": {
+        "displayName": "",
+        "description": ""
+      }
         },
         "subnet_name": {
             "type": "String",
-			"metadata": {
-				"displayName": "",
-				"description": ""
-			}
+      "metadata": {
+        "displayName": "",
+        "description": ""
+      }
         },
-		"enable_accelerated_networking": {
+    "enable_accelerated_networking": {
             "type": "bool",
-			"defaultValue": false,
-			"metadata": {
-				"displayName": "",
-				"description": ""
-			}
-		},
-		"private_ip_allocation_method": {
-			"type": "String",
-			"allowedValues": [
-				"Dynamic",
-				"Static"
-			],
-			"defaultValue": "Dynamic",
-			"metadata": {
-				"displayName": "",
-				"description": ""
-			}
-		}
-	},
-	"variables": {
-		"api_version": "2019-09-01",
-		"ip_config_name": "ipconfig1",
-		"vnet_id": "[resourceId(resourceGroup().name, 'Microsoft.Network/virtualNetworks/', parameters('vnet_name'))]",
+      "defaultValue": false,
+      "metadata": {
+        "displayName": "",
+        "description": ""
+      }
+    },
+    "private_ip_allocation_method": {
+      "type": "String",
+      "allowedValues": [
+        "Dynamic",
+        "Static"
+      ],
+      "defaultValue": "Dynamic",
+      "metadata": {
+        "displayName": "",
+        "description": ""
+      }
+    }
+  },
+  "variables": {
+    "api_version": "2019-09-01",
+    "ip_config_name": "ipconfig1",
+    "vnet_id": "[resourceId(resourceGroup().name, 'Microsoft.Network/virtualNetworks/', parameters('vnet_name'))]",
         "subnet_id": "[concat(variables('vnet_id'), '/subnets/', parameters('subnet_name'))]"
-	},
-	"resources": [
+  },
+  "resources": [
         {
             "type": "Microsoft.Network/networkInterfaces",
             "apiVersion": "[variables('api_version')]",
@@ -80,5 +80,5 @@
                 "enableAcceleratedNetworking": "[parameters('enable_accelerated_networking')]"
             }
         }
-	]
+  ]
 }

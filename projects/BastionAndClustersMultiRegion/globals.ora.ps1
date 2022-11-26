@@ -25,7 +25,7 @@ $global:g_StorageAccountNameRegion3 = ""
 # DEFAULTS PROVIDED BUT EDIT AS NEEDED
 
 # This will be used to name resource groups and other resources for VM clusters (e.g. general servers, Oracle VMs, etc.)
-$global:g_ClusterNameRoot = "ora"	# e.g. "srv" for general server VMs, "ora" for Oracle VMs
+$global:g_ClusterNameRoot = "ora"  # e.g. "srv" for general server VMs, "ora" for Oracle VMs
 
 $global:g_DeploymentName = "MultiRegionBastionAndClusters"
 

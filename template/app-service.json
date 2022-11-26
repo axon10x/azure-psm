@@ -1,0 +1,345 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "timestamp": {
+      "type": "string",
+      "defaultValue": "[utcNow('u')]"
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "metadata": {
+        "displayName": "Azure region",
+        "description": "See https://azure.microsoft.com/regions/."
+      }
+    },
+    "appServiceName": {
+      "type": "string"
+    },
+    "kind": {
+      "type": "string",
+      "defaultValue": "app",
+      "allowedValues": [
+        "app",
+        "functionapp",
+        "functionapp,linux"
+      ]
+    },
+    "assignSystemIdentity": {
+      "type": "bool",
+      "defaultValue": false
+    },
+    "userAssignedIdentityResourceId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "displayName": "User-Assigned Managed Identity Resource ID",
+        "description": "Optional. Can be retrieved for an existing UAMI using az identity show -o tsv --query 'id'."
+      }
+    },
+    "userAssignedIdentityClientId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "displayName": "User-Assigned Managed Identity Client ID",
+        "description": "Optional. Can be retrieved for an existing UAMI using az identity show -o tsv --query 'clientId'."
+      }
+    },
+    "appServicePlanResourceId": {
+      "type": "string"
+    },
+    "appInsightsResourceId": {
+      "type": "string"
+    },
+    "storageAccountName": {
+      "type": "string"
+    },
+    "functionRuntimeVersion": {
+      "type": "string",
+      "defaultValue": "",
+      "allowedValues": [
+        "",
+        "~3",
+        "~4"
+      ]
+    },
+    "functionRuntimeWorker": {
+      "type": "string",
+      "defaultValue": "",
+      "allowedValues": [
+        "",
+        "dotnet",
+        "python",
+        "node",
+        "java"
+      ]
+    },
+    "language": {
+      "type": "string",
+      "defaultValue": "",
+      "allowedValues": [
+        "",
+        ".net",
+        "python",
+        "node",
+        "html"
+      ]
+    },
+    "dotnetVersion": {
+      "type": "string",
+      "defaultValue": "",
+      "allowedValues": [
+        "",
+        "V3.1",
+        "V5.0",
+        "V6.0"
+      ]
+    },
+    "nodeVersion": {
+      "type": "string",
+      "defaultValue": ""
+    },
+    "pythonVersion": {
+      "type": "string",
+      "defaultValue": ""
+    },
+    "linuxFxVersion": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "displayName": "Linux framework",
+        "description": "az webapp list-runtimes --linux"
+      }
+    },
+    "publicNetworkAccess": {
+      "type": "string",
+      "defaultValue": "Disabled",
+      "allowedValues": [
+        "Enabled",
+        "Disabled"
+      ]
+    },
+    "subnetResourceId": {
+      "type": "string"
+    },
+    "routeAllTrafficThroughVNet": {
+      "type": "bool",
+      "defaultValue": true
+    },
+    "alwaysOn": {
+      "type": "bool",
+      "defaultValue": true
+    },
+    "numberOfWorkers": {
+      "type": "int",
+      "defaultValue": 1
+    },
+    "httpsOnly": {
+      "type": "bool",
+      "defaultValue": true
+    },
+    "http20Enabled": {
+      "type": "bool",
+      "defaultValue": true
+    },
+    "minTlsVersion": {
+      "type": "string",
+      "defaultValue": "1.2",
+      "allowedValues": [
+        "1.0",
+        "1.1",
+        "1.2"
+      ]
+    },
+    "clientAffinityEnabled": {
+      "type": "bool",
+      "defaultValue": false
+    },
+    "httpLoggingEnabled": {
+      "type": "bool",
+      "defaultValue": true
+    },
+    "detailedErrorLoggingEnabled": {
+      "type": "bool",
+      "defaultValue": true
+    },
+    "requestTracingEnabled": {
+      "type": "bool",
+      "defaultValue": false
+    },
+    "remoteDebuggingEnabled": {
+      "type": "bool",
+      "defaultValue": false
+    },
+    "webSocketsEnabled": {
+      "type": "bool",
+      "defaultValue": false
+    },
+    "healthCheckPath": {
+      "type": "string",
+      "defaultValue": ""
+    },
+    "scmIpSecurityRestrictionsUseMain": {
+      "type": "bool",
+      "defaultValue": true
+    },
+    "scmMinTlsVersion": {
+      "type": "string",
+      "defaultValue": "1.2",
+      "allowedValues": [
+        "1.0",
+        "1.1",
+        "1.2"
+      ]
+    },
+    "use32BitWorkerProcess": {
+      "type": "bool",
+      "defaultValue": false
+    },
+    "ftpsState": {
+      "type": "string",
+      "defaultValue": "Disabled",
+      "allowedValues": [
+        "AllAllowed",
+        "Disabled",
+        "FtpsOnly"
+      ]
+    },
+    "loadBalancing": {
+      "type": "string",
+      "defaultValue": "LeastRequests",
+      "allowedValues": [
+        "LeastRequests",
+        "LeastResponseTime",
+        "PerSiteRoundRobin",
+        "RequestHash",
+        "WeightedRoundRobin",
+        "WeightedTotalTraffic"
+      ]
+    },
+    "allowedIpAddressRanges": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "displayName": "Comma-delimited list of source IP address ranges to allow"
+      }
+    },
+    "tags": {
+      "type": "object",
+      "defaultValue": "[createObject()]"
+    }
+  },
+  "variables": {
+    "timeStampTag": {
+      "Timestamp": "[parameters('timestamp')]"
+    },
+    "tags": "[union(parameters('tags'), variables('timeStampTag'))]",
+    "assignUserIdentity": "[not(empty(trim(parameters('userAssignedIdentityResourceId'))))]",
+    "identityType": "[if(and(not(parameters('assignSystemIdentity')), not(variables('assignUserIdentity'))), 'None', if(and(parameters('assignSystemIdentity'), variables('assignUserIdentity')), 'SystemAssigned,UserAssigned', if(parameters('assignSystemIdentity'), 'SystemAssigned', 'UserAssigned')))]",
+    "userAssignedIdentities": "[if(empty(trim(parameters('userAssignedIdentityResourceId'))), json('null'), createObject(parameters('userAssignedIdentityResourceId'), json('{}')))]",
+    "keyVaultReferenceIdentity": "[if(variables('assignUserIdentity'), parameters('userAssignedIdentityResourceId'), if(parameters('assignSystemIdentity'), 'SystemAssigned', ''))]",
+    "allowedIpAddressRanges": "[if(empty(parameters('allowedIpAddressRanges')), json('[]'), split(parameters('allowedIpAddressRanges'), ','))]",
+    "ipRangeAccessAction": "Allow",
+    "appInsightsExtensionVersion": "~2",
+    "apiVersionWeb": "2022-03-01",
+    "apiVersionAppInsights": "2020-02-02",
+    "apiVersionStorage": "2021-09-01"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Web/sites",
+      "apiVersion": "[variables('apiVersionWeb')]",
+      "name": "[parameters('appServiceName')]",
+      "kind": "[parameters('kind')]",
+      "location": "[parameters('location')]",
+      "tags": "[variables('tags')]",
+      "identity": {
+        "type": "[variables('identityType')]",
+        "userAssignedIdentities": "[variables('userAssignedIdentities')]"
+      },
+      "properties": {
+        "clientAffinityEnabled": "[parameters('clientAffinityEnabled')]",
+        "httpsOnly": "[parameters('httpsOnly')]",
+        "keyVaultReferenceIdentity": "[variables('keyVaultReferenceIdentity')]",
+        "serverFarmId": "[parameters('appServicePlanResourceId')]",
+        "virtualNetworkSubnetId": "[parameters('subnetResourceId')]",
+        "swiftSupported": true,
+        "siteConfig": {
+          "netFrameworkVersion": "[parameters('dotnetVersion')]",
+          "nodeVersion": "[parameters('nodeVersion')]",
+          "pythonVersion": "[parameters('pythonVersion')]",
+          "linuxFxVersion": "[parameters('linuxFxVersion')]",
+          "acrUseManagedIdentityCreds": "[variables('assignUserIdentity')]",
+          "acrUserManagedIdentityID": "[parameters('userAssignedIdentityClientId')]",
+          "alwaysOn": "[parameters('alwaysOn')]",
+          "appSettings": [
+            {
+              "name": "FUNCTIONS_EXTENSION_VERSION",
+              "value": "[parameters('functionRuntimeVersion')]"
+            },
+            {
+              "name": "FUNCTIONS_WORKER_RUNTIME",
+              "value": "[parameters('functionRuntimeWorker')]"
+            },
+            {
+              "name": "APPLICATIONINSIGHTS_CONNECTION_STRING",
+              "value": "[reference(parameters('appInsightsResourceId'), variables('apiVersionAppInsights')).connectionString]"
+            },
+            {
+              "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+              "value": "[reference(parameters('appInsightsResourceId'), variables('apiVersionAppInsights')).InstrumentationKey]"
+            },
+            {
+              "name": "ApplicationInsightsAgent_EXTENSION_VERSION",
+              "value": "[variables('appInsightsExtensionVersion')]"
+            },
+            {
+              "name": "XDT_MicrosoftApplicationInsights_Mode",
+              "value": "default"
+            },
+            {
+              "name": "WEBSITE_VNET_ROUTE_ALL",
+              "value": "[parameters('routeAllTrafficThroughVNet')]"
+            },
+            {
+              "name": "AzureWebJobsStorage",
+              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', parameters('storageAccountName'), ';AccountKey=', listKeys(resourceId(subscription().subscriptionId, resourceGroup().name, 'Microsoft.Storage/storageAccounts', parameters('storageAccountName')), variables('apiVersionStorage')).keys[0].value, ';EndpointSuffix=core.windows.net')]"
+            }
+          ],
+          "azureStorageAccounts": {},
+          "detailedErrorLoggingEnabled": "[parameters('detailedErrorLoggingEnabled')]",
+          "ftpsState": "[parameters('ftpsState')]",
+          "healthCheckPath": "[parameters('healthCheckPath')]",
+          "http20Enabled": "[parameters('http20Enabled')]",
+          "httpLoggingEnabled": "[parameters('httpLoggingEnabled')]",
+          "language": "[parameters('language')]",
+          "loadBalancing": "[parameters('loadBalancing')]",
+          "minTlsVersion": "[parameters('minTlsVersion')]",
+          "numberOfWorkers": "[parameters('numberOfWorkers')]",
+          "publicNetworkAccess": "[parameters('publicNetworkAccess')]",
+          "remoteDebuggingEnabled": "[parameters('remoteDebuggingEnabled')]",
+          "requestTracingEnabled": "[parameters('requestTracingEnabled')]",
+          "scmIpSecurityRestrictionsUseMain": "[parameters('scmIpSecurityRestrictionsUseMain')]",
+          "scmMinTlsVersion": "[parameters('scmMinTlsVersion')]",
+          "use32BitWorkerProcess": "[parameters('use32BitWorkerProcess')]",
+          "vnetRouteAllEnabled": "[parameters('routeAllTrafficThroughVNet')]",
+          "webSocketsEnabled": "[parameters('webSocketsEnabled')]",
+          "copy": [
+            {
+              "name": "ipSecurityRestrictions",
+              "count": "[length(variables('allowedIpAddressRanges'))]",
+              "input": {
+                "ipAddress": "[variables('allowedIpAddressRanges')[copyIndex('ipSecurityRestrictions')]]",
+                "action": "[variables('ipRangeAccessAction')]",
+                "priority": "[add(100, copyIndex('ipSecurityRestrictions'))]",
+                "name": "[variables('allowedIpAddressRanges')[copyIndex('ipSecurityRestrictions')]]",
+                "description": "[variables('allowedIpAddressRanges')[copyIndex('ipSecurityRestrictions')]]"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

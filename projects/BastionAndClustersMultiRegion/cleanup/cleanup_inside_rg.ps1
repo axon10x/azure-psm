@@ -8,11 +8,11 @@ $NamePrefixToDelete = ""
 
 function GetResources()
 {
-	$resourceId = ("/subscriptions/" + $g_SubscriptionId + "/resourceGroups/" + $ResourceGroupNameToClean + "/resources")
+  $resourceId = ("/subscriptions/" + $g_SubscriptionId + "/resourceGroups/" + $ResourceGroupNameToClean + "/resources")
 
-	$result = Get-AzureRmResource -ResourceId $resourceId
+  $result = Get-AzureRmResource -ResourceId $resourceId
 
-	return $result
+  return $result
 }
 
 # Delete VMs first to remove any leases

@@ -1,33 +1,46 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-    "contentVersion": "1.0.0.0",
-    "parameters": {
-        "frontDoorName": {
-            "defaultValue": "",
-            "type": "string"
-        },
-        "skuName": {
-			"type": "string",
-			"defaultValue": "Premium_AzureFrontDoor",
-            "allowedValues": [
-                "Premium_AzureFrontDoor"
-            ]
-		}
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "timestamp": {
+      "type": "string",
+      "defaultValue": "[utcNow('u')]"
     },
-    "variables": {
-		"apiVersionFd": "2020-09-01"
+    "frontDoorName": {
+      "defaultValue": "",
+      "type": "string"
     },
-    "resources": [
-        {
-            "type": "Microsoft.Cdn/profiles",
-            "name": "[parameters('frontDoorName')]",
-            "apiVersion": "[variables('apiVersionFd')]",
-            "location": "Global",
-            "sku": {
-                "name": "[parameters('skuName')]"
-            },
-            "kind": "frontdoor",
-            "properties": {}
-        }
-    ]
+    "skuName": {
+      "type": "string",
+      "defaultValue": "Premium_AzureFrontDoor",
+      "allowedValues": [
+        "Premium_AzureFrontDoor"
+      ]
+    },
+    "tags": {
+      "type": "object",
+      "defaultValue": "[createObject()]"
+    }
+  },
+  "variables": {
+    "timeStampTag": {
+      "Timestamp": "[parameters('timestamp')]"
+    },
+    "tags": "[union(parameters('tags'), variables('timeStampTag'))]",
+    "apiVersionFd": "2020-09-01"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Cdn/profiles",
+      "name": "[parameters('frontDoorName')]",
+      "apiVersion": "[variables('apiVersionFd')]",
+      "location": "global",
+      "tags": "[variables('tags')]",
+      "sku": {
+        "name": "[parameters('skuName')]"
+      },
+      "kind": "frontdoor",
+      "properties": {}
+    }
+  ]
 }

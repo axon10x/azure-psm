@@ -1,25 +1,37 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-    "contentVersion": "1.0.0.0",
-    "parameters": {
-        "storageAccountName": {
-            "type": "string"
-        },
-        "containerName": {
-            "type": "string"
-        }
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "timestamp": {
+      "type": "string",
+      "defaultValue": "[utcNow('u')]"
     },
-    "variables": {
-        "apiVersionStorage": "2021-04-01"
+    "storageAccountName": {
+      "type": "string"
     },
-    "resources": [
-        {
-            "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
-            "apiVersion": "[variables('apiVersionStorage')]",
-            "name": "[concat(parameters('storageAccountName'), '/default/', parameters('containerName'))]",
-            "properties": {
-                "publicAccess": "none"
-            }
-        }
-    ]
+    "containerName": {
+      "type": "string"
+    },
+    "tags": {
+      "type": "object",
+      "defaultValue": "[createObject()]"
+    }
+  },
+  "variables": {
+    "timeStampTag": {
+      "Timestamp": "[parameters('timestamp')]"
+    },
+    "tags": "[union(parameters('tags'), variables('timeStampTag'))]",
+    "apiVersionStorage": "2021-09-01"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
+      "apiVersion": "[variables('apiVersionStorage')]",
+      "name": "[concat(parameters('storageAccountName'), '/default/', parameters('containerName'))]",
+      "properties": {
+        "publicAccess": "none"
+      }
+    }
+  ]
 }

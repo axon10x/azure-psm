@@ -2,125 +2,125 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-		"location": {
-			"type": "String",
-			"defaultValue": "",
-			"metadata": {
-				"displayName": "Azure region",
-				"description": "The Azure region within which to deploy. See https://azure.microsoft.com/regions/."
-			}
-		},
+    "location": {
+      "type": "String",
+      "defaultValue": "",
+      "metadata": {
+        "displayName": "Azure region",
+        "description": "The Azure region within which to deploy. See https://azure.microsoft.com/regions/."
+      }
+    },
         "vnet_name": {
             "type": "String",
-			"defaultValue": "",
-			"metadata": {
-				"displayName": "",
-				"description": ""
-			}
+      "defaultValue": "",
+      "metadata": {
+        "displayName": "",
+        "description": ""
+      }
         },
         "subnet_name": {
             "type": "String",
-			"defaultValue": "",
-			"metadata": {
-				"displayName": "",
-				"description": ""
-			}
+      "defaultValue": "",
+      "metadata": {
+        "displayName": "",
+        "description": ""
+      }
         },
         "public_ip_name": {
             "type": "String",
-			"defaultValue": "",
-			"metadata": {
-				"displayName": "",
-				"description": ""
-			}
+      "defaultValue": "",
+      "metadata": {
+        "displayName": "",
+        "description": ""
+      }
         },
         "appgw_name": {
             "type": "String",
-			"defaultValue": "",
-			"metadata": {
-				"displayName": "",
-				"description": ""
-			}
+      "defaultValue": "",
+      "metadata": {
+        "displayName": "",
+        "description": ""
+      }
         },
-		"appgw_sku_name": {
+    "appgw_sku_name": {
             "type": "String",
-			"defaultValue": "Standard_v2",
-			"metadata": {
-				"displayName": "",
-				"description": ""
-			}
-		},
-		"appgw_sku_tier": {
+      "defaultValue": "Standard_v2",
+      "metadata": {
+        "displayName": "",
+        "description": ""
+      }
+    },
+    "appgw_sku_tier": {
             "type": "String",
-			"defaultValue": "Standard_v2",
-			"metadata": {
-				"displayName": "",
-				"description": ""
-			}
-		},
-		"appgw_enable_http2": {
+      "defaultValue": "Standard_v2",
+      "metadata": {
+        "displayName": "",
+        "description": ""
+      }
+    },
+    "appgw_enable_http2": {
             "type": "Bool",
-			"defaultValue": false,
-			"metadata": {
-				"displayName": "",
-				"description": ""
-			}
-		},
-		"appgw_autoscale_instances_min": {
+      "defaultValue": false,
+      "metadata": {
+        "displayName": "",
+        "description": ""
+      }
+    },
+    "appgw_autoscale_instances_min": {
             "type": "Int",
-			"defaultValue": 1,
-			"metadata": {
-				"displayName": "",
-				"description": ""
-			}
-		},
-		"appgw_autoscale_instances_max": {
+      "defaultValue": 1,
+      "metadata": {
+        "displayName": "",
+        "description": ""
+      }
+    },
+    "appgw_autoscale_instances_max": {
             "type": "Int",
-			"defaultValue": 5,
-			"metadata": {
-				"displayName": "",
-				"description": ""
-			}
-		},
+      "defaultValue": 5,
+      "metadata": {
+        "displayName": "",
+        "description": ""
+      }
+    },
         "appgw_back_end_pool_name": {
             "type": "String",
-			"metadata": {
-				"displayName": "",
-				"description": ""
-			}
+      "metadata": {
+        "displayName": "",
+        "description": ""
+      }
         }
     },
     "variables": {
-		"api_version": "2019-09-01",
-		"ipconfig": "appgw_ipconfig",
-		"subnet_id": "[concat(resourceId(resourceGroup().name, 'Microsoft.Network/virtualNetworks', parameters('vnet_name')), '/subnets/', parameters('subnet_name'))]",
-		"public_ip_id": "[resourceId(resourceGroup().name, 'Microsoft.Network/publicIPAddresses', parameters('public_ip_name'))]",
-		"appgw_id": "[resourceId(resourceGroup().name, 'Microsoft.Network/applicationGateways', parameters('appgw_name'))]",
-		"front_end_ip_config_name": "[concat(parameters('appgw_name'), '-ipconfig')]",
-		"front_end_ip_config_id": "[concat(variables('appgw_id'), '/frontendIPConfigurations/', variables('front_end_ip_config_name'))]",
-		"front_end_port_name_80": "port_80",
-		"front_end_port_id_80": "[concat(variables('appgw_id'), '/frontendPorts/', variables('front_end_port_name_80'))]",
-		"back_end_pool_id": "[concat(variables('appgw_id'), '/backendAddressPools/', parameters('appgw_back_end_pool_name'))]",
-		"http_setting_name": "[concat(parameters('appgw_name'), '-setting-http')]",
-		"http_setting_id": "[concat(variables('appgw_id'), '/backendHttpSettingsCollection/', variables('http_setting_name'))]",
-		"http_listener_name": "[concat(parameters('appgw_name'), '-listener-http')]",
-		"http_listener_id": "[concat(variables('appgw_id'), '/httpListeners/', variables('http_listener_name'))]",
-		"request_routing_rule_name_1": "[concat(parameters('appgw_name'), '-rule-pub-http')]"
-	},
+    "api_version": "2019-09-01",
+    "ipconfig": "appgw_ipconfig",
+    "subnet_id": "[concat(resourceId(resourceGroup().name, 'Microsoft.Network/virtualNetworks', parameters('vnet_name')), '/subnets/', parameters('subnet_name'))]",
+    "public_ip_id": "[resourceId(resourceGroup().name, 'Microsoft.Network/publicIPAddresses', parameters('public_ip_name'))]",
+    "appgw_id": "[resourceId(resourceGroup().name, 'Microsoft.Network/applicationGateways', parameters('appgw_name'))]",
+    "front_end_ip_config_name": "[concat(parameters('appgw_name'), '-ipconfig')]",
+    "front_end_ip_config_id": "[concat(variables('appgw_id'), '/frontendIPConfigurations/', variables('front_end_ip_config_name'))]",
+    "front_end_port_name_80": "port_80",
+    "front_end_port_id_80": "[concat(variables('appgw_id'), '/frontendPorts/', variables('front_end_port_name_80'))]",
+    "back_end_pool_id": "[concat(variables('appgw_id'), '/backendAddressPools/', parameters('appgw_back_end_pool_name'))]",
+    "http_setting_name": "[concat(parameters('appgw_name'), '-setting-http')]",
+    "http_setting_id": "[concat(variables('appgw_id'), '/backendHttpSettingsCollection/', variables('http_setting_name'))]",
+    "http_listener_name": "[concat(parameters('appgw_name'), '-listener-http')]",
+    "http_listener_id": "[concat(variables('appgw_id'), '/httpListeners/', variables('http_listener_name'))]",
+    "request_routing_rule_name_1": "[concat(parameters('appgw_name'), '-rule-pub-http')]"
+  },
     "resources": [
-		{
-			"name": "[parameters('public_ip_name')]",
-			"type": "Microsoft.Network/publicIpAddresses",
-			"apiVersion": "[variables('api_version')]",
-			"location": "[parameters('location')]",
-			"properties": {
+    {
+      "name": "[parameters('public_ip_name')]",
+      "type": "Microsoft.Network/publicIpAddresses",
+      "apiVersion": "[variables('api_version')]",
+      "location": "[parameters('location')]",
+      "properties": {
                 "publicIPAddressVersion": "IPv4",
                 "publicIPAllocationMethod": "Static"
-			},
-			"sku": {
-				"name": "Standard"
-			}
-		},
+      },
+      "sku": {
+        "name": "Standard"
+      }
+    },
         {
             "type": "Microsoft.Network/applicationGateways",
             "apiVersion": "[variables('api_version')]",
@@ -131,9 +131,9 @@
                 "2",
                 "3"
             ],
-			"dependsOn": [
-				"[concat('Microsoft.Network/publicIpAddresses/', parameters('public_ip_name'))]"
-			],
+      "dependsOn": [
+        "[concat('Microsoft.Network/publicIpAddresses/', parameters('public_ip_name'))]"
+      ],
             "properties": {
                 "sku": {
                     "name": "[parameters('appgw_sku_name')]",

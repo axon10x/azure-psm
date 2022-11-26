@@ -91,9 +91,9 @@ az group deployment create -g "$resource_group_name" --name "$az_sql_srvr_name_t
 
 echo "Deploy empty source database (read scale-out and zone redundancy only available for Azure SQL DB Premium)"
 az group deployment create -g "$resource_group_name" --name "$az_sql_db_name_src" --template-file "$az_template_sql_db" --parameters \
-	location="$azure_region" server_name="$az_sql_srvr_name_src" db_name="$az_sql_db_name_src" \
-	db_sku="$az_sql_db_sku_src" db_tier="$az_sql_db_tier_src" db_max_size_bytes="$az_sql_db_max_size_src" \
-	db_read_scale="Disabled" db_zone_redundant=false audit_storage_account_name="$storage_acct_name" audit_storage_account_key="$storage_acct_key"
+  location="$azure_region" server_name="$az_sql_srvr_name_src" db_name="$az_sql_db_name_src" \
+  db_sku="$az_sql_db_sku_src" db_tier="$az_sql_db_tier_src" db_max_size_bytes="$az_sql_db_max_size_src" \
+  db_read_scale="Disabled" db_zone_redundant=false audit_storage_account_name="$storage_acct_name" audit_storage_account_key="$storage_acct_key"
 
 echo "Deploy empty target database (read scale-out and zone redundancy only available for Azure SQL DB Premium)"
 az group deployment create -g "$resource_group_name" --name "$az_sql_db_name_tgt" --template-file "$az_template_sql_db" --parameters \

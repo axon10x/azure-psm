@@ -8,7 +8,7 @@ DROP DATABASE IF EXISTS [RefDb];
 GO
 
 CREATE DATABASE [RefDb]
-	ON PRIMARY 
+  ON PRIMARY 
 ( NAME = N'RefDb', FILENAME = N'F:\MSSQL\DATA\RefDb.mdf', SIZE = 128MB , MAXSIZE = UNLIMITED, FILEGROWTH = 128MB )
  LOG ON 
 ( NAME = N'RefDb_log', FILENAME = N'F:\MSSQL\DATA\RefDb_log.ldf', SIZE = 64MB , MAXSIZE = 2048GB , FILEGROWTH = 64MB )
@@ -64,11 +64,11 @@ CREATE TABLE data.stores
     store_id INT IDENTITY(1, 1) NOT NULL,
     location_id INT NULL,
     store_name NVARCHAR(50) NULL,
-	date_start DATETIME2 NULL,
-	date_end DATETIME2 NULL,
+  date_start DATETIME2 NULL,
+  date_end DATETIME2 NULL,
     is_deleted BIT DEFAULT 0 NOT NULL,
-	date_created DATETIME2 DEFAULT (getutcdate()) NOT NULL,
-	date_updated DATETIME2 NULL
+  date_created DATETIME2 DEFAULT (getutcdate()) NOT NULL,
+  date_updated DATETIME2 NULL
 );
 GO
 
@@ -86,11 +86,11 @@ CREATE TABLE data.locations
     country NVARCHAR(50) NULL,
     latitude NUMERIC(18,8) NULL,
     longitude NUMERIC(18,8) NULL,
-	date_start DATETIME2 NULL,
-	date_end DATETIME2 NULL,
+  date_start DATETIME2 NULL,
+  date_end DATETIME2 NULL,
     is_deleted BIT DEFAULT 0 NOT NULL,
-	date_created DATETIME2 DEFAULT (getutcdate()) NOT NULL,
-	date_updated DATETIME2 NULL
+  date_created DATETIME2 DEFAULT (getutcdate()) NOT NULL,
+  date_updated DATETIME2 NULL
 );
 GO
 
@@ -98,11 +98,11 @@ CREATE TABLE data.location_types
 (
     location_type_id INT IDENTITY(1, 1) NOT NULL,
     location_type_name NVARCHAR(50) NULL,
-	date_start DATETIME2 NULL,
-	date_end DATETIME2 NULL,
+  date_start DATETIME2 NULL,
+  date_end DATETIME2 NULL,
     is_deleted BIT DEFAULT 0 NOT NULL,
-	date_created DATETIME2 DEFAULT (getutcdate()) NOT NULL,
-	date_updated DATETIME2 NULL
+  date_created DATETIME2 DEFAULT (getutcdate()) NOT NULL,
+  date_updated DATETIME2 NULL
 );
 GO
 
@@ -110,11 +110,11 @@ CREATE TABLE data.tx_types
 (
     tx_type_id INT IDENTITY(1, 1) NOT NULL,
     tx_type_name NVARCHAR(50) NULL,
-	date_start DATETIME2 NULL,
-	date_end DATETIME2 NULL,
+  date_start DATETIME2 NULL,
+  date_end DATETIME2 NULL,
     is_deleted BIT DEFAULT 0 NOT NULL,
-	date_created DATETIME2 DEFAULT (getutcdate()) NOT NULL,
-	date_updated DATETIME2 NULL
+  date_created DATETIME2 DEFAULT (getutcdate()) NOT NULL,
+  date_updated DATETIME2 NULL
 );
 GO
 

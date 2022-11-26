@@ -1,0 +1,240 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.1",
+  "parameters": {
+    "timestamp": {
+      "type": "string",
+      "defaultValue": "[utcNow('u')]"
+    },
+    "resourceId": {
+      "type": "string",
+      "metadata": {
+        "displayName": "Resource ID",
+        "description": "Resource ID for the resource to which the Diagnostics setting will be added"
+      }
+    },
+    "diagnosticsSettingName": {
+      "type": "string"
+    },
+    "logAnalyticsWorkspaceResourceId": {
+      "type": "string"
+    },
+    "tags": {
+      "type": "object",
+      "defaultValue": "[createObject()]"
+    }
+  },
+  "variables": {
+    "timeStampTag": {
+      "Timestamp": "[parameters('timestamp')]"
+    },
+    "tags": "[union(parameters('tags'), variables('timeStampTag'))]",
+    "apiVersionDiagnostics": "2021-05-01-preview"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Insights/diagnosticSettings",
+      "apiVersion": "[variables('apiVersionDiagnostics')]",
+      "name": "[parameters('diagnosticsSettingName')]",
+      "scope": "[parameters('resourceId')]",
+      "properties": {
+        "workspaceId": "[parameters('logAnalyticsWorkspaceResourceId')]",
+        "metrics": [
+          {
+            "category": "Transaction",
+            "timeGrain": "PT1M",
+            "enabled": true,
+            "retentionPolicy": {
+              "enabled": false,
+              "days": 0
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Insights/diagnosticSettings",
+      "apiVersion": "[variables('apiVersionDiagnostics')]",
+      "name": "[concat(parameters('diagnosticsSettingName'), '-blob')]",
+      "scope": "[concat(parameters('resourceId'), '/blobServices/default')]",
+      "properties": {
+        "workspaceId": "[parameters('logAnalyticsWorkspaceResourceId')]",
+        "logs": [
+          {
+            "category": "StorageRead",
+            "enabled": true,
+            "retentionPolicy": {
+              "enabled": true,
+              "days": 0
+            }
+          },
+          {
+            "category": "StorageWrite",
+            "enabled": true,
+            "retentionPolicy": {
+              "enabled": true,
+              "days": 0
+            }
+          },
+          {
+            "category": "StorageDelete",
+            "enabled": true,
+            "retentionPolicy": {
+              "enabled": true,
+              "days": 0
+            }
+          }
+        ],
+        "metrics": [
+          {
+            "category": "Transaction",
+            "timeGrain": "PT1M",
+            "enabled": true,
+            "retentionPolicy": {
+              "enabled": false,
+              "days": 0
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Insights/diagnosticSettings",
+      "apiVersion": "[variables('apiVersionDiagnostics')]",
+      "name": "[concat(parameters('diagnosticsSettingName'), '-file')]",
+      "scope": "[concat(parameters('resourceId'), '/fileServices/default')]",
+      "properties": {
+        "workspaceId": "[parameters('logAnalyticsWorkspaceResourceId')]",
+        "logs": [
+          {
+            "category": "StorageRead",
+            "enabled": true,
+            "retentionPolicy": {
+              "enabled": true,
+              "days": 0
+            }
+          },
+          {
+            "category": "StorageWrite",
+            "enabled": true,
+            "retentionPolicy": {
+              "enabled": true,
+              "days": 0
+            }
+          },
+          {
+            "category": "StorageDelete",
+            "enabled": true,
+            "retentionPolicy": {
+              "enabled": true,
+              "days": 0
+            }
+          }
+        ],
+        "metrics": [
+          {
+            "category": "Transaction",
+            "timeGrain": "PT1M",
+            "enabled": true,
+            "retentionPolicy": {
+              "enabled": false,
+              "days": 0
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Insights/diagnosticSettings",
+      "apiVersion": "[variables('apiVersionDiagnostics')]",
+      "name": "[concat(parameters('diagnosticsSettingName'), '-queue')]",
+      "scope": "[concat(parameters('resourceId'), '/queueServices/default')]",
+      "properties": {
+        "workspaceId": "[parameters('logAnalyticsWorkspaceResourceId')]",
+        "logs": [
+          {
+            "category": "StorageRead",
+            "enabled": true,
+            "retentionPolicy": {
+              "enabled": true,
+              "days": 0
+            }
+          },
+          {
+            "category": "StorageWrite",
+            "enabled": true,
+            "retentionPolicy": {
+              "enabled": true,
+              "days": 0
+            }
+          },
+          {
+            "category": "StorageDelete",
+            "enabled": true,
+            "retentionPolicy": {
+              "enabled": true,
+              "days": 0
+            }
+          }
+        ],
+        "metrics": [
+          {
+            "category": "Transaction",
+            "timeGrain": "PT1M",
+            "enabled": true,
+            "retentionPolicy": {
+              "enabled": false,
+              "days": 0
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Insights/diagnosticSettings",
+      "apiVersion": "[variables('apiVersionDiagnostics')]",
+      "name": "[concat(parameters('diagnosticsSettingName'), '-table')]",
+      "scope": "[concat(parameters('resourceId'), '/tableServices/default')]",
+      "properties": {
+        "workspaceId": "[parameters('logAnalyticsWorkspaceResourceId')]",
+        "logs": [
+          {
+            "category": "StorageRead",
+            "enabled": true,
+            "retentionPolicy": {
+              "enabled": true,
+              "days": 0
+            }
+          },
+          {
+            "category": "StorageWrite",
+            "enabled": true,
+            "retentionPolicy": {
+              "enabled": true,
+              "days": 0
+            }
+          },
+          {
+            "category": "StorageDelete",
+            "enabled": true,
+            "retentionPolicy": {
+              "enabled": true,
+              "days": 0
+            }
+          }
+        ],
+        "metrics": [
+          {
+            "category": "Transaction",
+            "timeGrain": "PT1M",
+            "enabled": true,
+            "retentionPolicy": {
+              "enabled": false,
+              "days": 0
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

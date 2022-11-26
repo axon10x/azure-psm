@@ -138,16 +138,16 @@ az appservice plan create -l $azure_region -g $resource_group_name -n $app_servi
 # Create application insights instance and get instrumentation key
 echo "Create Application Insights and get Instrumentation Key"
 app_insights_key="$(az group deployment create -g $resource_group_name -n $app_insights_name --template-file "app_insights.template.json" \
-	-o tsv --query "properties.outputs.app_insights_instrumentation_key.value" \
-	--parameters location="$azure_region" instance_name="$app_insights_name")"
+  -o tsv --query "properties.outputs.app_insights_instrumentation_key.value" \
+  --parameters location="$azure_region" instance_name="$app_insights_name")"
 
 # https://docs.microsoft.com/en-us/cli/azure/functionapp
 # Create function app with plan and app insights created above
 # Using Windows at this point because MSI on Linux still in preview
 echo "Create Function App and link to App Service Plan and App Insights instance created above"
 az functionapp create -g $resource_group_name -n $functionapp_name --storage-account $storage_acct_name \
-	--app-insights $app_insights_name --app-insights-key $app_insights_key \
-	--plan $app_service_plan_name --os-type Windows --runtime dotnet
+  --app-insights $app_insights_name --app-insights-key $app_insights_key \
+  --plan $app_service_plan_name --os-type Windows --runtime dotnet
 
 # https://docs.microsoft.com/en-us/cli/azure/functionapp/identity
 # Assign managed identity to function app

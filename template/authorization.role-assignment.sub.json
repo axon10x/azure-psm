@@ -1,0 +1,58 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "timestamp": {
+      "type": "string",
+      "defaultValue": "[utcNow('u')]"
+    },
+    "roleDefinitionId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "displayName": "Role Definition ID",
+        "description": "See https://docs.microsoft.com/azure/role-based-access-control/built-in-roles"
+      }
+    },
+    "principalId": {
+      "type": "string",
+      "defaultValue": ""
+    },
+    "principalType": {
+      "type": "string",
+      "defaultValue": "ServicePrincipal",
+      "allowedValues": [
+        "Device",
+        "ForeignGroup",
+        "Group",
+        "ServicePrincipal",
+        "User"
+      ]
+    },
+    "tags": {
+      "type": "object",
+      "defaultValue": "[createObject()]"
+    }
+  },
+  "variables": {
+    "timeStampTag": {
+      "Timestamp": "[parameters('timestamp')]"
+    },
+    "tags": "[union(parameters('tags'), variables('timeStampTag'))]",
+    "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', parameters('roleDefinitionId'))]",
+    "roleAssignmentName": "[guid(subscription().id, parameters('roleDefinitionId'), parameters('principalId'))]",
+    "apiVersionAuthRoleAssignment": "2021-04-01-preview"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Authorization/roleAssignments",
+      "name": "[variables('roleAssignmentName')]",
+      "apiVersion": "[variables('apiVersionAuthRoleAssignment')]",
+      "properties": {
+        "roleDefinitionId": "[variables('roleDefinitionId')]",
+        "principalId": "[parameters('principalId')]",
+        "principalType": "[parameters('principalType')]"
+      }
+    }
+  ]
+}

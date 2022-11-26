@@ -1,117 +1,125 @@
 {
-	"$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-	"contentVersion": "1.0.0.0",
-	"parameters": {
-		"timestamp": {
-			"type": "string",
-			"defaultValue": "[utcNow('u')]"
-		},
-		"trafficManagerProfileName": {
-			"type": "string",
-			"defaultValue": ""
-		},
-		"profileStatus": {
-			"type": "string",
-			"defaultValue": "Enabled",
-			"allowedValues": [
-				"Enabled",
-				"Disabled"
-			]
-		},
-		"trafficRoutingMethod": {
-			"type": "string",
-			"defaultValue": "Geographic",
-			"allowedValues": [
-				"Performance",
-				"Priority",
-				"Weighted",
-				"Geographic",
-				"MultiValue",
-				"Subnet"
-			]
-		},
-		"dnsTtl": {
-			"type": "int",
-			"defaultValue": 60
-		},
-		"protocol": {
-			"type": "string",
-			"defaultValue": "HTTPS",
-			"allowedValues": [
-				"TCP",
-				"HTTP",
-				"HTTPS"
-			]
-		},
-		"port": {
-			"type": "int",
-			"defaultValue": 443
-		},
-		"path": {
-			"type": "string",
-			"defaultValue": "/"
-		},
-		"intervalInSeconds": {
-			"type": "int",
-			"defaultValue": 10,
-			"allowedValues": [10, 30]
-		},
-		"timeoutInSeconds": {
-			"type": "int",
-			"defaultValue": 5,
-			"minValue": 5,
-			"maxValue": 10
-		},
-		"toleratedNumberOfFailures": {
-			"type": "int",
-			"defaultValue": 3
-		},
-		"trafficViewEnrollmentStatus": {
-			"type": "string",
-			"defaultValue": "Disabled",
-			"allowedValues": [
-				"Disabled",
-				"Enabled"
-			]
-		},
-		"maxReturn": {
-			"type": "int",
-			"defaultValue": 0
-		}
-	},
-	"variables": {
-		"resourceTags": {
-			"Timestamp": "[parameters('timestamp')]"
-		},
-		"apiVersion": "2018-04-01"
-	},
-	"resources": [
-		{
-			"type": "Microsoft.Network/trafficmanagerprofiles",
-			"apiVersion": "[variables('apiVersion')]",
-			"name": "[parameters('trafficManagerProfileName')]",
-			"location": "global",
-			"tags": "[variables('resourceTags')]",
-			"properties": {
-				"profileStatus": "[parameters('profileStatus')]",
-				"trafficRoutingMethod": "[parameters('trafficRoutingMethod')]",
-				"dnsConfig": {
-					"relativeName": "[parameters('trafficManagerProfileName')]",
-					"ttl": "[parameters('dnsTtl')]"
-				},
-				"monitorConfig": {
-					"protocol": "[parameters('protocol')]",
-					"port": "[parameters('port')]",
-					"path": "[parameters('path')]",
-					"intervalInSeconds": "[parameters('intervalInSeconds')]",
-					"timeoutInSeconds": "[parameters('timeoutInSeconds')]",
-					"toleratedNumberOfFailures": "[parameters('toleratedNumberOfFailures')]",
-					"customHeaders": [],
-					"expectedStatusCodeRanges": []
-				},
-				"trafficViewEnrollmentStatus": "[parameters('trafficViewEnrollmentStatus')]",
-				"maxReturn": "[parameters('maxReturn')]"
-			}
-		}
-	]
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "timestamp": {
+      "type": "string",
+      "defaultValue": "[utcNow('u')]"
+    },
+    "trafficManagerProfileName": {
+      "type": "string",
+      "defaultValue": ""
+    },
+    "profileStatus": {
+      "type": "string",
+      "defaultValue": "Enabled",
+      "allowedValues": [
+        "Enabled",
+        "Disabled"
+      ]
+    },
+    "trafficRoutingMethod": {
+      "type": "string",
+      "defaultValue": "Geographic",
+      "allowedValues": [
+        "Performance",
+        "Priority",
+        "Weighted",
+        "Geographic",
+        "MultiValue",
+        "Subnet"
+      ]
+    },
+    "dnsTtl": {
+      "type": "int",
+      "defaultValue": 60
+    },
+    "protocol": {
+      "type": "string",
+      "defaultValue": "HTTPS",
+      "allowedValues": [
+        "TCP",
+        "HTTP",
+        "HTTPS"
+      ]
+    },
+    "port": {
+      "type": "int",
+      "defaultValue": 443
+    },
+    "path": {
+      "type": "string",
+      "defaultValue": "/"
+    },
+    "intervalInSeconds": {
+      "type": "int",
+      "defaultValue": 10,
+      "allowedValues": [
+        10,
+        30
+      ]
+    },
+    "timeoutInSeconds": {
+      "type": "int",
+      "defaultValue": 5,
+      "minValue": 5,
+      "maxValue": 10
+    },
+    "toleratedNumberOfFailures": {
+      "type": "int",
+      "defaultValue": 3
+    },
+    "trafficViewEnrollmentStatus": {
+      "type": "string",
+      "defaultValue": "Disabled",
+      "allowedValues": [
+        "Disabled",
+        "Enabled"
+      ]
+    },
+    "maxReturn": {
+      "type": "int",
+      "defaultValue": 0
+    },
+    "tags": {
+      "type": "object",
+      "defaultValue": "[createObject()]"
+    }
+  },
+  "variables": {
+    "timeStampTag": {
+      "Timestamp": "[parameters('timestamp')]"
+    },
+    "tags": "[union(parameters('tags'), variables('timeStampTag'))]",
+    "apiVersion": "2018-04-01"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Network/trafficmanagerprofiles",
+      "apiVersion": "[variables('apiVersion')]",
+      "name": "[parameters('trafficManagerProfileName')]",
+      "location": "global",
+      "tags": "[variables('tags')]",
+      "properties": {
+        "profileStatus": "[parameters('profileStatus')]",
+        "trafficRoutingMethod": "[parameters('trafficRoutingMethod')]",
+        "dnsConfig": {
+          "relativeName": "[parameters('trafficManagerProfileName')]",
+          "ttl": "[parameters('dnsTtl')]"
+        },
+        "monitorConfig": {
+          "protocol": "[parameters('protocol')]",
+          "port": "[parameters('port')]",
+          "path": "[parameters('path')]",
+          "intervalInSeconds": "[parameters('intervalInSeconds')]",
+          "timeoutInSeconds": "[parameters('timeoutInSeconds')]",
+          "toleratedNumberOfFailures": "[parameters('toleratedNumberOfFailures')]",
+          "customHeaders": [],
+          "expectedStatusCodeRanges": []
+        },
+        "trafficViewEnrollmentStatus": "[parameters('trafficViewEnrollmentStatus')]",
+        "maxReturn": "[parameters('maxReturn')]"
+      }
+    }
+  ]
 }

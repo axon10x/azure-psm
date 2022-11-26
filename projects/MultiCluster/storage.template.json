@@ -86,9 +86,9 @@
     "variables": {
         "api_version_storage": "2019-04-01",
         "storage_account_kind": "StorageV2",
-		"vnet_id": "[resourceId(resourceGroup().name, 'Microsoft.Network/virtualNetworks/', parameters('vnet_name'))]",
-		"subnet_id_public": "[concat(variables('vnet_id'), '/subnets/', parameters('subnet_name_public'))]",
-		"subnet_id_private": "[concat(variables('vnet_id'), '/subnets/', parameters('subnet_name_private'))]"
+    "vnet_id": "[resourceId(resourceGroup().name, 'Microsoft.Network/virtualNetworks/', parameters('vnet_name'))]",
+    "subnet_id_public": "[concat(variables('vnet_id'), '/subnets/', parameters('subnet_name_public'))]",
+    "subnet_id_private": "[concat(variables('vnet_id'), '/subnets/', parameters('subnet_name_private'))]"
     },
     "resources": [
         {

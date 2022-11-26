@@ -1,0 +1,65 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "timestamp": {
+      "type": "string",
+      "defaultValue": "[utcNow('u')]"
+    },
+    "apimServiceName": {
+      "type": "string",
+      "defaultValue": ""
+    },
+    "isBuffered": {
+      "type": "bool",
+      "defaultValue": true
+    },
+    "appInsightsName": {
+      "type": "string"
+    },
+    "appInsightsResourceId": {
+      "type": "string"
+    },
+    "tags": {
+      "type": "object",
+      "defaultValue": "[createObject()]"
+    }
+  },
+  "variables": {
+    "timeStampTag": {
+      "Timestamp": "[parameters('timestamp')]"
+    },
+    "tags": "[union(parameters('tags'), variables('timeStampTag'))]",
+    "credentialName": "[concat(parameters('appInsightsName'), '-key')]",
+    "apiVersionApim": "2021-12-01-preview",
+    "apiVersionAppInsights": "2020-02-02"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.ApiManagement/service/namedValues",
+      "apiVersion": "[variables('apiVersionApim')]",
+      "name": "[concat(parameters('apimServiceName'), '/', variables('credentialName'))]",
+      "properties": {
+        "displayName": "[variables('credentialName')]",
+        "value": "[reference(parameters('appInsightsResourceId'), variables('apiVersionAppInsights')).InstrumentationKey]",
+        "secret": true
+      }
+    },
+    {
+      "type": "Microsoft.ApiManagement/service/loggers",
+      "apiVersion": "[variables('apiVersionApim')]",
+      "name": "[concat(parameters('apimServiceName'), '/', parameters('appInsightsName'))]",
+      "dependsOn": [
+        "[resourceId('Microsoft.ApiManagement/service/namedValues', parameters('apimServiceName'), variables('credentialName'))]"
+      ],
+      "properties": {
+        "loggerType": "applicationInsights",
+        "credentials": {
+          "instrumentationKey": "[concat('{{', variables('credentialName'), '}}')]"
+        },
+        "isBuffered": "[parameters('isBuffered')]",
+        "resourceId": "[parameters('appInsightsResourceId')]"
+      }
+    }
+  ]
+}

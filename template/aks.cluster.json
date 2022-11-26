@@ -1,351 +1,364 @@
 {
-	"$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-	"contentVersion": "1.0.0.1",
-	"parameters": {
-		"location": {
-			"type": "string",
-			"metadata": {
-				"displayName": "Azure region",
-				"description": "The Azure region within which to deploy. Examples: 'eastus2', 'centralus', etc. See https://azure.microsoft.com/regions/."
-			}
-		},
-		"k8sversion": {
-			"type": "string",
-			"defaultValue": ""
-		},
-		"skuName": {
-			"type": "string",
-			"defaultValue": "Basic",
-			"allowedValues": [
-				"Basic"
-			]
-		},
-		"skuTier": {
-			"type": "string",
-			"defaultValue": "Paid",
-			"allowedValues": [
-				"Free",
-				"Paid"
-			]
-		},
-		"clusterName": {
-			"type": "string",
-			"defaultValue": ""
-		},
-		"dnsPrefix": {
-			"type": "string",
-			"defaultValue": "",
-			"metadata": {
-				"description": "Optional DNS prefix to use with hosted Kubernetes API server FQDN."
-			}
-		},
-		"managedIdentityType": {
-			"type": "string",
-			"defaultValue": "UserAssigned",
-			"allowedValues": [
-				"SystemAssigned",
-				"UserAssigned",
-				"None"
-			]
-		},
-		"identityName": {
-			"type": "string",
-			"defaultValue": ""
-		},
-		"identityResourceId": {
-			"type": "string",
-			"defaultValue": "",
-			"metadata": {
-				"displayName": "User-Assigned Identity Resource ID",
-				"description": "If Identity Type set to UserAssigned, provide the UAI Resource ID here in ARM format, i.e. /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/{identityName}"
-			}
-		},
-		"identityClientId": {
-			"type": "string",
-			"defaultValue": ""
-		},
-		"identityObjectId": {
-			"type": "string",
-			"defaultValue": ""
-		},
-		"availabilityZones": {
-			"type": "string",
-			"defaultValue": "1,2,3",
-			"metadata": {
-				"displayName": "Azure availability zone(s) (AZs)",
-				"description": "Optional. One or more AZs, comma-delimited. Example: 1,2,3. If not provided, a non-zonal system agent pool will be deployed. See https://azure.microsoft.com/regions/ for which regions support AZs."
-			}
-		},
-		"nodeResourceGroup": {
-			"type": "string",
-			"defaultValue": "",
-			"metadata": {
-				"displayName": "(Optional) Node resource group name",
-				"description": "Resource group name for node pool resources. If not provided, the default (MC_resource-group-name_cluster-name_location) will be used."
-			}
-		},
-		"enableRBAC": {
-			"type": "bool",
-			"defaultValue": true
-		},
-		"systemPoolName": {
-			"type": "string",
-			"defaultValue": "systempool"
-		},
-		"nodeCount": {
-			"type": "int",
-			"defaultValue": 1,
-			"minValue": 1,
-			"maxValue": 100,
-			"metadata": {
-				"description": "The number of nodes for the system node pool."
-			}
-		},
-		"enableNodeAutoscale": {
-			"type": "bool",
-			"defaultValue": false
-		},
-		"nodeCountMin": {
-			"type": "int",
-			"defaultValue": 0,
-			"minValue": 0,
-			"maxValue": 100,
-			"metadata": {
-				"description": "The minimum number of nodes for the cluster when autoscale is used."
-			}
-		},
-		"nodeCountMax": {
-			"type": "int",
-			"defaultValue": 1,
-			"minValue": 1,
-			"maxValue": 100,
-			"metadata": {
-				"description": "The maximum number of nodes for the cluster when autoscale is used."
-			}
-		},
-		"nodeVmSize": {
-			"type": "string",
-			"defaultValue": "Standard_DS2_v2",
-			"metadata": {
-				"description": "The size of the system node pool VMs."
-			}
-		},
-		"osDiskSizeGB": {
-			"type": "int",
-			"defaultValue": 0,
-			"minValue": 0,
-			"maxValue": 1023,
-			"metadata": {
-				"description": "Disk size (in GB) to provision for each of the system pool nodes. This value ranges from 0 to 1023. Specifying 0 will apply the default disk size for that nodeVmSize."
-			}
-		},
-		"osType": {
-			"type": "string",
-			"defaultValue": "Linux",
-			"allowedValues": [
-				"Linux"
-			],
-			"metadata": {
-				"description": "The type of node operating system."
-			}
-		},
-		"nodeAdminUsername": {
-			"type": "string",
-			"metadata": {
-				"description": "Username for the system node pool VMs."
-			}
-		},
-		"sshRSAPublicKey": {
-			"type": "string",
-			"metadata": {
-				"description": "SSH public key in three-part format, ssh-rsa *** username"
-			}
-		},
-		"subnetResourceId": {
-			"type": "string",
-			"defaultValue": ""
-		},
-		"networkPlugin": {
-			"type": "string",
-			"defaultValue": "kubenet",
-			"allowedValues": [
-				"azure",
-				"kubenet"
-			]
-		},
-		"serviceCidr": {
-			"type": "string",
-			"defaultValue": "10.1.0.0/16"
-		},
-		"dnsServiceIp": {
-			"type": "string",
-			"defaultValue": "10.1.0.10"
-		},
-		"podCidr": {
-			"type": "string",
-			"defaultValue": "10.241.0.0/16"
-		},
-		"dockerBridgeCidr": {
-			"type": "string",
-			"defaultValue": "172.17.0.1/16"
-		},
-		"apiServerAuthorizedIpRanges": {
-			"type": "string",
-			"defaultValue": "",
-			"metadata": {
-				"displayName": "API Server Authorized IP Ranges",
-				"description": "Optional. To restrict API Server network access, pass a comma-delimited string of IP ranges. Example: 1.2.3.4/32,13.1.1.0/16. See https://docs.microsoft.com/azure/aks/api-server-authorized-ip-ranges for details."
-			}
-		},
-		"podIdentityEnabled": {
-			"type": "bool",
-			"defaultValue": false
-		},
-		"podIdentityKubenetEnabled": {
-			"type": "bool",
-			"defaultValue": false
-		},
-		"podIdentityNamespace": {
-			"type": "string",
-			"defaultValue": "default"
-		},
-		"podIdentityBindingSelector": {
-			"type": "string",
-			"defaultValue": ""
-		}
-	},
-	"variables": {
-		"userAssignedIdentity": "[
-			if
-			(
-				equals(toLower(parameters('managedIdentityType')), 'userassigned'),
-				createObject
-				(
-					parameters('identityResourceId'),
-					createObject()
-				),
-				json('null')
-			)
-		]",
-		"availabilityZones": "[
-			if
-			(
-				empty(parameters('availabilityZones')),
-				json('[]'),
-				split(parameters('availabilityZones'), ',')
-			)
-		]",
-		"systemPoolBase": {
-			"mode": "System",
-			"name": "[parameters('systemPoolName')]",
-			"availabilityZones": "[variables('availabilityZones')]",
-			"vmSize": "[parameters('nodeVmSize')]",
-			"osType": "[parameters('osType')]",
-			"storageProfile": "ManagedDisks",
-			"osDiskSizeGB": "[parameters('osDiskSizeGB')]",
-			"enableAutoScaling": "[parameters('enableNodeAutoscale')]",
-			"count": "[
-				if
-				(
-					parameters('enableNodeAutoscale'),
-					max(parameters('nodeCount'), parameters('nodeCountMin')),
-					parameters('nodeCount')
-				)
-			]",
-			"minCount": "[if(parameters('enableNodeAutoscale'), parameters('nodeCountMin'), json('null'))]",
-			"maxCount": "[if(parameters('enableNodeAutoscale'), parameters('nodeCountMax'), json('null'))]"
-		},
-		"customSubnetOn": {
-			"availabilityZones": "[variables('availabilityZones')]",
-			"vnetSubnetId": "[parameters('subnetResourceId')]"
-		},
-		"customSubnetOff": {
-			"availabilityZones": "[variables('availabilityZones')]"
-		},
-		"systemPool": "[
-			union
-			(
-				variables('systemPoolBase'),
-				if
-				(
-					empty(parameters('subnetResourceId')),
-					variables('customSubnetOff'),
-					variables('customSubnetOn')
-				)
-			)
-		]",
-		"apiVersionAks": "2021-05-01"
-	},
-	"resources": [
-		{
-			"type": "Microsoft.ContainerService/managedClusters",
-			"apiVersion": "[variables('apiVersionAks')]",
-			"name": "[parameters('clusterName')]",
-			"location": "[parameters('location')]",
-			"identity": {
-				"type": "[parameters('managedIdentityType')]",
-				"userAssignedIdentities": "[variables('userAssignedIdentity')]"
-			},
-			"sku": {
-				"name": "[parameters('skuName')]",
-				"tier": "[parameters('skuTier')]"
-			},
-			"properties": {
-				"kubernetesVersion": "[parameters('k8sversion')]",
-				"dnsPrefix": "[parameters('dnsPrefix')]",
-				"nodeResourceGroup": "[if(empty(parameters('nodeResourceGroup')), json('null'), parameters('nodeResourceGroup'))]",
-				"enableRBAC": "[parameters('enableRBAC')]",
-				"servicePrincipalProfile": {
-					"clientId": "msi"
-				},
-				"identityProfile": {
-					"kubeletIdentity": {
-						"resourceId": "[parameters('identityResourceId')]",
-						"clientId": "[parameters('identityClientId')]",
-						"objectId": "[parameters('identityObjectId')]"
-					}
-				},
-				"podIdentityProfile": {
-					"enabled": "[parameters('podIdentityEnabled')]",
-					"allowNetworkPluginKubenet": "[parameters('podIdentityKubenetEnabled')]"
-				},
-				"linuxProfile": {
-					"adminUsername": "[parameters('nodeAdminUsername')]",
-					"ssh": {
-						"publicKeys": [
-							{
-								"keyData": "[parameters('sshRSAPublicKey')]"
-							}
-						]
-					}
-				},
-				"networkProfile": {
-					"networkPlugin": "[parameters('networkPlugin')]",
-					"serviceCidr": "[if(empty(parameters('serviceCidr')), json('null'), parameters('serviceCidr'))]",
-					"dnsServiceIp": "[if(empty(parameters('dnsServiceIp')), json('null'), parameters('dnsServiceIp'))]",
-					"podCidr": "[if(empty(parameters('podCidr')), json('null'), parameters('podCidr'))]",
-					"dockerBridgeCidr": "[if(empty(parameters('dockerBridgeCidr')), json('null'), parameters('dockerBridgeCidr'))]"
-				},
-				"apiServerAccessProfile": {
-					"authorizedIPRanges": "[
-						if
-						(
-							empty(parameters('apiServerAuthorizedIpRanges')),
-							json('[]'),
-							split(parameters('apiServerAuthorizedIpRanges'), ',')
-						)
-                    ]"
-				},
-				"agentPoolProfiles": [
-					"[variables('systemPool')]"
-				]
-			}
-		}
-	],
-	"outputs": {
-		"controlPlaneFqdn": {
-			"type": "string",
-			"value": "[reference(parameters('clusterName')).fqdn]"
-		}
-	}
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.1",
+  "parameters": {
+    "timestamp": {
+      "type": "string",
+      "defaultValue": "[utcNow('u')]"
+    },
+    "location": {
+      "type": "string",
+      "metadata": {
+        "displayName": "Azure region",
+        "description": "The Azure region within which to deploy. Examples: 'eastus2', 'centralus', etc. See https://azure.microsoft.com/regions/."
+      }
+    },
+    "k8sversion": {
+      "type": "string",
+      "defaultValue": ""
+    },
+    "skuName": {
+      "type": "string",
+      "defaultValue": "Basic",
+      "allowedValues": [
+        "Basic"
+      ]
+    },
+    "skuTier": {
+      "type": "string",
+      "defaultValue": "Paid",
+      "allowedValues": [
+        "Free",
+        "Paid"
+      ]
+    },
+    "clusterName": {
+      "type": "string",
+      "defaultValue": ""
+    },
+    "dnsPrefix": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional DNS prefix to use with hosted Kubernetes API server FQDN."
+      }
+    },
+    "managedIdentityType": {
+      "type": "string",
+      "defaultValue": "UserAssigned",
+      "allowedValues": [
+        "SystemAssigned",
+        "UserAssigned",
+        "None"
+      ]
+    },
+    "identityName": {
+      "type": "string",
+      "defaultValue": ""
+    },
+    "identityResourceId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "displayName": "User-Assigned Identity Resource ID",
+        "description": "If Identity Type set to UserAssigned, provide the UAI Resource ID here in ARM format, i.e. /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/{identityName}"
+      }
+    },
+    "identityClientId": {
+      "type": "string",
+      "defaultValue": ""
+    },
+    "identityObjectId": {
+      "type": "string",
+      "defaultValue": ""
+    },
+    "availabilityZones": {
+      "type": "string",
+      "defaultValue": "1,2,3",
+      "metadata": {
+        "displayName": "Azure availability zone(s) (AZs)",
+        "description": "Optional. One or more AZs, comma-delimited. Example: 1,2,3. If not provided, a non-zonal system agent pool will be deployed. See https://azure.microsoft.com/regions/ for which regions support AZs."
+      }
+    },
+    "nodeResourceGroup": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "displayName": "(Optional) Node resource group name",
+        "description": "Resource group name for node pool resources. If not provided, the default (MC_resource-group-name_cluster-name_location) will be used."
+      }
+    },
+    "enableRBAC": {
+      "type": "bool",
+      "defaultValue": true
+    },
+    "systemPoolName": {
+      "type": "string",
+      "defaultValue": "systempool"
+    },
+    "nodeCount": {
+      "type": "int",
+      "defaultValue": 1,
+      "minValue": 1,
+      "maxValue": 100,
+      "metadata": {
+        "description": "The number of nodes for the system node pool."
+      }
+    },
+    "enableNodeAutoscale": {
+      "type": "bool",
+      "defaultValue": false
+    },
+    "nodeCountMin": {
+      "type": "int",
+      "defaultValue": 0,
+      "minValue": 0,
+      "maxValue": 100,
+      "metadata": {
+        "description": "The minimum number of nodes for the cluster when autoscale is used."
+      }
+    },
+    "nodeCountMax": {
+      "type": "int",
+      "defaultValue": 1,
+      "minValue": 1,
+      "maxValue": 100,
+      "metadata": {
+        "description": "The maximum number of nodes for the cluster when autoscale is used."
+      }
+    },
+    "nodeVmSize": {
+      "type": "string",
+      "defaultValue": "Standard_DS2_v2",
+      "metadata": {
+        "description": "The size of the system node pool VMs."
+      }
+    },
+    "osDiskSizeGB": {
+      "type": "int",
+      "defaultValue": 0,
+      "minValue": 0,
+      "maxValue": 1023,
+      "metadata": {
+        "description": "Disk size (in GB) to provision for each of the system pool nodes. This value ranges from 0 to 1023. Specifying 0 will apply the default disk size for that nodeVmSize."
+      }
+    },
+    "osType": {
+      "type": "string",
+      "defaultValue": "Linux",
+      "allowedValues": [
+        "Linux"
+      ],
+      "metadata": {
+        "description": "The type of node operating system."
+      }
+    },
+    "nodeAdminUsername": {
+      "type": "string",
+      "metadata": {
+        "description": "Username for the system node pool VMs."
+      }
+    },
+    "sshRSAPublicKey": {
+      "type": "string",
+      "metadata": {
+        "description": "SSH public key in three-part format, ssh-rsa *** username"
+      }
+    },
+    "subnetResourceId": {
+      "type": "string",
+      "defaultValue": ""
+    },
+    "networkPlugin": {
+      "type": "string",
+      "defaultValue": "kubenet",
+      "allowedValues": [
+        "azure",
+        "kubenet"
+      ]
+    },
+    "serviceCidr": {
+      "type": "string",
+      "defaultValue": "10.1.0.0/16"
+    },
+    "dnsServiceIp": {
+      "type": "string",
+      "defaultValue": "10.1.0.10"
+    },
+    "podCidr": {
+      "type": "string",
+      "defaultValue": "10.241.0.0/16"
+    },
+    "dockerBridgeCidr": {
+      "type": "string",
+      "defaultValue": "172.17.0.1/16"
+    },
+    "apiServerAuthorizedIpRanges": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "displayName": "API Server Authorized IP Ranges",
+        "description": "Optional. To restrict API Server network access, pass a comma-delimited string of IP ranges. Example: 1.2.3.4/32,13.1.1.0/16. See https://docs.microsoft.com/azure/aks/api-server-authorized-ip-ranges for details."
+      }
+    },
+    "podIdentityEnabled": {
+      "type": "bool",
+      "defaultValue": false
+    },
+    "podIdentityKubenetEnabled": {
+      "type": "bool",
+      "defaultValue": false
+    },
+    "podIdentityNamespace": {
+      "type": "string",
+      "defaultValue": "default"
+    },
+    "podIdentityBindingSelector": {
+      "type": "string",
+      "defaultValue": ""
+    },
+    "tags": {
+      "type": "object",
+      "defaultValue": "[createObject()]"
+    }
+  },
+  "variables": {
+    "timeStampTag": {
+      "Timestamp": "[parameters('timestamp')]"
+    },
+    "tags": "[union(parameters('tags'), variables('timeStampTag'))]",
+    "userAssignedIdentity": "[
+      if
+      (
+        equals(toLower(parameters('managedIdentityType')), 'userassigned'),
+        createObject
+        (
+          parameters('identityResourceId'),
+          createObject()
+        ),
+        json('null')
+      )
+    ]",
+    "availabilityZones": "[
+      if
+      (
+        empty(parameters('availabilityZones')),
+        json('[]'),
+        split(parameters('availabilityZones'), ',')
+      )
+    ]",
+    "systemPoolBase": {
+      "mode": "System",
+      "name": "[parameters('systemPoolName')]",
+      "availabilityZones": "[variables('availabilityZones')]",
+      "vmSize": "[parameters('nodeVmSize')]",
+      "osType": "[parameters('osType')]",
+      "storageProfile": "ManagedDisks",
+      "osDiskSizeGB": "[parameters('osDiskSizeGB')]",
+      "enableAutoScaling": "[parameters('enableNodeAutoscale')]",
+      "count": "[
+        if
+        (
+          parameters('enableNodeAutoscale'),
+          max(parameters('nodeCount'), parameters('nodeCountMin')),
+          parameters('nodeCount')
+        )
+      ]",
+      "minCount": "[if(parameters('enableNodeAutoscale'), parameters('nodeCountMin'), json('null'))]",
+      "maxCount": "[if(parameters('enableNodeAutoscale'), parameters('nodeCountMax'), json('null'))]"
+    },
+    "customSubnetOn": {
+      "availabilityZones": "[variables('availabilityZones')]",
+      "vnetSubnetId": "[parameters('subnetResourceId')]"
+    },
+    "customSubnetOff": {
+      "availabilityZones": "[variables('availabilityZones')]"
+    },
+    "systemPool": "[
+      union
+      (
+        variables('systemPoolBase'),
+        if
+        (
+          empty(parameters('subnetResourceId')),
+          variables('customSubnetOff'),
+          variables('customSubnetOn')
+        )
+      )
+    ]",
+    "apiVersionAks": "2021-05-01"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.ContainerService/managedClusters",
+      "apiVersion": "[variables('apiVersionAks')]",
+      "name": "[parameters('clusterName')]",
+      "location": "[parameters('location')]",
+      "tags": "[variables('tags')]",
+      "identity": {
+        "type": "[parameters('managedIdentityType')]",
+        "userAssignedIdentities": "[variables('userAssignedIdentity')]"
+      },
+      "sku": {
+        "name": "[parameters('skuName')]",
+        "tier": "[parameters('skuTier')]"
+      },
+      "properties": {
+        "kubernetesVersion": "[parameters('k8sversion')]",
+        "dnsPrefix": "[parameters('dnsPrefix')]",
+        "nodeResourceGroup": "[if(empty(parameters('nodeResourceGroup')), json('null'), parameters('nodeResourceGroup'))]",
+        "enableRBAC": "[parameters('enableRBAC')]",
+        "servicePrincipalProfile": {
+          "clientId": "msi"
+        },
+        "identityProfile": {
+          "kubeletIdentity": {
+            "resourceId": "[parameters('identityResourceId')]",
+            "clientId": "[parameters('identityClientId')]",
+            "objectId": "[parameters('identityObjectId')]"
+          }
+        },
+        "podIdentityProfile": {
+          "enabled": "[parameters('podIdentityEnabled')]",
+          "allowNetworkPluginKubenet": "[parameters('podIdentityKubenetEnabled')]"
+        },
+        "linuxProfile": {
+          "adminUsername": "[parameters('nodeAdminUsername')]",
+          "ssh": {
+            "publicKeys": [
+              {
+                "keyData": "[parameters('sshRSAPublicKey')]"
+              }
+            ]
+          }
+        },
+        "networkProfile": {
+          "networkPlugin": "[parameters('networkPlugin')]",
+          "serviceCidr": "[if(empty(parameters('serviceCidr')), json('null'), parameters('serviceCidr'))]",
+          "dnsServiceIp": "[if(empty(parameters('dnsServiceIp')), json('null'), parameters('dnsServiceIp'))]",
+          "podCidr": "[if(empty(parameters('podCidr')), json('null'), parameters('podCidr'))]",
+          "dockerBridgeCidr": "[if(empty(parameters('dockerBridgeCidr')), json('null'), parameters('dockerBridgeCidr'))]"
+        },
+        "apiServerAccessProfile": {
+          "authorizedIPRanges": "[
+            if
+            (
+              empty(parameters('apiServerAuthorizedIpRanges')),
+              json('[]'),
+              split(parameters('apiServerAuthorizedIpRanges'), ',')
+            )
+          ]"
+        },
+        "agentPoolProfiles": [
+          "[variables('systemPool')]"
+        ]
+      }
+    }
+  ],
+  "outputs": {
+    "controlPlaneFqdn": {
+      "type": "string",
+      "value": "[reference(parameters('clusterName')).fqdn]"
+    }
+  }
 }
