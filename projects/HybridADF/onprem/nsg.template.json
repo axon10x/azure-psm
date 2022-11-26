@@ -4,7 +4,7 @@
     "parameters": {
         "location": {
             "type": "string",
-			"defaultValue": "[resourceGroup().location]",
+      "defaultValue": "[resourceGroup().location]",
             "metadata": {
                 "displayName": "Azure region",
                 "description": "The Azure region within which to deploy. Examples: '[parameters('location')]', 'westus', and so on. See https://azure.microsoft.com/regions/."
@@ -43,9 +43,9 @@
             "name": "[parameters('nsg_name')]",
             "apiVersion": "[variables('networkApiVersion')]",
             "location": "[parameters('location')]",
-			"tags": {
-				"Purpose": "ADF PoC"
-			},
+      "tags": {
+        "Purpose": "ADF PoC"
+      },
             "properties": {
                 "securityRules": [
                     {

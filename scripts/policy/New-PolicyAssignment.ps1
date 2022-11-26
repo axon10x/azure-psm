@@ -17,8 +17,8 @@ $parameter = @{'myParameterName' = $parameter_value}
 
 # Assign policy
 New-AzPolicyAssignment `
-	-Name $assignment_name `
-	-DisplayName $display_name `
-	-Scope $resource_group_id `
-	-PolicyDefinition $definition `
-	-PolicyParameterObject $parameter
+  -Name $assignment_name `
+  -DisplayName $display_name `
+  -Scope $resource_group_id `
+  -PolicyDefinition $definition `
+  -PolicyParameterObject $parameter

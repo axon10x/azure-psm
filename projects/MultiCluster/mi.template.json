@@ -5,30 +5,30 @@
         "location": {
             "type": "String",
             "defaultValue": "",
-			"metadata": {
-				"displayName": "",
-				"description": ""
-			}
+      "metadata": {
+        "displayName": "",
+        "description": ""
+      }
         },
         "tenant_id": {
             "type": "String",
-			"metadata": {
-				"displayName": "",
-				"description": ""
-			}
+      "metadata": {
+        "displayName": "",
+        "description": ""
+      }
         },
         "mi_name": {
             "type": "String",
-			"metadata": {
-				"displayName": "",
-				"description": ""
-			}
+      "metadata": {
+        "displayName": "",
+        "description": ""
+      }
         }
     },
     "variables": {
-		"api_version": "2018-11-30",
+    "api_version": "2018-11-30",
         "mi_reference": "[concat('Microsoft.ManagedIdentity/userAssignedIdentities/', parameters('mi_name'))]"
-	},
+  },
     "resources": [
         {
             "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
@@ -40,10 +40,10 @@
             }
         }
     ],
-	"outputs": {
-		"principal_id": {
+  "outputs": {
+    "principal_id": {
             "type": "string",
             "value": "[reference(variables('mi_reference'), variables('api_version')).principalId]"
         }
-	}
+  }
 }

@@ -1,39 +1,52 @@
 {
-	"$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-	"contentVersion": "1.0.0.0",
-	"parameters": {
-		"location": {
-			"type": "string",
-			"metadata": {
-				"displayName": "Azure region",
-				"description": "The Azure region within which to deploy. Examples: 'eastus2', 'centralus', etc. See https://azure.microsoft.com/regions/."
-			}
-		},
-		"gallery-name": {
-			"type": "string",
-			"defaultValue": ""
-		},
-		"description": {
-			"type": "string",
-			"defaultValue": ""
-		},
-		"softDeleteEnabled": {
-			"type": "bool",
-			"defaultValue": false
-		}
-	},
-	"variables": {
-		"apiVersion": "2020-09-30"
-	},
-	"resources": [
-		{
-			"name": "[parameters('gallery-name')]",
-			"type": "Microsoft.Compute/galleries",
-			"apiVersion": "[variables('apiVersion')]",
-			"location": "[parameters('location')]",
-			"properties": {
-				"description": "[parameters('description')]"
-			}
-		}
-	]
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "timestamp": {
+      "type": "string",
+      "defaultValue": "[utcNow('u')]"
+    },
+    "location": {
+      "type": "string",
+      "metadata": {
+        "displayName": "Azure region",
+        "description": "The Azure region within which to deploy. Examples: 'eastus2', 'centralus', etc. See https://azure.microsoft.com/regions/."
+      }
+    },
+    "gallery-name": {
+      "type": "string",
+      "defaultValue": ""
+    },
+    "description": {
+      "type": "string",
+      "defaultValue": ""
+    },
+    "softDeleteEnabled": {
+      "type": "bool",
+      "defaultValue": false
+    },
+    "tags": {
+      "type": "object",
+      "defaultValue": "[createObject()]"
+    }
+  },
+  "variables": {
+    "timeStampTag": {
+      "Timestamp": "[parameters('timestamp')]"
+    },
+    "tags": "[union(parameters('tags'), variables('timeStampTag'))]",
+    "apiVersion": "2020-09-30"
+  },
+  "resources": [
+    {
+      "name": "[parameters('gallery-name')]",
+      "type": "Microsoft.Compute/galleries",
+      "apiVersion": "[variables('apiVersion')]",
+      "location": "[parameters('location')]",
+      "tags": "[variables('tags')]",
+      "properties": {
+        "description": "[parameters('description')]"
+      }
+    }
+  ]
 }

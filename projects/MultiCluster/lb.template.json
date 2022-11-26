@@ -4,52 +4,52 @@
     "parameters": {
         "location": {
             "type": "String",
-			"metadata": {
-				"displayName": "",
-				"description": ""
-			}
+      "metadata": {
+        "displayName": "",
+        "description": ""
+      }
         },
         "vnet_name": {
             "type": "String",
-			"metadata": {
-				"displayName": "",
-				"description": ""
-			}
+      "metadata": {
+        "displayName": "",
+        "description": ""
+      }
         },
         "subnet_name": {
             "type": "String",
-			"metadata": {
-				"displayName": "",
-				"description": ""
-			}
+      "metadata": {
+        "displayName": "",
+        "description": ""
+      }
         },
         "lb_name": {
             "type": "String",
-			"metadata": {
-				"displayName": "",
-				"description": ""
-			}
+      "metadata": {
+        "displayName": "",
+        "description": ""
+      }
         },
         "lb_back_end_pool_name": {
             "type": "String",
-			"metadata": {
-				"displayName": "",
-				"description": ""
-			}
+      "metadata": {
+        "displayName": "",
+        "description": ""
+      }
         }
     },
     "variables": {
-		"api-version": "2019-09-01",
-		"vnet_id": "[resourceId(resourceGroup().name, 'Microsoft.Network/virtualNetworks/', parameters('vnet_name'))]",
-		"subnet_id": "[concat(variables('vnet_id'), '/subnets/', parameters('subnet_name'))]",
-		"lb_id": "[resourceId(resourceGroup().name, 'Microsoft.Network/loadBalancers', parameters('lb_name'))]",
-		"fe_name": "LoadBalancerFrontEnd",
-		"fe_id": "[concat(resourceId('Microsoft.Network/loadBalancers', parameters('lb_name')), '/frontendIPConfigurations/', variables('fe_name'))]",
-		"lb_back_end_pool_id": "[concat(variables('lb_id'), '/backendAddressPools/', parameters('lb_back_end_pool_name'))]",
-		"probe_name": "[concat(parameters('lb_name'), '-probe')]",
-		"probe_id": "[concat(variables('lb_id'), concat('/probes/', variables('probe_name')))]",
-		"lb_rule_name": "rule1"
-	},
+    "api-version": "2019-09-01",
+    "vnet_id": "[resourceId(resourceGroup().name, 'Microsoft.Network/virtualNetworks/', parameters('vnet_name'))]",
+    "subnet_id": "[concat(variables('vnet_id'), '/subnets/', parameters('subnet_name'))]",
+    "lb_id": "[resourceId(resourceGroup().name, 'Microsoft.Network/loadBalancers', parameters('lb_name'))]",
+    "fe_name": "LoadBalancerFrontEnd",
+    "fe_id": "[concat(resourceId('Microsoft.Network/loadBalancers', parameters('lb_name')), '/frontendIPConfigurations/', variables('fe_name'))]",
+    "lb_back_end_pool_id": "[concat(variables('lb_id'), '/backendAddressPools/', parameters('lb_back_end_pool_name'))]",
+    "probe_name": "[concat(parameters('lb_name'), '-probe')]",
+    "probe_id": "[concat(variables('lb_id'), concat('/probes/', variables('probe_name')))]",
+    "lb_rule_name": "rule1"
+  },
     "resources": [
         {
             "type": "Microsoft.Network/loadBalancers",
@@ -73,13 +73,13 @@
                     }
                 ],
                 "backendAddressPools": [
-					{
+          {
                         "name": "[parameters('lb_back_end_pool_name')]",
                         "properties": {}
-					}
-				],
+          }
+        ],
                 "loadBalancingRules": [
-					{
+          {
                         "name": "[variables('lb_rule_name')]",
                         "properties": {
                             "frontendIPConfiguration": {
@@ -101,8 +101,8 @@
                             }
                         }
 
-					}
-				],
+          }
+        ],
                 "probes": [
                     {
                         "name": "[variables('probe_name')]",
@@ -113,7 +113,7 @@
                             "numberOfProbes": 2
                         }
                     }
-				],
+        ],
                 "inboundNatRules": [],
                 "outboundRules": [],
                 "inboundNatPools": []

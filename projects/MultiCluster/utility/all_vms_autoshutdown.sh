@@ -16,11 +16,11 @@ vm_names="$(az vm list -g $resource_group_name -o tsv --query [].name)"
 
 for vm_name in $vm_names
 do
-	echo "Configure VM Auto-Shutdown for ""$vm_name"
-	schedule_name="shutdown-computevm-""$vm_name"
-	az group deployment create -g "$resource_group_name" -n "$schedule_name" --template-file "$autoshutdown_template_file" --no-wait --parameters \
-		location="$location" vm_name="$vm_name" shutdown_timezone="$autoshutdown_timezone" shutdown_time="$autoshutdown_time" notification_state="$autoshutdown_notification_state" \
-		notification_web_hook_url="$autoshutdown_notification_webhook_url" notification_email="$autoshutdown_notification_email" \
-		notification_minutes_before="$autoshutdown_notification_minutes_before" notification_locale="$autoshutdown_notification_locale"
+  echo "Configure VM Auto-Shutdown for ""$vm_name"
+  schedule_name="shutdown-computevm-""$vm_name"
+  az group deployment create -g "$resource_group_name" -n "$schedule_name" --template-file "$autoshutdown_template_file" --no-wait --parameters \
+    location="$location" vm_name="$vm_name" shutdown_timezone="$autoshutdown_timezone" shutdown_time="$autoshutdown_time" notification_state="$autoshutdown_notification_state" \
+    notification_web_hook_url="$autoshutdown_notification_webhook_url" notification_email="$autoshutdown_notification_email" \
+    notification_minutes_before="$autoshutdown_notification_minutes_before" notification_locale="$autoshutdown_notification_locale"
 done
 

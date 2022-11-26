@@ -7,5 +7,5 @@ rgs="$(az group list --subscription "$subscription_id" -o tsv --query "[?name.st
 
 for rg in $rgs
 do
-	az group delete --subscription "$subscription_id" -g "$rg" --yes
+  az group delete --subscription "$subscription_id" -g "$rg" --yes
 done

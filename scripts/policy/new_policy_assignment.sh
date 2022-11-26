@@ -13,9 +13,9 @@ resource_group_id="$(az group show -n "$resource_group_name" -o tsv --query "id"
 
 # Assign policy
 az policy assignment create \
-	--sku standard \
-	--name "$assignment_name" \
-	--display-name "$display_name" \
-	--scope "$resource_group_id" \
-	--policy "$definition_name" \
-	--params "{ \"myParameterName\": { \"type\": \"myParameterType\", \"value\": $parameter_value } }"
+  --sku standard \
+  --name "$assignment_name" \
+  --display-name "$display_name" \
+  --scope "$resource_group_id" \
+  --policy "$definition_name" \
+  --params "{ \"myParameterName\": { \"type\": \"myParameterType\", \"value\": $parameter_value } }"

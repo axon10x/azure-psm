@@ -1,0 +1,57 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.1",
+  "parameters": {
+    "timestamp": {
+      "type": "string",
+      "defaultValue": "[utcNow('u')]"
+    },
+    "resourceId": {
+      "type": "string",
+      "metadata": {
+        "displayName": "Resource ID",
+        "description": "Resource ID for the resource to which the Diagnostics setting will be added"
+      }
+    },
+    "diagnosticsSettingName": {
+      "type": "string"
+    },
+    "logAnalyticsWorkspaceResourceId": {
+      "type": "string"
+    },
+    "sendLogs": {
+      "type": "bool",
+      "defaultValue": true
+    },
+    "sendMetrics": {
+      "type": "bool",
+      "defaultValue": true
+    },
+    "tags": {
+      "type": "object",
+      "defaultValue": "[createObject()]"
+    }
+  },
+  "variables": {
+    "timeStampTag": {
+      "Timestamp": "[parameters('timestamp')]"
+    },
+    "tags": "[union(parameters('tags'), variables('timeStampTag'))]",
+    "logs": "[if( equals(true(), bool(parameters('sendLogs'))), array(createObject('categoryGroup', 'allLogs', 'enabled', 'true')), json('[]') )]",
+    "metrics": "[if( equals(true(), bool(parameters('sendMetrics'))), array(createObject('category', 'AllMetrics', 'timeGrain', 'PT1M', 'enabled', 'true', 'retentionPolicy', createObject('enabled', 'false', 'days', 0))), json('[]') )]",
+    "apiVersionDiagnostics": "2021-05-01-preview"
+  },
+  "resources": [
+    {
+      "name": "[parameters('diagnosticsSettingName')]",
+      "type": "Microsoft.Insights/diagnosticSettings",
+      "apiVersion": "[variables('apiVersionDiagnostics')]",
+      "scope": "[parameters('resourceId')]",
+      "properties": {
+        "workspaceId": "[parameters('logAnalyticsWorkspaceResourceId')]",
+        "metrics": "[variables('metrics')]",
+        "logs": "[variables('logs')]"
+      }
+    }
+  ]
+}

@@ -2,6 +2,10 @@
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
+    "timestamp": {
+      "type": "string",
+      "defaultValue": "[utcNow('u')]"
+    },
     "location": {
       "type": "string",
       "defaultValue": "eastus2euap",
@@ -42,9 +46,17 @@
       "metadata": {
         "description": "ISO 8601 duration format"
       }
+    },
+    "tags": {
+      "type": "object",
+      "defaultValue": "[createObject()]"
     }
   },
   "variables": {
+    "timeStampTag": {
+      "Timestamp": "[parameters('timestamp')]"
+    },
+    "tags": "[union(parameters('tags'), variables('timeStampTag'))]",
     "targetResourceIds": "[split(parameters('targetResourceIds'), ',')]",
     "apiVersion": "2021-06-07-preview"
   },
@@ -54,6 +66,7 @@
       "name": "[parameters('experimentName')]",
       "apiVersion": "[variables('apiVersion')]",
       "location": "[parameters('location')]",
+      "tags": "[variables('tags')]",
       "identity": {
         "type": "SystemAssigned"
       },

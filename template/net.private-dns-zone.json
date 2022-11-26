@@ -1,30 +1,40 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-    "contentVersion": "1.0.0.0",
-    "parameters": {
-		"timestamp": {
-			"type": "string",
-			"defaultValue": "[utcNow('u')]"
-		},
-
-        "privateDnsZoneName": {
-            "type": "String"
-        }
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "timestamp": {
+      "type": "string",
+      "defaultValue": "[utcNow('u')]"
     },
-    "variables": {
-		"resourceTags": {
-			"Timestamp": "[parameters('timestamp')]"
-		},
-        "apiVersionDnsZones": "2020-06-01"
+    "privateDnsZoneName": {
+      "type": "String"
     },
-    "resources": [
-        {
-            "type": "Microsoft.Network/privateDnsZones",
-            "apiVersion": "[variables('apiVersionDnsZones')]",
-            "name": "[parameters('privateDnsZoneName')]",
-            "location": "global",
-			"tags": "[variables('resourceTags')]",
-            "properties": {}
-        }
-    ]
+    "tags": {
+      "type": "object",
+      "defaultValue": "[createObject()]"
+    }
+  },
+  "variables": {
+    "timeStampTag": {
+      "Timestamp": "[parameters('timestamp')]"
+    },
+    "tags": "[union(parameters('tags'), variables('timeStampTag'))]",
+    "apiVersionDnsZones": "2020-06-01"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Network/privateDnsZones",
+      "apiVersion": "[variables('apiVersionDnsZones')]",
+      "name": "[parameters('privateDnsZoneName')]",
+      "location": "global",
+      "tags": "[variables('tags')]",
+      "properties": {}
+    }
+  ],
+  "outputs": {
+    "resourceId": {
+      "type": "string",
+      "value": "[resourceId('Microsoft.Network/privateDnsZones', parameters('privateDnsZoneName'))]"
+    }
+  }
 }

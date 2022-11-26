@@ -1,0 +1,64 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "timestamp": {
+      "type": "string",
+      "defaultValue": "[utcNow('u')]"
+    },
+    "routeTableName": {
+      "type": "string"
+    },
+    "routeName": {
+      "type": "string"
+    },
+    "destinationAddressPrefix": {
+      "type": "string",
+      "defaultValue": "0.0.0.0/0"
+    },
+    "hasBgpOverride": {
+      "type": "bool",
+      "defaultValue": false
+    },
+    "nextHopIpAddress": {
+      "type": "string",
+      "defaultValue": ""
+    },
+    "nextHopType": {
+      "type": "string",
+      "defaultValue": "VirtualAppliance",
+      "allowedValues": [
+        "Internet",
+        "None",
+        "VirtualAppliance",
+        "VirtualNetworkGateway",
+        "VnetLocal"
+      ]
+    },
+    "tags": {
+      "type": "object",
+      "defaultValue": "[createObject()]"
+    }
+  },
+  "variables": {
+    "timeStampTag": {
+      "Timestamp": "[parameters('timestamp')]"
+    },
+    "tags": "[union(parameters('tags'), variables('timeStampTag'))]",
+    "routeName": "[concat(parameters('routeTableName'), '/', parameters('routeName'))]",
+    "apiVersionNet": "2022-01-01"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Network/routeTables/routes",
+      "apiVersion": "[variables('apiVersionNet')]",
+      "name": "[variables('routeName')]",
+      "properties": {
+        "addressPrefix": "[parameters('destinationAddressPrefix')]",
+        "nextHopType": "[parameters('nextHopType')]",
+        "nextHopIpAddress": "[parameters('nextHopIpAddress')]",
+        "hasBgpOverride": "[parameters('hasBgpOverride')]"
+      }
+    }
+  ]
+}

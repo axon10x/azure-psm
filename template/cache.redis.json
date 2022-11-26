@@ -1,0 +1,133 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "timestamp": {
+      "type": "string",
+      "defaultValue": "[utcNow('u')]"
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "metadata": {
+        "displayName": "Azure region",
+        "description": "See https://azure.microsoft.com/regions/."
+      }
+    },
+    "cacheName": {
+      "type": "string"
+    },
+    "assignSystemIdentity": {
+      "type": "bool",
+      "defaultValue": false
+    },
+    "userAssignedIdentityResourceId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "displayName": "User Assigned Identity Resource ID (optional)",
+        "description": "User Assigned Identity resource ID to associate with the Config Store. Not required."
+      }
+    },
+    "redisVersion": {
+      "type": "string",
+      "defaultValue": "6",
+      "allowedValues": [
+        "4",
+        "6"
+      ]
+    },
+    "skuName": {
+      "type": "string",
+      "defaultValue": "Standard",
+      "allowedValues": [
+        "Basic",
+        "Standard",
+        "Premium"
+      ]
+    },
+    "redisCacheCapacity": {
+      "type": "int",
+      "defaultValue": 1,
+      "allowedValues": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "metadata": {
+        "description": "Specify the size of the new Azure Redis Cache instance. Valid values: for C (Basic/Standard) family (0, 1, 2, 3, 4, 5, 6), for P (Premium) family (1, 2, 3, 4)"
+      }
+    },
+    "enableNonSslPort": {
+      "type": "bool",
+      "defaultValue": false
+    },
+    "minimumTlsVersion": {
+      "type": "string",
+      "defaultValue": "1.2",
+      "allowedValues": [
+        "1.0",
+        "1.1",
+        "1.2"
+      ]
+    },
+    "publicNetworkAccess": {
+      "type": "string",
+      "defaultValue": "Disabled",
+      "allowedValues": [
+        "Disabled",
+        "Enabled"
+      ]
+    },
+    "tags": {
+      "type": "object",
+      "defaultValue": "[createObject()]"
+    }
+  },
+  "variables": {
+    "timeStampTag": {
+      "Timestamp": "[parameters('timestamp')]"
+    },
+    "tags": "[union(parameters('tags'), variables('timeStampTag'))]",
+    "assignUserIdentity": "[not(empty(trim(parameters('userAssignedIdentityResourceId'))))]",
+    "identityType": "[if(and(not(parameters('assignSystemIdentity')), not(variables('assignUserIdentity'))), 'None', if(and(parameters('assignSystemIdentity'), variables('assignUserIdentity')), 'SystemAssigned,UserAssigned', if(parameters('assignSystemIdentity'), 'SystemAssigned', 'UserAssigned')))]",
+    "userAssignedIdentities": "[if(empty(trim(parameters('userAssignedIdentityResourceId'))), json('null'), createObject(parameters('userAssignedIdentityResourceId'), json('{}')))]",
+    "skuFamily": "[if(equals(parameters('skuName'), 'Premium'), 'P', 'C')]",
+    "apiVersionCache": "2021-06-01"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Cache/Redis",
+      "apiVersion": "[variables('apiVersionCache')]",
+      "name": "[parameters('cacheName')]",
+      "location": "[parameters('location')]",
+      "tags": "[variables('tags')]",
+      "identity": {
+        "type": "[variables('identityType')]",
+        "userAssignedIdentities": "[variables('userAssignedIdentities')]"
+      },
+      "properties": {
+        "enableNonSslPort": "[parameters('enableNonSslPort')]",
+        "minimumTlsVersion": "[parameters('minimumTlsVersion')]",
+        "publicNetworkAccess": "[parameters('publicNetworkAccess')]",
+        "redisConfiguration": {},
+        "redisVersion": "[parameters('redisVersion')]",
+        "sku": {
+          "name": "[parameters('skuName')]",
+          "family": "[variables('skuFamily')]",
+          "capacity": "[parameters('redisCacheCapacity')]"
+        }
+      }
+    }
+  ],
+  "outputs": {
+    "resourceId": {
+      "type": "string",
+      "value": "[resourceId('Microsoft.Cache/Redis', parameters('cacheName'))]"
+    }
+  }
+}

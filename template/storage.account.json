@@ -1,185 +1,210 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-    "contentVersion": "1.0.0.0",
-    "parameters": {
-        "location": {
-            "defaultValue": "[resourceGroup().location]",
-            "type": "String"
-        },
-        "storageAccountName": {
-            "type": "String"
-        },
-        "skuName": {
-            "type": "String",
-            "defaultValue": "Standard_LRS",
-            "allowedValues": [
-                "Standard_LRS",
-                "Standard_GRS",
-                "Standard_RAGRS",
-                "Standard_ZRS",
-                "Premium_LRS",
-                "Premium_ZRS",
-                "Standard_GZRS",
-                "Standard_RAGZRS"
-            ]
-        },
-        "skuTier": {
-            "type": "String",
-            "defaultValue": "Standard",
-            "allowedValues": [
-                "Standard",
-                "Premium"
-            ]
-        },
-        "kind": {
-            "type": "String",
-            "defaultValue": "StorageV2",
-            "allowedValues": [
-                "Storage",
-                "StorageV2",
-                "BlobStorage",
-                "FileStorage",
-                "BlockBlobStorage"
-            ]
-        },
-        "accessTier": {
-            "type": "String",
-            "defaultValue": "Hot",
-            "allowedValues": [
-                "Hot",
-                "Cool"
-            ]
-        },
-        "httpsOnly": {
-            "type": "bool",
-            "defaultValue": true
-        },
-        "hierarchicalEnabled": {
-            "type": "bool",
-            "defaultValue": false
-        },
-        "defaultAction": {
-            "type": "String",
-            "defaultValue": "Deny",
-            "allowedValues": [
-                "Allow",
-                "Deny"
-            ],
-            "metadata": {
-                "displayName": "Default access action",
-                "description": "If set to Allow, the 'Allow access from' setting will be 'All networks'. If set to 'Deny', the 'Allow access from' setting will be 'Selected networks', designated in the VNet/subnets to allow."
-            }
-        },
-        "bypass": {
-            "type": "String",
-            "defaultValue": "AzureServices, Logging, Metrics"
-        },
-        "allowBlobPublicAccess": {
-            "type": "bool",
-            "defaultValue": false
-        },
-        "minimumTlsVersion": {
-            "type": "String",
-            "defaultValue": "TLS1_2",
-            "allowedValues": [
-                "TLS1_0",
-                "TLS1_1",
-                "TLS1_2"
-            ]
-        },
-        "keySource": {
-            "type": "String",
-            "defaultValue": "Microsoft.Storage",
-            "allowedValues": [
-                "Microsoft.Storage",
-                "Microsoft.Keyvault"
-            ]
-        },
-        "virtualNetworkResourceGroup": {
-            "type": "String",
-            "defaultValue": ""
-        },
-        "virtualNetworkName": {
-            "type": "String",
-            "defaultValue": ""
-        },
-        "subnetNamesToAllow": {
-            "type": "string",
-            "defaultValue": "",
-            "metadata": {
-                "displayName": "Subnet names to allow",
-                "description": "Optional. If a VNet RG and Name provided, this is a comma-delimited list of subnet names in that VNet for which allow rules will be created. Example: 'subnet1,subnet2,subnet3'."
-            }
-        }
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "timestamp": {
+      "type": "string",
+      "defaultValue": "[utcNow('u')]"
     },
-    "variables": {
-        "vnetId":
-        "[
-            if
-            (
-                or(empty(trim(parameters('virtualNetworkResourceGroup'))), empty(trim(parameters('virtualNetworkName'))), empty(trim(parameters('subnetNamesToAllow')))),
-                '',
-                resourceId(parameters('virtualNetworkResourceGroup'), 'Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))
-            )
-        ]",
-		"subnetNamesToAllow":
-        "[
-            if
-            (
-                or(empty(variables('vnetId')), empty(parameters('subnetNamesToAllow'))),
-                json('[]'),
-                split(parameters('subnetNamesToAllow'), ',')
-            )
-        ]",
-        "subnetAccessAction": "Allow",
-        "apiVersionStorage": "2021-04-01"
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "metadata": {
+        "displayName": "Azure region",
+        "description": "See https://azure.microsoft.com/regions/."
+      }
     },
-    "resources": [
-        {
-            "type": "Microsoft.Storage/storageAccounts",
-            "apiVersion": "[variables('apiVersionStorage')]",
-            "name": "[parameters('storageAccountName')]",
-            "location": "[parameters('location')]",
-            "sku": {
-                "name": "[parameters('skuName')]",
-                "tier": "[parameters('skuTier')]"
+    "storageAccountName": {
+      "type": "string"
+    },
+    "skuName": {
+      "type": "string",
+      "defaultValue": "Standard_LRS",
+      "allowedValues": [
+        "Standard_LRS",
+        "Standard_GRS",
+        "Standard_RAGRS",
+        "Standard_ZRS",
+        "Premium_LRS",
+        "Premium_ZRS",
+        "Standard_GZRS",
+        "Standard_RAGZRS"
+      ]
+    },
+    "skuTier": {
+      "type": "string",
+      "defaultValue": "Standard",
+      "allowedValues": [
+        "Standard",
+        "Premium"
+      ]
+    },
+    "kind": {
+      "type": "string",
+      "defaultValue": "StorageV2",
+      "allowedValues": [
+        "Storage",
+        "StorageV2",
+        "BlobStorage",
+        "BlockBlobStorage",
+        "FileStorage"
+      ]
+    },
+    "accessTier": {
+      "type": "string",
+      "defaultValue": "Hot",
+      "allowedValues": [
+        "Hot",
+        "Cool"
+      ]
+    },
+    "httpsOnly": {
+      "type": "bool",
+      "defaultValue": true
+    },
+    "hierarchicalEnabled": {
+      "type": "bool",
+      "defaultValue": false
+    },
+    "publicNetworkAccess": {
+      "type": "string",
+      "defaultValue": "Disabled",
+      "allowedValues": [
+        "Enabled",
+        "Disabled"
+      ],
+      "metadata": {
+        "displayName": "Default access action",
+        "description": "If set to Allow, the 'Allow access from' setting will be 'All networks' unless VNet and/or IP access restrictions are also specified, in which case it will be Selected virtual networks and IP addresses."
+      }
+    },
+    "bypass": {
+      "type": "string",
+      "defaultValue": "AzureServices"
+    },
+    "allowBlobPublicAccess": {
+      "type": "bool",
+      "defaultValue": false
+    },
+    "minimumTlsVersion": {
+      "type": "string",
+      "defaultValue": "TLS1_2",
+      "allowedValues": [
+        "TLS1_0",
+        "TLS1_1",
+        "TLS1_2"
+      ]
+    },
+    "keySource": {
+      "type": "string",
+      "defaultValue": "Microsoft.Storage",
+      "allowedValues": [
+        "Microsoft.Storage",
+        "Microsoft.Keyvault"
+      ]
+    },
+    "allowedSubnetResourceIds": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "displayName": "Comma-delimited list of Subnet resource IDs to allow"
+      }
+    },
+    "allowedIpAddressRanges": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "displayName": "Comma-delimited list of source IP address ranges to allow"
+      }
+    },
+    "tags": {
+      "type": "object",
+      "defaultValue": "[createObject()]"
+    }
+  },
+  "variables": {
+    "timeStampTag": {
+      "Timestamp": "[parameters('timestamp')]"
+    },
+    "tags": "[union(parameters('tags'), variables('timeStampTag'))]",
+    "publicNetworkAccess": "[if(and(equals(parameters('publicNetworkAccess'), 'Disabled'), or(not(empty(parameters('allowedSubnetResourceIds'))), not(empty(parameters('allowedIpAddressRanges'))))), 'Enabled', 'Disabled')]",
+    "allowedSubnetResourceIds": "[if(empty(parameters('allowedSubnetResourceIds')), json('[]'), split(parameters('allowedSubnetResourceIds'), ','))]",
+    "allowedIpAddressRanges": "[if(empty(parameters('allowedIpAddressRanges')), json('[]'), split(parameters('allowedIpAddressRanges'), ','))]",
+    "subnetAccessAction": "Allow",
+    "ipRangeAccessAction": "Allow",
+    "defaultAccessAction": "Deny",
+    "apiVersionStorage": "2021-09-01"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "apiVersion": "[variables('apiVersionStorage')]",
+      "name": "[parameters('storageAccountName')]",
+      "location": "[parameters('location')]",
+      "tags": "[variables('tags')]",
+      "sku": {
+        "name": "[parameters('skuName')]",
+        "tier": "[parameters('skuTier')]"
+      },
+      "kind": "[parameters('kind')]",
+      "properties": {
+        "accessTier": "[parameters('accessTier')]",
+        "publicNetworkAccess": "[variables('publicNetworkAccess')]",
+        "networkAcls": {
+          "bypass": "[parameters('bypass')]",
+          "copy": [
+            {
+              "name": "virtualNetworkRules",
+              "count": "[length(variables('allowedSubnetResourceIds'))]",
+              "input": {
+                "id": "[variables('allowedSubnetResourceIds')[copyIndex('virtualNetworkRules')]]",
+                "action": "[variables('subnetAccessAction')]"
+              }
             },
-            "kind": "[parameters('kind')]",
-            "properties": {
-                "accessTier": "[parameters('accessTier')]",
-                "networkAcls": {
-                    "bypass": "[parameters('bypass')]",
-                    "copy": [
-                        {
-                            "name": "virtualNetworkRules",
-                            "count": "[length(variables('subnetNamesToAllow'))]",
-                            "input": {
-                                "id": "[concat(variables('vnetId'), '/subnets/', trim(variables('subnetNamesToAllow')[copyIndex('virtualNetworkRules')]))]",
-                                "action": "[variables('subnetAccessAction')]"
-                            }
-                        }
-                    ],
-                    "ipRules": [],
-                    "defaultAction": "[parameters('defaultAction')]"
-                },
-                "supportsHttpsTrafficOnly": "[parameters('httpsOnly')]",
-                "allowBlobPublicAccess": "[parameters('allowBlobPublicAccess')]",
-                "minimumTlsVersion": "[parameters('minimumTlsVersion')]",
-                "isHnsEnabled": "[parameters('hierarchicalEnabled')]",
-                "encryption": {
-                    "services": {
-                        "file": {
-                            "keyType": "Account",
-                            "enabled": true
-                        },
-                        "blob": {
-                            "keyType": "Account",
-                            "enabled": true
-                        }
-                    },
-                    "keySource": "[parameters('keySource')]"
-                }
+            {
+              "name": "ipRules",
+              "count": "[length(variables('allowedIpAddressRanges'))]",
+              "input": {
+                "value": "[variables('allowedIpAddressRanges')[copyIndex('ipRules')]]",
+                "action": "[variables('ipRangeAccessAction')]"
+              }
             }
+          ],
+          "defaultAction": "[variables('defaultAccessAction')]"
+        },
+        "supportsHttpsTrafficOnly": "[parameters('httpsOnly')]",
+        "allowBlobPublicAccess": "[parameters('allowBlobPublicAccess')]",
+        "minimumTlsVersion": "[parameters('minimumTlsVersion')]",
+        "isHnsEnabled": "[parameters('hierarchicalEnabled')]",
+        "allowCrossTenantReplication": false,
+        "encryption": {
+          "services": {
+            "blob": {
+              "keyType": "Account",
+              "enabled": true
+            },
+            "file": {
+              "keyType": "Account",
+              "enabled": true
+            },
+            "queue": {
+              "keyType": "Account",
+              "enabled": true
+            },
+            "table": {
+              "keyType": "Account",
+              "enabled": true
+            }
+          },
+          "keySource": "[parameters('keySource')]"
         }
-    ]
+      }
+    }
+  ],
+  "outputs": {
+    "resourceId": {
+      "type": "string",
+      "value": "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]"
+    }
+  }
 }

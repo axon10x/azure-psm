@@ -25,7 +25,7 @@
         }
     },
     "variables": {
-		"api_version_network": "2019-09-01"
+    "api_version_network": "2019-09-01"
     },
     "resources": [
         {

@@ -2,34 +2,34 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-		"location": {
-			"type": "string",
-			"defaultValue": "[resourceGroup().location]",
-			"metadata": {
-				"displayName": "Azure region",
-				"description": "The Azure region within which to deploy. Examples: 'eastus', 'eastus2', and so on. See https://azure.microsoft.com/regions/."
-			}
-		},
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "metadata": {
+        "displayName": "Azure region",
+        "description": "The Azure region within which to deploy. Examples: 'eastus', 'eastus2', and so on. See https://azure.microsoft.com/regions/."
+      }
+    },
         "azure_logic_app_name": {
             "type": "string"
-		},
+    },
         "azure_adf_factory_name": {
             "type": "string"
         },
         "azure_adf_pipeline_name": {
             "type": "string"
-		},
-		"azure_api_connection_name": {
-			"type": "string"
-		}
+    },
+    "azure_api_connection_name": {
+      "type": "string"
+    }
     },
     "variables": {
-		"subscription_id": "[subscription().subscriptionId]",
-		"resource_group_name": "[resourceGroup().name]",
-		"api_version_logicapp": "2017-07-01",
-		"api_version_adf": "2017-09-01-preview",
-		"adf_connection_external_id": "[concat('/subscriptions/', variables('subscription_id'), '/resourceGroups/', variables('resource_group_name'), '/providers/Microsoft.Web/connections/', parameters('azure_api_connection_name'))]"
-	},
+    "subscription_id": "[subscription().subscriptionId]",
+    "resource_group_name": "[resourceGroup().name]",
+    "api_version_logicapp": "2017-07-01",
+    "api_version_adf": "2017-09-01-preview",
+    "adf_connection_external_id": "[concat('/subscriptions/', variables('subscription_id'), '/resourceGroups/', variables('resource_group_name'), '/providers/Microsoft.Web/connections/', parameters('azure_api_connection_name'))]"
+  },
     "resources": [
         {
             "type": "Microsoft.Logic/workflows",
@@ -72,7 +72,7 @@
                                     "x-ms-api-version": "[variables('api_version_adf')]"
                                 }
                             }
-						}
+            }
                     },
                     "outputs": {}
                 },
@@ -87,7 +87,7 @@
                         }
                     }
                 }
-			}
+      }
         }
     ],
     "outputs": {

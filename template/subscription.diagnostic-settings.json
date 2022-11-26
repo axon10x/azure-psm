@@ -1,0 +1,105 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "timestamp": {
+      "type": "string",
+      "defaultValue": "[utcNow('u')]"
+    },
+    "diagnosticsSettingName": {
+      "type": "string"
+    },
+    "logAnalyticsWorkspaceResourceId": {
+      "type": "string"
+    },
+    "tags": {
+      "type": "object",
+      "defaultValue": "[createObject()]"
+    }
+  },
+  "variables": {
+    "timeStampTag": {
+      "Timestamp": "[parameters('timestamp')]"
+    },
+    "tags": "[union(parameters('tags'), variables('timeStampTag'))]",
+    "apiVersionDiagnostics": "2021-05-01-preview"
+  },
+  "resources": [
+    {
+      "name": "[parameters('diagnosticsSettingName')]",
+      "type": "Microsoft.Insights/diagnosticSettings",
+      "apiVersion": "[variables('apiVersionDiagnostics')]",
+      "location": "global",
+      "tags": "[variables('tags')]",
+      "properties": {
+        "workspaceId": "[parameters('logAnalyticsWorkspaceResourceId')]",
+        "logs": [
+          {
+            "category": "Administrative",
+            "enabled": true,
+            "retentionPolicy": {
+              "enabled": true,
+              "days": 0
+            }
+          },
+          {
+            "category": "Security",
+            "enabled": true,
+            "retentionPolicy": {
+              "enabled": true,
+              "days": 0
+            }
+          },
+          {
+            "category": "ServiceHealth",
+            "enabled": true,
+            "retentionPolicy": {
+              "enabled": true,
+              "days": 0
+            }
+          },
+          {
+            "category": "Alert",
+            "enabled": true,
+            "retentionPolicy": {
+              "enabled": true,
+              "days": 0
+            }
+          },
+          {
+            "category": "Recommendation",
+            "enabled": true,
+            "retentionPolicy": {
+              "enabled": true,
+              "days": 0
+            }
+          },
+          {
+            "category": "Policy",
+            "enabled": true,
+            "retentionPolicy": {
+              "enabled": true,
+              "days": 0
+            }
+          },
+          {
+            "category": "Autoscale",
+            "enabled": true,
+            "retentionPolicy": {
+              "enabled": true,
+              "days": 0
+            }
+          },
+          {
+            "category": "ResourceHealth",
+            "enabled": true,
+            "retentionPolicy": {
+              "enabled": true,
+              "days": 0
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

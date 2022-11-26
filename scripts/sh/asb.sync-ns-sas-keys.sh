@@ -16,9 +16,9 @@ secondaryKey="$(az servicebus namespace authorization-rule keys list --subscript
 
 # Set to destination namespace
 az servicebus namespace authorization-rule keys renew --subscription "$subscriptionId" --verbose \
-	-g "$resourceGroupName" --namespace-name "$asbNamespaceNameDestination" -n "$sasPolicyName" \
-	--key PrimaryKey --key-value "$primaryKey"
+  -g "$resourceGroupName" --namespace-name "$asbNamespaceNameDestination" -n "$sasPolicyName" \
+  --key PrimaryKey --key-value "$primaryKey"
 
 az servicebus namespace authorization-rule keys renew --subscription "$subscriptionId" --verbose \
-	-g "$resourceGroupName" --namespace-name "$asbNamespaceNameDestination" -n "$sasPolicyName" \
-	--key SecondaryKey --key-value "$secondaryKey"
+  -g "$resourceGroupName" --namespace-name "$asbNamespaceNameDestination" -n "$sasPolicyName" \
+  --key SecondaryKey --key-value "$secondaryKey"

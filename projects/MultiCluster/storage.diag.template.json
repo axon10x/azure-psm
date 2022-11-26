@@ -81,11 +81,11 @@
         "storage_account_sku": "Standard_LRS",
         "storage_account_tier": "Standard",
         "storage_access_tier": "Hot",
-		"vnet_id": "[resourceId(resourceGroup().name, 'Microsoft.Network/virtualNetworks/', parameters('vnet_name'))]",
-		"subnet_id_public": "[concat(variables('vnet_id'), '/subnets/', parameters('subnet_name_public'))]",
-		"subnet_id_private": "[concat(variables('vnet_id'), '/subnets/', parameters('subnet_name_private'))]",
-		"subnet_id_appgw": "[concat(variables('vnet_id'), '/subnets/', parameters('subnet_name_appgw'))]",
-		"subnet_id_lb": "[concat(variables('vnet_id'), '/subnets/', parameters('subnet_name_lb'))]"
+    "vnet_id": "[resourceId(resourceGroup().name, 'Microsoft.Network/virtualNetworks/', parameters('vnet_name'))]",
+    "subnet_id_public": "[concat(variables('vnet_id'), '/subnets/', parameters('subnet_name_public'))]",
+    "subnet_id_private": "[concat(variables('vnet_id'), '/subnets/', parameters('subnet_name_private'))]",
+    "subnet_id_appgw": "[concat(variables('vnet_id'), '/subnets/', parameters('subnet_name_appgw'))]",
+    "subnet_id_lb": "[concat(variables('vnet_id'), '/subnets/', parameters('subnet_name_lb'))]"
     },
     "resources": [
         {

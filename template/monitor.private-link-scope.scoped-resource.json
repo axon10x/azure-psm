@@ -1,0 +1,40 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "timestamp": {
+      "type": "string",
+      "defaultValue": "[utcNow('u')]"
+    },
+    "linkScopeName": {
+      "type": "string"
+    },
+    "scopedResourceId": {
+      "type": "string"
+    },
+    "scopedResourceName": {
+      "type": "string"
+    },
+    "tags": {
+      "type": "object",
+      "defaultValue": "[createObject()]"
+    }
+  },
+  "variables": {
+    "timeStampTag": {
+      "Timestamp": "[parameters('timestamp')]"
+    },
+    "tags": "[union(parameters('tags'), variables('timeStampTag'))]",
+    "apiVersionInsights": "2021-07-01-preview"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Insights/privateLinkScopes/scopedResources",
+      "apiVersion": "[variables('apiVersionInsights')]",
+      "name": "[concat(parameters('linkScopeName'), '/scoped', parameters('scopedResourceName'))]",
+      "properties": {
+        "linkedResourceId": "[parameters('scopedResourceId')]"
+      }
+    }
+  ]
+}

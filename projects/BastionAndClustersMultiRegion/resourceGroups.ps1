@@ -3,26 +3,26 @@
 
 function DoResourceGroup()
 {
-	param
-	(
-		[string]$ResourceGroupName,
-		[string]$AzureRegion
-	)
+  param
+  (
+    [string]$ResourceGroupName,
+    [string]$AzureRegion
+  )
 
-	$rg = Get-AzureRmResourceGroup -Name $ResourceGroupName -Location $AzureRegion -ErrorAction SilentlyContinue
+  $rg = Get-AzureRmResourceGroup -Name $ResourceGroupName -Location $AzureRegion -ErrorAction SilentlyContinue
 
-	if ($null -eq $rg) {
-		Write-Host("Creating Resource Group " + $ResourceGroupName + " in region " + $AzureRegion)
+  if ($null -eq $rg) {
+    Write-Host("Creating Resource Group " + $ResourceGroupName + " in region " + $AzureRegion)
 
-		New-AzureRmResourceGroup -Name $ResourceGroupName -Location $AzureRegion
+    New-AzureRmResourceGroup -Name $ResourceGroupName -Location $AzureRegion
 
-		$rg = Get-AzureRmResourceGroup -Name $ResourceGroupName -Location $AzureRegion -ErrorAction SilentlyContinue
-	}
-	else {
-		Write-Host("Found/using existing Resource Group " + $ResourceGroupName + " in region " + $AzureRegion)
-	}
+    $rg = Get-AzureRmResourceGroup -Name $ResourceGroupName -Location $AzureRegion -ErrorAction SilentlyContinue
+  }
+  else {
+    Write-Host("Found/using existing Resource Group " + $ResourceGroupName + " in region " + $AzureRegion)
+  }
 
-	return $rg
+  return $rg
 }
 
 # Network resource groups
