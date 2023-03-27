@@ -2,26 +2,14 @@
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "timestamp": {
-      "type": "string",
-      "defaultValue": "[utcNow('u')]"
-    },
     "storageAccountName": {
       "type": "string"
     },
     "containerName": {
       "type": "string"
-    },
-    "tags": {
-      "type": "object",
-      "defaultValue": "[createObject()]"
     }
   },
   "variables": {
-    "timeStampTag": {
-      "Timestamp": "[parameters('timestamp')]"
-    },
-    "tags": "[union(parameters('tags'), variables('timeStampTag'))]",
     "apiVersionStorage": "2021-09-01"
   },
   "resources": [

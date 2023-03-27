@@ -279,7 +279,7 @@
                     )
                 )
             )
-  ]",
+        ]",
     "userAssignedIdentities": "[if(empty(trim(parameters('userAssignedIdentityResourceId'))), json('null'), createObject(parameters('userAssignedIdentityResourceId'), json('{}')))]",
     "zones": "[if(empty(trim(parameters('availabilityZone'))), json('[]'), split(parameters('availabilityZone'), ','))]",
     "osDisk": "[if(empty(trim(parameters('osDiskId'))), createObject('createOption', 'FromImage', 'name', parameters('osDiskName'), 'diskSizeGB', parameters('osDiskSizeInGB'), 'managedDisk', createObject('storageAccountType', parameters('osDiskStorageType'))), createObject('managedDisk', createObject('id', parameters('osDiskId'))))]",
@@ -295,7 +295,7 @@
                 ),
                 json('null')
             )
-]",
+        ]",
     "bootDiagnosticsStorageUri": "[if(empty(trim(parameters('bootDiagnosticsStorageAccountName'))), json(''), concat('https://', parameters('bootDiagnosticsStorageAccountName'), '.blob.core.windows.net/'))]",
     "apiVersionCompute": "2022-03-01",
     "apiVersionDevTestLabSchedule": "2018-09-15"
@@ -373,7 +373,6 @@
       "name": "[concat('shutdown-computevm-', parameters('virtualMachineName'))]",
       "apiVersion": "[variables('apiVersionDevTestLabSchedule')]",
       "location": "[parameters('location')]",
-      "tags": "[variables('tags')]",
       "dependsOn": [
         "[concat('Microsoft.Compute/virtualMachines/', parameters('virtualMachineName'))]"
       ],

@@ -2,10 +2,6 @@
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "timestamp": {
-      "type": "string",
-      "defaultValue": "[utcNow('u')]"
-    },
     "roleDefinitionId": {
       "type": "string",
       "defaultValue": "",
@@ -36,17 +32,9 @@
     "resourceName": {
       "type": "string",
       "defaultValue": ""
-    },
-    "tags": {
-      "type": "object",
-      "defaultValue": "[createObject()]"
     }
   },
   "variables": {
-    "timeStampTag": {
-      "Timestamp": "[parameters('timestamp')]"
-    },
-    "tags": "[union(parameters('tags'), variables('timeStampTag'))]",
     "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', parameters('roleDefinitionId'))]",
     "roleAssignmentName": "[guid(subscription().id, resourceGroup().name, parameters('roleDefinitionId'), parameters('principalId'), parameters('resourceType'), parameters('resourceName'))]",
     "scopeId": "[if(or(empty(parameters('resourceType')), empty(parameters('resourceName'))), subscription().id, concat(parameters('resourceType'), '/', parameters('resourceName')))]",

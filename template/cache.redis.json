@@ -99,22 +99,27 @@
     "skuFamily": "[if(equals(parameters('skuName'), 'Premium'), 'P', 'C')]",
     "apiVersionCache": "2021-06-01"
   },
-  "resources": [
+  "resources":
+  [
     {
       "type": "Microsoft.Cache/Redis",
       "apiVersion": "[variables('apiVersionCache')]",
       "name": "[parameters('cacheName')]",
       "location": "[parameters('location')]",
       "tags": "[variables('tags')]",
-      "identity": {
+      "identity":
+      {
         "type": "[variables('identityType')]",
         "userAssignedIdentities": "[variables('userAssignedIdentities')]"
       },
-      "properties": {
+      "properties":
+      {
         "enableNonSslPort": "[parameters('enableNonSslPort')]",
         "minimumTlsVersion": "[parameters('minimumTlsVersion')]",
         "publicNetworkAccess": "[parameters('publicNetworkAccess')]",
-        "redisConfiguration": {},
+        "redisConfiguration":
+        {
+        },
         "redisVersion": "[parameters('redisVersion')]",
         "sku": {
           "name": "[parameters('skuName')]",
@@ -124,7 +129,8 @@
       }
     }
   ],
-  "outputs": {
+  "outputs":
+  {
     "resourceId": {
       "type": "string",
       "value": "[resourceId('Microsoft.Cache/Redis', parameters('cacheName'))]"

@@ -14,24 +14,17 @@
         "description": "See https://azure.microsoft.com/regions/."
       }
     },
-    "linkScopeName": {
+    "appServicePlanResourceId": {
       "type": "string"
     },
-    "queryAccessMode": {
-      "type": "string",
-      "defaultValue": "Open",
-      "allowedValues": [
-        "Open",
-        "PrivateOnly"
-      ]
+    "certificateName": {
+      "type": "string"
     },
-    "ingestionAccessMode": {
-      "type": "string",
-      "defaultValue": "Open",
-      "allowedValues": [
-        "Open",
-        "PrivateOnly"
-      ]
+    "keyVaultResourceId": {
+      "type": "string"
+    },
+    "keyVaultSecretName": {
+      "type": "string"
     },
     "tags": {
       "type": "object",
@@ -43,28 +36,20 @@
       "Timestamp": "[parameters('timestamp')]"
     },
     "tags": "[union(parameters('tags'), variables('timeStampTag'))]",
-    "apiVersionInsights": "2021-07-01-preview"
+    "apiVersionWeb": "2022-03-01"
   },
   "resources": [
     {
-      "type": "microsoft.insights/privateLinkScopes",
-      "apiVersion": "[variables('apiVersionInsights')]",
-      "name": "[parameters('linkScopeName')]",
+      "type": "Microsoft.Web/certificates",
+      "apiVersion": "[variables('apiVersionWeb')]",
+      "name": "[parameters('certificateName')]",
       "location": "[parameters('location')]",
       "tags": "[variables('tags')]",
       "properties": {
-        "accessModeSettings": {
-          "exclusions": [],
-          "queryAccessMode": "[parameters('queryAccessMode')]",
-          "ingestionAccessMode": "[parameters('ingestionAccessMode')]"
-        }
+        "keyVaultId": "[parameters('keyVaultResourceId')]",
+        "keyVaultSecretName": "[parameters('keyVaultSecretName')]",
+        "serverFarmId": "[parameters('appServicePlanResourceId')]"
       }
     }
-  ],
-  "outputs": {
-    "resourceId": {
-      "type": "string",
-      "value": "[resourceId('microsoft.insights/privateLinkScopes', parameters('linkScopeName'))]"
-    }
-  }
+  ]
 }

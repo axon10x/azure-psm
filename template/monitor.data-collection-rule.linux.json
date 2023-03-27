@@ -50,7 +50,7 @@
                 "Microsoft-Perf",
                 "Microsoft-InsightsMetrics"
               ],
-              "samplingFrequencyInSeconds": 10,
+              "samplingFrequencyInSeconds": 60,
               "counterSpecifiers": [
                 "Processor(*)\\% Processor Time",
                 "Processor(*)\\% Idle Time",

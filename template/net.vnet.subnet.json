@@ -2,10 +2,6 @@
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "timestamp": {
-      "type": "string",
-      "defaultValue": "[utcNow('u')]"
-    },
     "vnetName": {
       "type": "string"
     },
@@ -62,17 +58,9 @@
         "displayName": "Private Link Service Network Policies State",
         "description": "Enable or Disable apply network policies on private link service in the subnet."
       }
-    },
-    "tags": {
-      "type": "object",
-      "defaultValue": "[createObject()]"
     }
   },
   "variables": {
-    "timeStampTag": {
-      "Timestamp": "[parameters('timestamp')]"
-    },
-    "tags": "[union(parameters('tags'), variables('timeStampTag'))]",
     "networkSecurityGroup": "[if(empty(trim(parameters('nsgResourceId'))), json('null'), createObject('id', parameters('nsgResourceId')))]",
     "routeTable": "[if(empty(trim(parameters('routeTableResourceId'))), json('null'), createObject('id', parameters('routeTableResourceId')))]",
     "serviceEndpointNames": "[split(parameters('serviceEndpoints'), ',')]",

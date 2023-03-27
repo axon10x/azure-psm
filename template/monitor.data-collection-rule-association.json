@@ -2,27 +2,15 @@
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "timestamp": {
-      "type": "string",
-      "defaultValue": "[utcNow('u')]"
-    },
     "dataCollectionRuleResourceId": {
       "type": "string",
       "defaultValue": ""
     },
     "virtualMachineName": {
       "type": "string"
-    },
-    "tags": {
-      "type": "object",
-      "defaultValue": "[createObject()]"
     }
   },
   "variables": {
-    "timeStampTag": {
-      "Timestamp": "[parameters('timestamp')]"
-    },
-    "tags": "[union(parameters('tags'), variables('timeStampTag'))]",
     "dataCollectionRuleAssociationName": "configurationAccessEndpoint",
     "apiVersionInsights": "2021-09-01-preview"
   },

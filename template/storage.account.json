@@ -117,6 +117,14 @@
         "displayName": "Comma-delimited list of source IP address ranges to allow"
       }
     },
+    "defaultAccessAction": {
+      "type": "string",
+      "defaultValue": "Deny",
+      "allowedValues": [
+        "Allow",
+        "Deny"
+      ]
+    },
     "tags": {
       "type": "object",
       "defaultValue": "[createObject()]"
@@ -132,7 +140,6 @@
     "allowedIpAddressRanges": "[if(empty(parameters('allowedIpAddressRanges')), json('[]'), split(parameters('allowedIpAddressRanges'), ','))]",
     "subnetAccessAction": "Allow",
     "ipRangeAccessAction": "Allow",
-    "defaultAccessAction": "Deny",
     "apiVersionStorage": "2021-09-01"
   },
   "resources": [
@@ -170,7 +177,7 @@
               }
             }
           ],
-          "defaultAction": "[variables('defaultAccessAction')]"
+          "defaultAction": "[parameters('defaultAccessAction')]"
         },
         "supportsHttpsTrafficOnly": "[parameters('httpsOnly')]",
         "allowBlobPublicAccess": "[parameters('allowBlobPublicAccess')]",

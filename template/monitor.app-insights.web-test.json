@@ -61,8 +61,11 @@
     "timeStampTag": {
       "Timestamp": "[parameters('timestamp')]"
     },
-    "tags": "[union(parameters('tags'), variables('timeStampTag'))]",
     "appInsightsId": "[resourceId('microsoft.insights/components', parameters('appInsightsName'))]",
+    "appInsightsTag": {
+      "[concat('hidden-link:', variables('appInsightsId'))]": "Resource"
+    },
+    "tags": "[union(parameters('tags'), variables('timeStampTag'), variables('appInsightsTag'))]",
     "apiVersionWebTests": "2018-05-01-preview"
   },
   "resources": [
@@ -72,9 +75,6 @@
       "name": "[parameters('webTestName')]",
       "location": "[parameters('location')]",
       "tags": "[variables('tags')]",
-      "tags": {
-        "[concat('hidden-link:', variables('appInsightsId'))]": "Resource"
-      },
       "properties": {
         "SyntheticMonitorId": "[parameters('webTestName')]",
         "Name": "[parameters('webTestName')]",

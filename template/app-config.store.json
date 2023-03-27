@@ -62,7 +62,8 @@
       "defaultValue": "[createObject()]"
     }
   },
-  "variables": {
+  "variables":
+  {
     "timeStampTag": {
       "Timestamp": "[parameters('timestamp')]"
     },
@@ -73,21 +74,25 @@
     "userAssignedIdentities": "[if(empty(trim(parameters('userAssignedIdentityResourceId'))), json('null'), createObject(parameters('userAssignedIdentityResourceId'), json('{}')))]",
     "apiVersionAppConfig": "2022-05-01"
   },
-  "resources": [
+  "resources":
+  [
     {
       "type": "Microsoft.AppConfiguration/configurationStores",
       "apiVersion": "[variables('apiVersionAppConfig')]",
       "name": "[parameters('configStoreName')]",
       "location": "[parameters('location')]",
       "tags": "[variables('tags')]",
-      "sku": {
+      "sku":
+      {
         "name": "[parameters('skuName')]"
       },
-      "identity": {
+      "identity":
+      {
         "type": "[variables('identityType')]",
         "userAssignedIdentities": "[variables('userAssignedIdentities')]"
       },
-      "properties": {
+      "properties":
+      {
         "createMode": "[variables('createMode')]",
         "disableLocalAuth": "[parameters('disableLocalAuth')]",
         "enablePurgeProtection": "[parameters('enablePurgeProtection')]",
@@ -96,8 +101,10 @@
       }
     }
   ],
-  "outputs": {
-    "resourceId": {
+  "outputs":
+  {
+    "resourceId":
+    {
       "type": "string",
       "value": "[resourceId('Microsoft.AppConfiguration/configurationStores', parameters('configStoreName'))]"
     }

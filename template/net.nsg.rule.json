@@ -2,10 +2,6 @@
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "timestamp": {
-      "type": "string",
-      "defaultValue": "[utcNow('u')]"
-    },
     "nsgName": {
       "type": "string"
     },
@@ -86,17 +82,9 @@
     "destinationPortRanges": {
       "type": "string",
       "defaultValue": ""
-    },
-    "tags": {
-      "type": "object",
-      "defaultValue": "[createObject()]"
     }
   },
   "variables": {
-    "timeStampTag": {
-      "Timestamp": "[parameters('timestamp')]"
-    },
-    "tags": "[union(parameters('tags'), variables('timeStampTag'))]",
     "sourcePortRange": "[if(and(empty(parameters('sourcePortRange')), empty(parameters('sourcePortRanges'))), '*', parameters('sourcePortRange'))]",
     "sourcePortRanges": "[if(empty(parameters('sourcePortRanges')), json('[]'), split(parameters('sourcePortRanges'), ','))]",
     "sourceAddressPrefixes": "[if(empty(parameters('sourceAddressPrefixes')), json('[]'), split(parameters('sourceAddressPrefixes'), ','))]",

@@ -2,10 +2,6 @@
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "timestamp": {
-      "type": "string",
-      "defaultValue": "[utcNow('u')]"
-    },
     "roleDefinitionId": {
       "type": "string",
       "defaultValue": "",
@@ -28,17 +24,9 @@
         "ServicePrincipal",
         "User"
       ]
-    },
-    "tags": {
-      "type": "object",
-      "defaultValue": "[createObject()]"
     }
   },
   "variables": {
-    "timeStampTag": {
-      "Timestamp": "[parameters('timestamp')]"
-    },
-    "tags": "[union(parameters('tags'), variables('timeStampTag'))]",
     "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', parameters('roleDefinitionId'))]",
     "roleAssignmentName": "[guid(subscription().id, parameters('roleDefinitionId'), parameters('principalId'))]",
     "apiVersionAuthRoleAssignment": "2021-04-01-preview"
