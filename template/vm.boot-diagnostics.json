@@ -2,10 +2,6 @@
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "timestamp": {
-      "type": "string",
-      "defaultValue": "[utcNow('u')]"
-    },
     "location": {
       "type": "string",
       "metadata": {
@@ -31,17 +27,9 @@
         "displayName": "Storage account name for boot diagnostics",
         "description": ""
       }
-    },
-    "tags": {
-      "type": "object",
-      "defaultValue": "[createObject()]"
     }
   },
   "variables": {
-    "timeStampTag": {
-      "Timestamp": "[parameters('timestamp')]"
-    },
-    "tags": "[union(parameters('tags'), variables('timeStampTag'))]",
     "bootDiagnosticsStorageUri": "[concat('https://', parameters('diagnosticsStorageAccountName'), '.blob.core.windows.net/')]",
     "apiVersionCompute": "2022-03-01"
   },
@@ -51,7 +39,6 @@
       "type": "Microsoft.Compute/virtualMachines",
       "apiVersion": "[variables('apiVersionCompute')]",
       "location": "[parameters('location')]",
-      "tags": "[variables('tags')]",
       "properties": {
         "diagnosticsProfile": {
           "bootDiagnostics": {

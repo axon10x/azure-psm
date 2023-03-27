@@ -65,6 +65,14 @@
         "Enabled"
       ]
     },
+    "defaultAction": {
+      "type": "string",
+      "defaultValue": "Deny",
+      "allowedValues": [
+        "Allow",
+        "Deny"
+      ]
+    },
     "allowedIpAddressRanges": {
       "type": "string",
       "defaultValue": "",
@@ -117,7 +125,7 @@
         "publicNetworkAccess": "[parameters('publicNetworkAccess')]",
         "networkAcls": {
           "bypass": "AzureServices",
-          "defaultAction": "Deny",
+          "defaultAction": "[parameters('defaultAction')]",
           "copy": [
             {
               "name": "ipRules",

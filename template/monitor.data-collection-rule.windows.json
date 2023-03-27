@@ -50,7 +50,7 @@
                 "Microsoft-Perf",
                 "Microsoft-InsightsMetrics"
               ],
-              "samplingFrequencyInSeconds": 10,
+              "samplingFrequencyInSeconds": 60,
               "counterSpecifiers": [
                 "\\Processor Information(_Total)\\% Processor Time",
                 "\\Processor Information(_Total)\\% Privileged Time",

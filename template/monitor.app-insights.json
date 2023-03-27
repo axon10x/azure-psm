@@ -123,7 +123,6 @@
       "apiVersion": "[variables('apiVersionAppInsightsDetection')]",
       "name": "[concat(parameters('appInsightsName'), '/degradationindependencyduration')]",
       "location": "[parameters('location')]",
-      "tags": "[variables('tags')]",
       "dependsOn": [
         "[resourceId('microsoft.insights/components', parameters('appInsightsName'))]"
       ],
@@ -149,7 +148,6 @@
       "apiVersion": "[variables('apiVersionAppInsightsDetection')]",
       "name": "[concat(parameters('appInsightsName'), '/degradationinserverresponsetime')]",
       "location": "[parameters('location')]",
-      "tags": "[variables('tags')]",
       "dependsOn": [
         "[resourceId('microsoft.insights/components', parameters('appInsightsName'))]"
       ],
@@ -175,7 +173,6 @@
       "apiVersion": "[variables('apiVersionAppInsightsDetection')]",
       "name": "[concat(parameters('appInsightsName'), '/digestMailConfiguration')]",
       "location": "[parameters('location')]",
-      "tags": "[variables('tags')]",
       "dependsOn": [
         "[resourceId('microsoft.insights/components', parameters('appInsightsName'))]"
       ],
@@ -201,7 +198,6 @@
       "apiVersion": "[variables('apiVersionAppInsightsDetection')]",
       "name": "[concat(parameters('appInsightsName'), '/extension_billingdatavolumedailyspikeextension')]",
       "location": "[parameters('location')]",
-      "tags": "[variables('tags')]",
       "dependsOn": [
         "[resourceId('microsoft.insights/components', parameters('appInsightsName'))]"
       ],
@@ -227,7 +223,6 @@
       "apiVersion": "[variables('apiVersionAppInsightsDetection')]",
       "name": "[concat(parameters('appInsightsName'), '/extension_canaryextension')]",
       "location": "[parameters('location')]",
-      "tags": "[variables('tags')]",
       "dependsOn": [
         "[resourceId('microsoft.insights/components', parameters('appInsightsName'))]"
       ],
@@ -253,7 +248,6 @@
       "apiVersion": "[variables('apiVersionAppInsightsDetection')]",
       "name": "[concat(parameters('appInsightsName'), '/extension_exceptionchangeextension')]",
       "location": "[parameters('location')]",
-      "tags": "[variables('tags')]",
       "dependsOn": [
         "[resourceId('microsoft.insights/components', parameters('appInsightsName'))]"
       ],
@@ -279,7 +273,6 @@
       "apiVersion": "[variables('apiVersionAppInsightsDetection')]",
       "name": "[concat(parameters('appInsightsName'), '/extension_memoryleakextension')]",
       "location": "[parameters('location')]",
-      "tags": "[variables('tags')]",
       "dependsOn": [
         "[resourceId('microsoft.insights/components', parameters('appInsightsName'))]"
       ],
@@ -305,7 +298,6 @@
       "apiVersion": "[variables('apiVersionAppInsightsDetection')]",
       "name": "[concat(parameters('appInsightsName'), '/extension_securityextensionspackage')]",
       "location": "[parameters('location')]",
-      "tags": "[variables('tags')]",
       "dependsOn": [
         "[resourceId('microsoft.insights/components', parameters('appInsightsName'))]"
       ],
@@ -331,7 +323,6 @@
       "apiVersion": "[variables('apiVersionAppInsightsDetection')]",
       "name": "[concat(parameters('appInsightsName'), '/extension_traceseveritydetector')]",
       "location": "[parameters('location')]",
-      "tags": "[variables('tags')]",
       "dependsOn": [
         "[resourceId('microsoft.insights/components', parameters('appInsightsName'))]"
       ],
@@ -357,7 +348,6 @@
       "apiVersion": "[variables('apiVersionAppInsightsDetection')]",
       "name": "[concat(parameters('appInsightsName'), '/longdependencyduration')]",
       "location": "[parameters('location')]",
-      "tags": "[variables('tags')]",
       "dependsOn": [
         "[resourceId('microsoft.insights/components', parameters('appInsightsName'))]"
       ],
@@ -383,7 +373,6 @@
       "apiVersion": "[variables('apiVersionAppInsightsDetection')]",
       "name": "[concat(parameters('appInsightsName'), '/migrationToAlertRulesCompleted')]",
       "location": "[parameters('location')]",
-      "tags": "[variables('tags')]",
       "dependsOn": [
         "[resourceId('microsoft.insights/components', parameters('appInsightsName'))]"
       ],
@@ -409,7 +398,6 @@
       "apiVersion": "[variables('apiVersionAppInsightsDetection')]",
       "name": "[concat(parameters('appInsightsName'), '/slowpageloadtime')]",
       "location": "[parameters('location')]",
-      "tags": "[variables('tags')]",
       "dependsOn": [
         "[resourceId('microsoft.insights/components', parameters('appInsightsName'))]"
       ],
@@ -435,7 +423,6 @@
       "apiVersion": "[variables('apiVersionAppInsightsDetection')]",
       "name": "[concat(parameters('appInsightsName'), '/slowserverresponsetime')]",
       "location": "[parameters('location')]",
-      "tags": "[variables('tags')]",
       "dependsOn": [
         "[resourceId('microsoft.insights/components', parameters('appInsightsName'))]"
       ],

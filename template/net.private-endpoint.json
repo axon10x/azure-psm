@@ -60,9 +60,7 @@
             "name": "[parameters('privateEndpointName')]",
             "properties": {
               "privateLinkServiceId": "[parameters('protectedWorkloadResourceId')]",
-              "groupIds": [
-                "[parameters('protectedWorkloadSubResource')]"
-              ]
+              "groupIds": [ "[parameters('protectedWorkloadSubResource')]" ]
             }
           }
         ],

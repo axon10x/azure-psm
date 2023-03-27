@@ -2,26 +2,14 @@
   "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "timestamp": {
-      "type": "string",
-      "defaultValue": "[utcNow('u')]"
-    },
     "diagnosticsSettingName": {
       "type": "string"
     },
     "logAnalyticsWorkspaceResourceId": {
       "type": "string"
-    },
-    "tags": {
-      "type": "object",
-      "defaultValue": "[createObject()]"
     }
   },
   "variables": {
-    "timeStampTag": {
-      "Timestamp": "[parameters('timestamp')]"
-    },
-    "tags": "[union(parameters('tags'), variables('timeStampTag'))]",
     "apiVersionDiagnostics": "2021-05-01-preview"
   },
   "resources": [
@@ -29,8 +17,7 @@
       "name": "[parameters('diagnosticsSettingName')]",
       "type": "Microsoft.Insights/diagnosticSettings",
       "apiVersion": "[variables('apiVersionDiagnostics')]",
-      "location": "global",
-      "tags": "[variables('tags')]",
+      "location": "Global",
       "properties": {
         "workspaceId": "[parameters('logAnalyticsWorkspaceResourceId')]",
         "logs": [

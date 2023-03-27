@@ -93,7 +93,8 @@
         "",
         "V3.1",
         "V5.0",
-        "V6.0"
+        "V6.0",
+        "V7.0"
       ]
     },
     "nodeVersion": {
@@ -101,6 +102,10 @@
       "defaultValue": ""
     },
     "pythonVersion": {
+      "type": "string",
+      "defaultValue": ""
+    },
+    "phpVersion": {
       "type": "string",
       "defaultValue": ""
     },
@@ -225,12 +230,27 @@
         "displayName": "Comma-delimited list of source IP address ranges to allow"
       }
     },
+    "customFqdn": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "displayName": "Custom host/domain name - optional"
+      }
+    },
+    "certificateForAppServiceThumbprint": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "displayName": "Custom certificate thumbprint - optional"
+      }
+    },
     "tags": {
       "type": "object",
       "defaultValue": "[createObject()]"
     }
   },
-  "variables": {
+  "variables":
+  {
     "timeStampTag": {
       "Timestamp": "[parameters('timestamp')]"
     },
@@ -246,7 +266,8 @@
     "apiVersionAppInsights": "2020-02-02",
     "apiVersionStorage": "2021-09-01"
   },
-  "resources": [
+  "resources":
+  [
     {
       "type": "Microsoft.Web/sites",
       "apiVersion": "[variables('apiVersionWeb')]",
@@ -269,6 +290,7 @@
           "netFrameworkVersion": "[parameters('dotnetVersion')]",
           "nodeVersion": "[parameters('nodeVersion')]",
           "pythonVersion": "[parameters('pythonVersion')]",
+          "phpVersion": "[parameters('phpVersion')]",
           "linuxFxVersion": "[parameters('linuxFxVersion')]",
           "acrUseManagedIdentityCreds": "[variables('assignUserIdentity')]",
           "acrUserManagedIdentityID": "[parameters('userAssignedIdentityClientId')]",
@@ -297,6 +319,11 @@
             {
               "name": "XDT_MicrosoftApplicationInsights_Mode",
               "value": "default"
+            },
+            {
+              "name": "WEBSITE_RUN_FROM_PACKAGE",
+              "value": "1",
+              "slotSetting": false
             },
             {
               "name": "WEBSITE_VNET_ROUTE_ALL",
