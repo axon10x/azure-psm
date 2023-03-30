@@ -9,7 +9,7 @@ resource_group_name="azsql"
 # Naming prefix - change as you like. Has no functional purpose.
 prefix="pzy"
 
-external_ips_allowed="75.68.47.183"
+external_ips_allowed=""
 
 storage_acct_name="$prefix""sqlsa"
 storage_container_name="sql"

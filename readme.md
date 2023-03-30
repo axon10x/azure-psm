@@ -1,4 +1,3 @@
-![Validate Templates](https://github.com/plzm/azure-deploy/actions/workflows/validate-templates.yml/badge.svg)  
 ![Validate Workflows](https://github.com/plzm/azure-deploy/actions/workflows/validate-workflows.yml/badge.svg)  
 
 ## Azure deployment artifacts: ARM templates, scripts, etc.
