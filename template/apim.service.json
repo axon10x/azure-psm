@@ -56,11 +56,11 @@
     },
     "publisherName": {
       "type": "string",
-      "defaultValue": "CPO-NG"
+      "defaultValue": ""
     },
     "publisherEmail": {
       "type": "string",
-      "defaultValue": "cpong@ses.com"
+      "defaultValue": ""
     },
     "publicNetworkAccess": {
       "type": "string",
