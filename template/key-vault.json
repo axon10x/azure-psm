@@ -101,7 +101,7 @@
     "tags": "[union(parameters('tags'), variables('timeStampTag'))]",
     "allowedIpAddressRanges": "[if(not(empty(trim(parameters('allowedIpAddressRanges')))), split(parameters('allowedIpAddressRanges'), ','), json('[]'))]",
     "allowedSubnetResourceIds": "[if(not(empty(trim(parameters('allowedSubnetResourceIds')))), split(parameters('allowedSubnetResourceIds'), ','), json('[]'))]",
-    "apiVersionKeyVault": "2021-11-01-preview"
+    "apiVersionKeyVault": "2022-07-01"
   },
   "resources": [
     {
