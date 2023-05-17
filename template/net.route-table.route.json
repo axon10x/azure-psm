@@ -34,7 +34,7 @@
   },
   "variables": {
     "routeName": "[concat(parameters('routeTableName'), '/', parameters('routeName'))]",
-    "apiVersionNet": "2022-01-01"
+    "apiVersionNet": "2022-07-01"
   },
   "resources": [
     {

@@ -106,7 +106,7 @@
     "tags": "[union(parameters('tags'), variables('timeStampTag'))]",
     "vnetId": "[resourceId(parameters('vnetResourceGroup'), 'Microsoft.Network/virtualNetworks/', parameters('vnetName'))]",
     "subnetId": "[concat(variables('vnetId'), '/subnets/', parameters('subnetName'))]",
-    "apiVersionNetwork": "2021-08-01"
+    "apiVersionNetwork": "2022-07-01"
   },
   "resources": [
     {

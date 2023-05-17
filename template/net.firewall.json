@@ -99,7 +99,7 @@
       )
     ]",
     "publicIpAddressNames": "[split(parameters('publicIpAddressNames'), ',')]",
-    "apiVersionNetwork": "2021-05-01"
+    "apiVersionNetwork": "2022-07-01"
   },
   "resources": [
     {

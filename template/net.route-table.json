@@ -31,7 +31,7 @@
       "Timestamp": "[parameters('timestamp')]"
     },
     "tags": "[union(parameters('tags'), variables('timeStampTag'))]",
-    "apiVersionNet": "2022-01-01"
+    "apiVersionNet": "2022-07-01"
   },
   "resources": [
     {
