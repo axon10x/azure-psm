@@ -61,8 +61,6 @@
     }
   },
   "variables": {
-    "networkSecurityGroup": "[createobject('id', if(empty(trim(parameters('nsgResourceId'))), json('null'), parameters('nsgResourceId')))]",
-    "routeTable": "[createobject('id', if(empty(trim(parameters('routeTableResourceId'))), json('null'), parameters('routeTableResourceId')))]",
     "serviceEndpointNames": "[split(parameters('serviceEndpoints'), ',')]",
     "delegation": "[if(empty(trim(parameters('delegationService'))), json('[]'), array(createObject('name', replace(parameters('delegationService'), '/', '.'), 'properties', createObject('serviceName', parameters('delegationService')))))]",
     "apiVersionVnet": "2022-07-01"
@@ -74,16 +72,31 @@
       "name": "[concat(parameters('vnetName'), '/', parameters('subnetName'))]",
       "properties": {
         "addressPrefix": "[parameters('subnetPrefix')]",
-        "networkSecurityGroup": "[variables('networkSecurityGroup')]",
-        "routeTable": "[variables('routeTable')]",
         "delegations": "[variables('delegation')]",
         "privateEndpointNetworkPolicies": "[parameters('privateEndpointNetworkPolicies')]",
         "privateLinkServiceNetworkPolicies": "[parameters('privateLinkServiceNetworkPolicies')]",
         "copy": [
           {
+            "name": "networkSecurityGroup",
+            "count": "[if(empty(trim(parameters('nsgResourceId'))), 0, 1)]",
+            "input":
+            {
+              "id": "[parameters('nsgResourceId')]"
+            }
+          },
+          {
+            "name": "routeTable",
+            "count": "[if(empty(trim(parameters('routeTableResourceId'))), 0, 1)]",
+            "input":
+            {
+              "id": "[parameters('routeTableResourceId')]"
+            }
+          },
+          {
             "name": "serviceEndpoints",
             "count": "[if(or(empty(trim(parameters('serviceEndpoints'))), empty(variables('serviceEndpointNames'))), 0, length(variables('serviceEndpointNames')))]",
-            "input": {
+            "input":
+            {
               "service": "[trim(variables('serviceEndpointNames')[copyIndex('serviceEndpoints')])]",
               "locations": "*"
             }
