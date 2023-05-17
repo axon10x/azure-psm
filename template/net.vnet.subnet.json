@@ -61,7 +61,7 @@
     }
   },
   "variables": {
-    "networkSecurityGroup": "[if(empty(trim(parameters('nsgResourceId'))), json('null'), createObject('id', parameters('nsgResourceId')))]",
+    "networkSecurityGroup": "[createobject('id', if(empty(trim(parameters('nsgResourceId'))), json('null'), parameters('nsgResourceId')))]",
     "routeTable": "[if(empty(trim(parameters('routeTableResourceId'))), json('null'), createObject('id', parameters('routeTableResourceId')))]",
     "serviceEndpointNames": "[split(parameters('serviceEndpoints'), ',')]",
     "delegation": "[if(empty(trim(parameters('delegationService'))), json('[]'), array(createObject('name', replace(parameters('delegationService'), '/', '.'), 'properties', createObject('serviceName', parameters('delegationService')))))]",
