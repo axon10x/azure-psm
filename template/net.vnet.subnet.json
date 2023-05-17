@@ -61,8 +61,8 @@
     }
   },
   "variables": {
-    "networkSecurityGroup": "[createobject('id', if(empty(trim(parameters('nsgResourceId'))), json('null'), parameters('nsgResourceId')))]",
-    "routeTable": "[createobject('id', if(empty(trim(parameters('routeTableResourceId'))), json('null'), parameters('routeTableResourceId')))]",
+    "networkSecurityGroup": "[createobject('id', if(empty(trim(parameters('nsgResourceId'))), json(''), parameters('nsgResourceId')))]",
+    "routeTable": "[createobject('id', if(empty(trim(parameters('routeTableResourceId'))), json(''), parameters('routeTableResourceId')))]",
     "serviceEndpointNames": "[split(parameters('serviceEndpoints'), ',')]",
     "delegation": "[if(empty(trim(parameters('delegationService'))), json('[]'), array(createObject('name', replace(parameters('delegationService'), '/', '.'), 'properties', createObject('serviceName', parameters('delegationService')))))]",
     "apiVersionVnet": "2022-07-01"
