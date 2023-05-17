@@ -55,7 +55,7 @@
     },
     "tags": "[union(parameters('tags'), variables('timeStampTag'))]",
     "customDnsServers": "[if(not(empty(trim(parameters('customDnsServers')))), split(parameters('customDnsServers'), ','), json('[]'))]",
-    "apiVersionVnet": "2021-08-01"
+    "apiVersionVnet": "2022-07-01"
   },
   "resources": [
     {
