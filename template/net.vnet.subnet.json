@@ -29,10 +29,10 @@
     },
     "serviceEndpoints": {
       "type": "string",
-      "defaultValue": "Microsoft.AzureActiveDirectory,Microsoft.EventHub,Microsoft.KeyVault,Microsoft.Sql,Microsoft.Storage,Microsoft.Web",
+      "defaultValue": "",
       "metadata": {
         "displayName": "Comma-delimited list of Service Endpoints to configure",
-        "description": "Optional. Example: Microsoft.AzureCosmosDB, Microsoft.EventHub, Microsoft.ServiceBus, Microsoft.Storage, Microsoft.Web. See https://docs.microsoft.com/azure/virtual-network/virtual-network-service-endpoints-overview"
+        "description": "Optional. Example: Microsoft.KeyVault,Microsoft.AzureCosmosDB,Microsoft.Sql,Microsoft.Storage,Microsoft.Web. See https://docs.microsoft.com/azure/virtual-network/virtual-network-service-endpoints-overview"
       }
     },
     "privateEndpointNetworkPolicies": {
@@ -60,38 +60,106 @@
       }
     }
   },
-  "variables": {
+  "variables":
+  {
     "serviceEndpointNames": "[split(parameters('serviceEndpoints'), ',')]",
     "delegation": "[if(empty(trim(parameters('delegationService'))), json('[]'), array(createObject('name', replace(parameters('delegationService'), '/', '.'), 'properties', createObject('serviceName', parameters('delegationService')))))]",
     "apiVersionVnet": "2022-07-01"
   },
-  "resources": [
+  "resources":
+  [
     {
+      "condition": "[and(empty(trim(parameters('nsgResourceId'))), empty(trim(parameters('routeTableResourceId'))))]",
       "type": "Microsoft.Network/virtualNetworks/subnets",
       "apiVersion": "[variables('apiVersionVnet')]",
       "name": "[concat(parameters('vnetName'), '/', parameters('subnetName'))]",
-      "properties": {
+      "properties":
+      {
         "addressPrefix": "[parameters('subnetPrefix')]",
         "delegations": "[variables('delegation')]",
         "privateEndpointNetworkPolicies": "[parameters('privateEndpointNetworkPolicies')]",
         "privateLinkServiceNetworkPolicies": "[parameters('privateLinkServiceNetworkPolicies')]",
-        "copy": [
+        "copy":
+        [
           {
-            "name": "networkSecurityGroup",
-            "count": "[if(empty(trim(parameters('nsgResourceId'))), 0, 1)]",
+            "name": "serviceEndpoints",
+            "count": "[if(or(empty(trim(parameters('serviceEndpoints'))), empty(variables('serviceEndpointNames'))), 0, length(variables('serviceEndpointNames')))]",
             "input":
             {
-              "id": "[parameters('nsgResourceId')]"
+              "service": "[trim(variables('serviceEndpointNames')[copyIndex('serviceEndpoints')])]",
+              "locations": "*"
             }
-          },
+          }
+        ]
+      }
+    },
+    {
+      "condition": "[and(not(empty(trim(parameters('nsgResourceId')))), empty(trim(parameters('routeTableResourceId'))))]",
+      "type": "Microsoft.Network/virtualNetworks/subnets",
+      "apiVersion": "[variables('apiVersionVnet')]",
+      "name": "[concat(parameters('vnetName'), '/', parameters('subnetName'))]",
+      "properties":
+      {
+        "addressPrefix": "[parameters('subnetPrefix')]",
+        "networkSecurityGroup": {"id": "[parameters('nsgResourceId')]"},
+        "delegations": "[variables('delegation')]",
+        "privateEndpointNetworkPolicies": "[parameters('privateEndpointNetworkPolicies')]",
+        "privateLinkServiceNetworkPolicies": "[parameters('privateLinkServiceNetworkPolicies')]",
+        "copy":
+        [
           {
-            "name": "routeTable",
-            "count": "[if(empty(trim(parameters('routeTableResourceId'))), 0, 1)]",
+            "name": "serviceEndpoints",
+            "count": "[if(or(empty(trim(parameters('serviceEndpoints'))), empty(variables('serviceEndpointNames'))), 0, length(variables('serviceEndpointNames')))]",
             "input":
             {
-              "id": "[parameters('routeTableResourceId')]"
+              "service": "[trim(variables('serviceEndpointNames')[copyIndex('serviceEndpoints')])]",
+              "locations": "*"
             }
-          },
+          }
+        ]
+      }
+    },
+    {
+      "condition": "[and(empty(trim(parameters('nsgResourceId'))), not(empty(trim(parameters('routeTableResourceId')))))]",
+      "type": "Microsoft.Network/virtualNetworks/subnets",
+      "apiVersion": "[variables('apiVersionVnet')]",
+      "name": "[concat(parameters('vnetName'), '/', parameters('subnetName'))]",
+      "properties":
+      {
+        "addressPrefix": "[parameters('subnetPrefix')]",
+        "routeTable": {"id": "[parameters('routeTableResourceId')]"},
+        "delegations": "[variables('delegation')]",
+        "privateEndpointNetworkPolicies": "[parameters('privateEndpointNetworkPolicies')]",
+        "privateLinkServiceNetworkPolicies": "[parameters('privateLinkServiceNetworkPolicies')]",
+        "copy":
+        [
+          {
+            "name": "serviceEndpoints",
+            "count": "[if(or(empty(trim(parameters('serviceEndpoints'))), empty(variables('serviceEndpointNames'))), 0, length(variables('serviceEndpointNames')))]",
+            "input":
+            {
+              "service": "[trim(variables('serviceEndpointNames')[copyIndex('serviceEndpoints')])]",
+              "locations": "*"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "condition": "[and(not(empty(trim(parameters('nsgResourceId')))), not(empty(trim(parameters('routeTableResourceId')))))]",
+      "type": "Microsoft.Network/virtualNetworks/subnets",
+      "apiVersion": "[variables('apiVersionVnet')]",
+      "name": "[concat(parameters('vnetName'), '/', parameters('subnetName'))]",
+      "properties":
+      {
+        "addressPrefix": "[parameters('subnetPrefix')]",
+        "networkSecurityGroup": {"id": "[parameters('nsgResourceId')]"},
+        "routeTable": {"id": "[parameters('routeTableResourceId')]"},
+        "delegations": "[variables('delegation')]",
+        "privateEndpointNetworkPolicies": "[parameters('privateEndpointNetworkPolicies')]",
+        "privateLinkServiceNetworkPolicies": "[parameters('privateLinkServiceNetworkPolicies')]",
+        "copy":
+        [
           {
             "name": "serviceEndpoints",
             "count": "[if(or(empty(trim(parameters('serviceEndpoints'))), empty(variables('serviceEndpointNames'))), 0, length(variables('serviceEndpointNames')))]",
