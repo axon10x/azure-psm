@@ -125,6 +125,38 @@
         "Deny"
       ]
     },
+    "blobDeleteRetentionPolicyEnabled": {
+      "type": "bool",
+      "defaultValue": true
+    },
+    "blobDeleteRetentionDays": {
+      "type": "int",
+      "defaultValue": 15
+    },
+    "blobVersioningEnabled": {
+      "type": "bool",
+      "defaultValue": true
+    },
+    "blobChangeFeedEnabled": {
+      "type": "bool",
+      "defaultValue": true
+    },
+    "blobRestorePolicyEnabled": {
+      "type": "bool",
+      "defaultValue": true
+    },
+    "blobRestoreDays": {
+      "type": "int",
+      "defaultValue": 14
+    },
+    "blobContainerDeleteRetentionPolicyEnabled": {
+      "type": "bool",
+      "defaultValue": true
+    },
+    "blobContainerDeleteRetentionDays": {
+      "type": "int",
+      "defaultValue": 14
+    },
     "tags": {
       "type": "object",
       "defaultValue": "[createObject()]"
@@ -140,7 +172,7 @@
     "allowedIpAddressRanges": "[if(empty(parameters('allowedIpAddressRanges')), json('[]'), split(parameters('allowedIpAddressRanges'), ','))]",
     "subnetAccessAction": "Allow",
     "ipRangeAccessAction": "Allow",
-    "apiVersionStorage": "2021-09-01"
+    "apiVersionStorage": "2022-09-01"
   },
   "resources": [
     {
@@ -204,6 +236,37 @@
             }
           },
           "keySource": "[parameters('keySource')]"
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Storage/storageAccounts/blobServices",
+      "apiVersion": "[variables('apiVersionStorage')]",
+      "name": "[concat(parameters('storageAccountName'), '/default')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]"
+      ],
+      "sku": {
+        "name": "[parameters('skuName')]",
+        "tier": "[parameters('skuTier')]"
+      },
+      "properties": {
+        "deleteRetentionPolicy": {
+          "allowPermanentDelete": false,
+          "enabled": "[parameters('blobDeleteRetentionPolicyEnabled')]",
+          "days": "[parameters('blobDeleteRetentionDays')]"
+        },
+        "isVersioningEnabled": "[parameters('blobVersioningEnabled')]",
+        "changeFeed": {
+          "enabled": "[parameters('blobChangeFeedEnabled')]"
+        },
+        "restorePolicy": {
+          "enabled": "[parameters('blobRestorePolicyEnabled')]",
+          "days": "[parameters('blobRestoreDays')]"
+        },
+        "containerDeleteRetentionPolicy": {
+          "enabled": "[parameters('blobContainerDeleteRetentionPolicyEnabled')]",
+          "days": "[parameters('blobContainerDeleteRetentionDays')]"
         }
       }
     }

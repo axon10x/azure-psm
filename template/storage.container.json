@@ -10,7 +10,7 @@
     }
   },
   "variables": {
-    "apiVersionStorage": "2021-09-01"
+    "apiVersionStorage": "2022-09-01"
   },
   "resources": [
     {
