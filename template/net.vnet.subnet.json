@@ -69,92 +69,14 @@
   "resources":
   [
     {
-      "condition": "[and(empty(trim(parameters('nsgResourceId'))), empty(trim(parameters('routeTableResourceId'))))]",
       "type": "Microsoft.Network/virtualNetworks/subnets",
       "apiVersion": "[variables('apiVersionVnet')]",
       "name": "[concat(parameters('vnetName'), '/', parameters('subnetName'))]",
       "properties":
       {
         "addressPrefix": "[parameters('subnetPrefix')]",
-        "delegations": "[variables('delegation')]",
-        "privateEndpointNetworkPolicies": "[parameters('privateEndpointNetworkPolicies')]",
-        "privateLinkServiceNetworkPolicies": "[parameters('privateLinkServiceNetworkPolicies')]",
-        "copy":
-        [
-          {
-            "name": "serviceEndpoints",
-            "count": "[if(or(empty(trim(parameters('serviceEndpoints'))), empty(variables('serviceEndpointNames'))), 0, length(variables('serviceEndpointNames')))]",
-            "input":
-            {
-              "service": "[trim(variables('serviceEndpointNames')[copyIndex('serviceEndpoints')])]",
-              "locations": "*"
-            }
-          }
-        ]
-      }
-    },
-    {
-      "condition": "[and(not(empty(trim(parameters('nsgResourceId')))), empty(trim(parameters('routeTableResourceId'))))]",
-      "type": "Microsoft.Network/virtualNetworks/subnets",
-      "apiVersion": "[variables('apiVersionVnet')]",
-      "name": "[concat(parameters('vnetName'), '/', parameters('subnetName'))]",
-      "properties":
-      {
-        "addressPrefix": "[parameters('subnetPrefix')]",
-        "networkSecurityGroup": {"id": "[parameters('nsgResourceId')]"},
-        "delegations": "[variables('delegation')]",
-        "privateEndpointNetworkPolicies": "[parameters('privateEndpointNetworkPolicies')]",
-        "privateLinkServiceNetworkPolicies": "[parameters('privateLinkServiceNetworkPolicies')]",
-        "copy":
-        [
-          {
-            "name": "serviceEndpoints",
-            "count": "[if(or(empty(trim(parameters('serviceEndpoints'))), empty(variables('serviceEndpointNames'))), 0, length(variables('serviceEndpointNames')))]",
-            "input":
-            {
-              "service": "[trim(variables('serviceEndpointNames')[copyIndex('serviceEndpoints')])]",
-              "locations": "*"
-            }
-          }
-        ]
-      }
-    },
-    {
-      "condition": "[and(empty(trim(parameters('nsgResourceId'))), not(empty(trim(parameters('routeTableResourceId')))))]",
-      "type": "Microsoft.Network/virtualNetworks/subnets",
-      "apiVersion": "[variables('apiVersionVnet')]",
-      "name": "[concat(parameters('vnetName'), '/', parameters('subnetName'))]",
-      "properties":
-      {
-        "addressPrefix": "[parameters('subnetPrefix')]",
-        "routeTable": {"id": "[parameters('routeTableResourceId')]"},
-        "delegations": "[variables('delegation')]",
-        "privateEndpointNetworkPolicies": "[parameters('privateEndpointNetworkPolicies')]",
-        "privateLinkServiceNetworkPolicies": "[parameters('privateLinkServiceNetworkPolicies')]",
-        "copy":
-        [
-          {
-            "name": "serviceEndpoints",
-            "count": "[if(or(empty(trim(parameters('serviceEndpoints'))), empty(variables('serviceEndpointNames'))), 0, length(variables('serviceEndpointNames')))]",
-            "input":
-            {
-              "service": "[trim(variables('serviceEndpointNames')[copyIndex('serviceEndpoints')])]",
-              "locations": "*"
-            }
-          }
-        ]
-      }
-    },
-    {
-      "condition": "[and(not(empty(trim(parameters('nsgResourceId')))), not(empty(trim(parameters('routeTableResourceId')))))]",
-      "type": "Microsoft.Network/virtualNetworks/subnets",
-      "apiVersion": "[variables('apiVersionVnet')]",
-      "name": "[concat(parameters('vnetName'), '/', parameters('subnetName'))]",
-      "properties":
-      {
-        "addressPrefix": "[parameters('subnetPrefix')]",
-        "networkSecurityGroup": {"id": "[parameters('nsgResourceId')]"},
-        "routeTable": {"id": "[parameters('routeTableResourceId')]"},
+        "networkSecurityGroup": "[json('null')]",
+        "routeTable": "[json('null')]",
         "delegations": "[variables('delegation')]",
         "privateEndpointNetworkPolicies": "[parameters('privateEndpointNetworkPolicies')]",
         "privateLinkServiceNetworkPolicies": "[parameters('privateLinkServiceNetworkPolicies')]",
