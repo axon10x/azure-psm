@@ -75,8 +75,8 @@
       "properties":
       {
         "addressPrefix": "[parameters('subnetPrefix')]",
-        "networkSecurityGroup": "[json('null')]",
-        "routeTable": "[json('null')]",
+        "networkSecurityGroup": "[if(empty(parameters('nsgResourceId')), json('null'), createObject('id', parameters('nsgResourceId')) )]",
+        "routeTable": "[if(empty(parameters('routeTableResourceId')), json('null'), createObject('id', parameters('routeTableResourceId')) )]",
         "delegations": "[variables('delegation')]",
         "privateEndpointNetworkPolicies": "[parameters('privateEndpointNetworkPolicies')]",
         "privateLinkServiceNetworkPolicies": "[parameters('privateLinkServiceNetworkPolicies')]",
