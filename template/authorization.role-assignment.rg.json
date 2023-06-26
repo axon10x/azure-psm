@@ -38,7 +38,7 @@
     "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', parameters('roleDefinitionId'))]",
     "roleAssignmentName": "[guid(subscription().id, resourceGroup().name, parameters('roleDefinitionId'), parameters('principalId'), parameters('resourceType'), parameters('resourceName'))]",
     "scopeId": "[if(or(empty(parameters('resourceType')), empty(parameters('resourceName'))), subscription().id, concat(parameters('resourceType'), '/', parameters('resourceName')))]",
-    "apiVersionAuthRoleAssignment": "2021-04-01-preview"
+    "apiVersionAuthRoleAssignment": "2022-04-01"
   },
   "resources": [
     {

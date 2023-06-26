@@ -45,7 +45,7 @@
         '',
         concat(parameters('resourceType'), '/', parameters('resourceName'))
       )
-  ]","apiVersionAuthRoleAssignment": "2021-04-01-preview"
+  ]","apiVersionAuthRoleAssignment": "2022-04-01"
 },
 "resources": [
   {
