@@ -39,7 +39,7 @@
     },
     "tags": "[union(parameters('tags'), variables('timeStampTag'))]",
     "identityReference": "[concat('Microsoft.ManagedIdentity/userAssignedIdentities/', parameters('identityName'))]",
-    "apiVersionUserAssignedIdentity": "2021-09-30-preview"
+    "apiVersionUserAssignedIdentity": "2023-01-31"
   },
   "resources": [
     {

@@ -29,7 +29,7 @@
   "variables": {
     "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', parameters('roleDefinitionId'))]",
     "roleAssignmentName": "[guid(subscription().id, parameters('roleDefinitionId'), parameters('principalId'))]",
-    "apiVersionAuthRoleAssignment": "2021-04-01-preview"
+    "apiVersionAuthRoleAssignment": "2022-04-01"
   },
   "resources": [
     {
