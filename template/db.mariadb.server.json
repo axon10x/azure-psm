@@ -69,7 +69,7 @@
         "description": "The size of the Azure Database for MariaDB server"
       }
     },
-    "mariadbVersion": {
+    "mariaDbVersion": {
       "type": "string",
       "defaultValue": "10.3",
       "allowedValues": [
@@ -95,7 +95,7 @@
     },
     "geoRedundantBackup": {
       "type": "string",
-      "defaultValue": "Disabled",
+      "defaultValue": "Enabled",
       "allowedValues": [
         "Disabled",
         "Enabled"
@@ -103,7 +103,7 @@
     },
     "storageAutogrow": {
       "type": "string",
-      "defaultValue": "Disabled",
+      "defaultValue": "Enabled",
       "allowedValues": [
         "Disabled",
         "Enabled"
@@ -154,7 +154,7 @@
       "properties":
       {
         "createMode": "[parameters('createMode')]",
-        "version": "[parameters('mariadbVersion')]",
+        "version": "[parameters('mariaDbVersion')]",
         "administratorLogin": "[parameters('administratorLogin')]",
         "administratorLoginPassword": "[parameters('administratorPassword')]",
         "storageProfile":
