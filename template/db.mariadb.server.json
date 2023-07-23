@@ -168,10 +168,10 @@
       "properties":
       {
         "createMode": "[parameters('createMode')]",
-        "administratorLogin": "[parameters('administratorLogin')]",
-        "administratorLoginPassword": "[parameters('administratorPassword')]",
-        "sourceServerId": "[parameters('sourceServerId')]",
-        "restorePointInTime": "[parameters('restorePointInTime')]",
+        "administratorLogin": "[if(empty(parameters('administratorLogin')), json('null'), parameters('administratorLogin'))]",
+        "administratorLoginPassword": "[if(empty(parameters('administratorPassword')), json('null'), parameters('administratorPassword'))]",
+        "sourceServerId": "[if(empty(parameters('sourceServerId')), json('null'), parameters('sourceServerId'))]",
+        "restorePointInTime": "[if(empty(parameters('restorePointInTime')), json('null'), parameters('restorePointInTime'))]",
         "version": "[parameters('mariaDbVersion')]",
         "storageProfile":
         {
