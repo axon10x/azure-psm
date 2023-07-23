@@ -284,18 +284,18 @@
     "zones": "[if(empty(trim(parameters('availabilityZone'))), json('[]'), split(parameters('availabilityZone'), ','))]",
     "osDisk": "[if(empty(trim(parameters('osDiskId'))), createObject('createOption', 'FromImage', 'name', parameters('osDiskName'), 'diskSizeGB', parameters('osDiskSizeInGB'), 'managedDisk', createObject('storageAccountType', parameters('osDiskStorageType'))), createObject('managedDisk', createObject('id', parameters('osDiskId'))))]",
     "plan": "[
-            if
+        if
+        (
+            parameters('isMarketplaceThirdPartyPlan'),
+            createObject
             (
-                parameters('isMarketplaceThirdPartyPlan'),
-                createObject
-                (
-                    'publisher', parameters('publisher'),
-                    'product', parameters('offer'),
-                    'name', parameters('sku')
-                ),
-                json('null')
-            )
-        ]",
+                'publisher', parameters('publisher'),
+                'product', parameters('offer'),
+                'name', parameters('sku')
+            ),
+            json('null')
+        )
+    ]",
     "bootDiagnosticsStorageUri": "[if(empty(trim(parameters('bootDiagnosticsStorageAccountName'))), json(''), concat('https://', parameters('bootDiagnosticsStorageAccountName'), '.blob.core.windows.net/'))]",
     "apiVersionCompute": "2022-03-01",
     "apiVersionDevTestLabSchedule": "2018-09-15"

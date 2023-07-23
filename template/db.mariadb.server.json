@@ -87,6 +87,20 @@
         "PointInTimeRestore"
       ]
     },
+    "sourceServerId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "When createMode is GeoRestore or PointInTimeRestore or Replica, you must specify this value."
+      }
+    },
+    "restorePointInTime": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "When createMode is PointInTimeRestore, you must specify this value."
+      }
+    },
     "backupRetentionDays": {
       "type": "int",
       "defaultValue": 7,
@@ -154,9 +168,11 @@
       "properties":
       {
         "createMode": "[parameters('createMode')]",
-        "version": "[parameters('mariaDbVersion')]",
         "administratorLogin": "[parameters('administratorLogin')]",
         "administratorLoginPassword": "[parameters('administratorPassword')]",
+        "sourceServerId": "[parameters('sourceServerId')]",
+        "restorePointInTime": "[parameters('restorePointInTime')]",
+        "version": "[parameters('mariaDbVersion')]",
         "storageProfile":
         {
           "storageMB": "[parameters('skuSizeMB')]",
