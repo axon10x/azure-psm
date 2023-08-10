@@ -39,7 +39,8 @@
       "defaultValue": "app",
       "allowedValues": [
         "app",
-        "app,linux"
+        "app,linux",
+        "linux"
       ]
     },
     "zoneRedundant": {

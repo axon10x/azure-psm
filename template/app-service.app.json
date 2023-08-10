@@ -23,7 +23,8 @@
       "allowedValues": [
         "app",
         "functionapp",
-        "functionapp,linux"
+        "functionapp,linux",
+        "app,linux,container"
       ]
     },
     "assignSystemIdentity": {
