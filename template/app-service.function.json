@@ -117,7 +117,7 @@
       "defaultValue": "",
       "metadata": {
         "displayName": "Linux framework",
-        "description": "az webapp list-runtimes --linux"
+        "description": "az webapp list-runtimes --os-type linux"
       }
     },
     "publicNetworkAccess": {

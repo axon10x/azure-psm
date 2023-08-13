@@ -55,8 +55,8 @@
     "timeStampTag": {
       "Timestamp": "[parameters('timestamp')]"
     },
+    "reserved": "[contains(parameters('kind'), 'linux')]",
     "tags": "[union(parameters('tags'), variables('timeStampTag'))]",
-    "reserved": "[equals(parameters('kind'), 'app,linux')]",
     "apiVersionAsp": "2022-03-01"
   },
   "resources": [
