@@ -53,6 +53,9 @@
     "appInsightsResourceId": {
       "type": "string"
     },
+    "storageAccountResourceId": {
+      "type": "string"
+    },
     "storageAccountName": {
       "type": "string"
     },
@@ -282,7 +285,7 @@
     "appInsightsExtensionVersion": "~2",
     "apiVersionWeb": "2022-03-01",
     "apiVersionAppInsights": "2020-02-02",
-    "apiVersionStorage": "2021-09-01"
+    "apiVersionStorage": "2022-09-01"
   },
   "resources": [
     {
@@ -298,14 +301,14 @@
       },
       "properties": {
         "hostNameSslStates": "
-                [
-                    if
-                    (
-                        or(empty(trim(parameters('customFqdn'))), empty(trim(parameters('certificateForAppServiceThumbprint')))),
-                        json('null'),
-                        variables('hostNameSslStates')
-                    )
-                ]",
+          [
+              if
+              (
+                  or(empty(trim(parameters('customFqdn'))), empty(trim(parameters('certificateForAppServiceThumbprint')))),
+                  json('null'),
+                  variables('hostNameSslStates')
+              )
+          ]",
         "clientAffinityEnabled": "[parameters('clientAffinityEnabled')]",
         "httpsOnly": "[parameters('httpsOnly')]",
         "keyVaultReferenceIdentity": "[variables('keyVaultReferenceIdentity')]",
@@ -339,17 +342,8 @@
               "value": "default"
             },
             {
-              "name": "WEBSITE_RUN_FROM_PACKAGE",
-              "value": "1",
-              "slotSetting": false
-            },
-            {
-              "name": "WEBSITE_VNET_ROUTE_ALL",
-              "value": "[parameters('routeAllTrafficThroughVNet')]"
-            },
-            {
               "name": "AzureWebJobsStorage",
-              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', parameters('storageAccountName'), ';AccountKey=', listKeys(resourceId(subscription().subscriptionId, resourceGroup().name, 'Microsoft.Storage/storageAccounts', parameters('storageAccountName')), variables('apiVersionStorage')).keys[0].value, ';EndpointSuffix=core.windows.net')]"
+              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', parameters('storageAccountName'), ';AccountKey=', listKeys(parameters('storageAccountResourceId'), variables('apiVersionStorage')).keys[0].value, ';EndpointSuffix=core.windows.net')]"
             }
           ],
           "azureStorageAccounts": {},
