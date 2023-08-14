@@ -54,7 +54,7 @@
       "Timestamp": "[parameters('timestamp')]"
     },
     "tags": "[union(parameters('tags'), variables('timeStampTag'))]",
-    "apiVersionAutoscale": "2021-05-01-preview"
+    "apiVersionAutoscale": "2022-10-01"
   },
   "resources": [
     {
