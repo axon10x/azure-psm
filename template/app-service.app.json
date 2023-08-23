@@ -283,7 +283,7 @@
       }
     ],
     "appInsightsExtensionVersion": "~2",
-    "apiVersionWeb": "2022-03-01",
+    "apiVersionWeb": "2022-09-01",
     "apiVersionAppInsights": "2020-02-02",
     "apiVersionStorage": "2022-09-01"
   },
