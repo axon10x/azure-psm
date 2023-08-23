@@ -28,10 +28,14 @@
       "apiVersion": "[variables('apiVersionPrivateEndpoint')]",
       "name": "[concat(parameters('privateEndpointName'), '/', parameters('privateDnsZoneGroupName'))]",
       "properties": {
-        "name": "[parameters('privateDnsZoneName')]",
-        "properties": {
-            "privateDnsZoneId": "[parameters('privateDnsZoneResourceId')]"
-        }
+        "privateDnsZoneConfigs": [
+          {
+            "name": "[parameters('privateDnsZoneName')]",
+            "properties": {
+              "privateDnsZoneId": "[parameters('privateDnsZoneResourceId')]"
+            }
+          }
+        ]
       }
     }
   ]
