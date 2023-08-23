@@ -1,0 +1,38 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "privateEndpointName": {
+      "type": "string"
+    },
+    "privateDnsZoneName": {
+      "type": "string",
+      "metadata": {
+        "description": "Typically the private DNS zone name with dots replaced by underscores, e.g. privatelink_vaultcore_azure_net"
+      }
+    },
+    "privateDnsZoneGroupName": {
+      "type": "string",
+      "defaultValue": "default"
+    },
+    "privateDnsZoneResourceId": {
+      "type": "string"
+    }
+  },
+  "variables": {
+    "apiVersionPrivateEndpoint": "2023-04-01"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Network/privateEndpoints/privateDnsZoneGroups",
+      "apiVersion": "[variables('apiVersionPrivateEndpoint')]",
+      "name": "[concat(parameters('privateEndpointName'), '/', parameters('privateDnsZoneGroupName'))]",
+      "properties": {
+        "name": "[parameters('privateDnsZoneName')]",
+        "properties": {
+            "privateDnsZoneId": "[parameters('privateDnsZoneResourceId')]"
+        }
+      }
+    }
+  ]
+}
