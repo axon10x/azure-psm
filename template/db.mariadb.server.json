@@ -156,7 +156,7 @@
           'geoRedundantBackup', parameters('geoRedundantBackup'),
           'storageAutogrow', parameters('storageAutogrow')
         ),
-        json('null')
+        json('')
       )
     ]",
     "timeStampTag":
