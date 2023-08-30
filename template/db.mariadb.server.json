@@ -156,10 +156,7 @@
           'geoRedundantBackup', parameters('geoRedundantBackup'),
           'storageAutogrow', parameters('storageAutogrow')
         ),
-        createObject
-        (
-          'storageMB', parameters('skuSizeMB')
-        )
+        createObject()
       )
     ]",
     "timeStampTag":
