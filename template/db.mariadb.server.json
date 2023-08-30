@@ -91,7 +91,7 @@
       "type": "string",
       "defaultValue": "",
       "metadata": {
-        "description": "When createMode is GeoRestore or PointInTimeRestore or Replica, you must specify this value."
+        "description": "When createMode is not Default, you must specify this value."
       }
     },
     "restorePointInTime": {
@@ -109,7 +109,7 @@
     },
     "geoRedundantBackup": {
       "type": "string",
-      "defaultValue": "Enabled",
+      "defaultValue": "Disabled",
       "allowedValues": [
         "Disabled",
         "Enabled"
@@ -117,7 +117,7 @@
     },
     "storageAutogrow": {
       "type": "string",
-      "defaultValue": "Enabled",
+      "defaultValue": "Disabled",
       "allowedValues": [
         "Disabled",
         "Enabled"
@@ -143,8 +143,24 @@
       "defaultValue": "[createObject()]"
     }
   },
-  "variables": {
-    "timeStampTag": {
+  "variables":
+  {
+    "storageProfile": "[
+      if
+      (
+        equals(parameters('createMode'), 'Default'),
+        createObject
+        (
+          'storageMB', parameters('skuSizeMB'),
+          'backupRetentionDays', parameters('backupRetentionDays'),
+          'geoRedundantBackup', parameters('geoRedundantBackup'),
+          'storageAutogrow', parameters('storageAutogrow')
+        ),
+        json('null')
+      )
+    ]",
+    "timeStampTag":
+    {
       "Timestamp": "[parameters('timestamp')]"
     },
     "tags": "[union(parameters('tags'), variables('timeStampTag'))]",
@@ -173,13 +189,7 @@
         "sourceServerId": "[if(empty(parameters('sourceServerId')), json('null'), parameters('sourceServerId'))]",
         "restorePointInTime": "[if(empty(parameters('restorePointInTime')), json('null'), parameters('restorePointInTime'))]",
         "version": "[parameters('mariaDbVersion')]",
-        "storageProfile":
-        {
-          "storageMB": "[parameters('skuSizeMB')]",
-          "backupRetentionDays": "[parameters('backupRetentionDays')]",
-          "geoRedundantBackup": "[parameters('geoRedundantBackup')]",
-          "storageAutogrow": "[parameters('storageAutogrow')]"
-        },
+        "storageProfile": "[variables('storageProfile')]",
         "sslEnforcement": "Enabled",
         "minimalTlsVersion": "[parameters('minimumTlsVersion')]",
         "publicNetworkAccess": "[parameters('publicNetworkAccess')]"
