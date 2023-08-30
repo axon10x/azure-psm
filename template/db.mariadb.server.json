@@ -189,7 +189,6 @@
         "sourceServerId": "[if(empty(parameters('sourceServerId')), json('null'), parameters('sourceServerId'))]",
         "restorePointInTime": "[if(empty(parameters('restorePointInTime')), json('null'), parameters('restorePointInTime'))]",
         "version": "[parameters('mariaDbVersion')]",
-        "storageProfile": "[variables('storageProfile')]",
         "sslEnforcement": "Enabled",
         "minimalTlsVersion": "[parameters('minimumTlsVersion')]",
         "publicNetworkAccess": "[parameters('publicNetworkAccess')]"
