@@ -1,8 +1,0 @@
-Function Get-VNetRuleId
-{
-  Param ([String]$ResourceGroupName, [String]$VNetName, [String]$SubnetName)
-  
-  $vnet = Get-AzResource -Name $VNetName -ResourceGroupName $ResourceGroupName -ResourceType "Microsoft.Network/virtualNetworks"
-  
-  return ($vnet.ResourceId + "/subnets/" + $SubnetName)
-}
