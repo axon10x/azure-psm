@@ -1,4 +1,4 @@
-name: Validate GHA Workflows
+name: Validate GitHub Actions Workflows
 
 on:
   workflow_dispatch:

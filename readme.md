@@ -2,6 +2,14 @@
 
 ## Azure deployment artifacts: ARM templates, scripts, etc.
 
+/scripts/ contains mostly Powershell but also some Bash scripts. Some are mostly scratch format, whereas others - particularly in the /scripts/ directory - can be dot-sourced and are higher quality.
+
+/template/ contains many ARM templates I have put together. The intent is:
+- To provide templates which are each responsible for exactly one Azure resource type - no giant spaghetti templates mingling resources, which are only ever useful once, instead these are templates which can be assembled flexibly in... scripts, infrastructure deployment pipelines, etc.
+- To heavily parameterize templates so they are very flexible for different scenarios
+- To include lots of conditional logic (ARM functions etc.) to make templates still more flexible for different scenarios
+I have used these ARM templates on several production projects so they have been thoroughly tested and have successfully deployed many Azure resources.
+
 ---
 
 ### PLEASE NOTE FOR THE ENTIRETY OF THIS REPOSITORY AND ALL ASSETS
