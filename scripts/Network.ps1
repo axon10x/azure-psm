@@ -248,7 +248,8 @@ function Get-ServiceTagsForAzurePublicIp() {
 
   Write-Debug -Debug:$Debug -Message "Processing - please wait... this will take a couple of minutes"
 
-  foreach ($ipRange in $ipRanges) {
+  foreach ($ipRange in $ipRanges)
+  {
     $isFound = $false
 
     $ipRangeName = $ipRange.name
@@ -259,10 +260,12 @@ function Get-ServiceTagsForAzurePublicIp() {
 
     if (!$region) { $region = "(N/A)" }
 
-    foreach ($cidr in $cidrs) {
+    foreach ($cidr in $cidrs)
+    {
       $ipIsInCidr = Test-IsIpInCidr -IpAddress $IpAddress -Cidr $cidr
 
-      if ($ipIsInCidr) {
+      if ($ipIsInCidr)
+      {
         $result +=
         @{
           Name   = $ipRangeName;
