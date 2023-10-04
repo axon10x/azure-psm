@@ -49,7 +49,7 @@
       "type": "string",
       "defaultValue": "Burstable",
       "metadata": {
-        "description": "Azure database for MariaDB pricing tier",
+        "description": "Azure database for MySql tier",
         "allowedValues": [
           "Burstable",
           "GeneralPurpose",
