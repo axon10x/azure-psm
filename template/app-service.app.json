@@ -22,9 +22,9 @@
       "defaultValue": "app",
       "allowedValues": [
         "app",
+        "app,linux,container",
         "functionapp",
-        "functionapp,linux",
-        "app,linux,container"
+        "functionapp,linux"
       ]
     },
     "assignSystemIdentity": {
@@ -95,10 +95,9 @@
       "defaultValue": "",
       "allowedValues": [
         "",
-        "V3.1",
-        "V5.0",
         "V6.0",
-        "V7.0"
+        "V7.0",
+        "V8.0"
       ]
     },
     "nodeVersion": {
