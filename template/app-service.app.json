@@ -120,6 +120,10 @@
         "description": "az webapp list-runtimes --os-type linux"
       }
     },
+    "vnetImagePullEnabled": {
+      "type": "bool",
+      "defaultValue": false
+    },
     "publicNetworkAccess": {
       "type": "string",
       "defaultValue": "Disabled",
@@ -362,6 +366,7 @@
           "scmMinTlsVersion": "[parameters('scmMinTlsVersion')]",
           "use32BitWorkerProcess": "[parameters('use32BitWorkerProcess')]",
           "vnetRouteAllEnabled": "[parameters('routeAllTrafficThroughVNet')]",
+          "vnetImagePullEnabled": "[parameters('vnetImagePullEnabled')]",
           "webSocketsEnabled": "[parameters('webSocketsEnabled')]",
           "copy": [
             {
