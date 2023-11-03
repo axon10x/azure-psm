@@ -48,20 +48,128 @@
         "Disabled"
       ]
     },
+    "publicNetworkAccess": {
+      "type": "string",
+      "defaultValue": "Disabled",
+      "allowedValues": [
+        "Enabled",
+        "Disabled"
+      ]
+    },
+    "networkRuleBypassOptions": {
+      "type": "string",
+      "defaultValue": "AzureServices",
+      "allowedValues": [
+        "None",
+        "AzureServices"
+      ]
+    },
+    "allowedIpAddressRanges": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "displayName": "Allowed IP address ranges",
+        "description": "Comma-separated list of allowed IP address ranges. Example: 20.37.158.0/23,0.37.194.0/24"
+      }
+    },
+    "allowedSubnetResourceIds": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "displayName": "Allowed subnet resource IDs",
+        "description": "Comma-separated list of allowed subnet resource IDs. Example: /subscriptions/.../resourceGroups/.../providers/Microsoft.Network/virtualNetworks/.../subnets/...1,/subscriptions/.../resourceGroups/.../providers/Microsoft.Network/virtualNetworks/.../subnets/...2"
+      }
+    },
+    "defaultAction": {
+      "type": "string",
+      "defaultValue": "Deny",
+      "allowedValues": [
+        "Allow",
+        "Deny"
+      ]
+    },
+    "dataEndpointEnabled": {
+      "type": "bool",
+      "defaultValue": false
+    },
+    "anonymousPullEnabled": {
+      "type": "bool",
+      "defaultValue": false
+    },
+    "identityType": {
+      "type": "string",
+      "defaultValue": "None",
+      "allowedValues": [
+        "None",
+        "SystemAssigned",
+        "SystemAssigned, UserAssigned",
+        "UserAssigned"
+      ]
+    },
+    "userAssignedIdentityResourceId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "displayName": "User-Assigned Identity Resource ID",
+        "description": "Optional. Can be retrieved for an existing UAI using az identity show -o tsv --query 'id'."
+      }
+    },
     "tags": {
       "type": "object",
       "defaultValue": "[createObject()]"
     }
   },
   "variables": {
+    "allowedIpAddressRanges": "[if(not(empty(trim(parameters('allowedIpAddressRanges')))), split(parameters('allowedIpAddressRanges'), ','), json('[]'))]",
+    "allowedSubnetResourceIds": "[if(not(empty(trim(parameters('allowedSubnetResourceIds')))), split(parameters('allowedSubnetResourceIds'), ','), json('[]'))]",
+      "networkRuleSet": {
+        "defaultAction": "[parameters('defaultAction')]",
+        "copy": [
+          {
+              "name": "ipRules",
+              "count": "[length(variables('allowedIpAddressRanges'))]",
+              "input": {
+                  "value": "[variables('allowedIpAddressRanges')[copyIndex('ipRules')]]"
+              }
+          },
+          {
+              "name": "virtualNetworkRules",
+              "count": "[length(variables('allowedSubnetResourceIds'))]",
+              "input": {
+                  "id": "[variables('allowedSubnetResourceIds')[copyIndex('virtualNetworkRules')]]"
+              }
+          }
+        ]
+      },
+    "identity": "[
+      if
+      (
+        equals(parameters('identityType'), 'None'),
+        json('null'),
+        if
+        (
+          equals(parameters('identityType'), 'SystemAssigned'),
+          createObject('type', 'SystemAssigned'),
+          createObject
+          (
+            'type', parameters('identityType'),
+            'userAssignedIdentities', createObject
+            (
+              parameters('userAssignedIdentityResourceId'), createObject()
+            )
+          )
+        )
+      )
+    ]",
     "timeStampTag": {
       "Timestamp": "[parameters('timestamp')]"
     },
     "tags": "[union(parameters('tags'), variables('timeStampTag'))]",
     "replicationLocations": "[if(equals(toLower(trim(parameters('skuName'))), 'premium'), split(parameters('replicationLocations'), ','), json('[]'))]",
-    "apiVersionRegistry": "2020-11-01-preview"
+    "apiVersionRegistry": "2023-01-01-preview"
   },
-  "resources": [
+  "resources":
+  [
     {
       "type": "Microsoft.ContainerRegistry/registries",
       "apiVersion": "[variables('apiVersionRegistry')]",
@@ -72,13 +180,9 @@
         "name": "[parameters('skuName')]",
         "tier": "[parameters('skuName')]"
       },
+      "identity": "[variables('identity')]",
       "properties": {
         "adminUserEnabled": false,
-        "networkRuleSet": {
-          "defaultAction": "Allow",
-          "virtualNetworkRules": [],
-          "ipRules": []
-        },
         "policies": {
           "quarantinePolicy": {
             "status": "disabled"
@@ -95,11 +199,19 @@
         "encryption": {
           "status": "disabled"
         },
-        "dataEndpointEnabled": false,
-        "publicNetworkAccess": "Enabled",
-        "networkRuleBypassOptions": "AzureServices",
-        "zoneRedundancy": "Enabled",
-        "anonymousPullEnabled": false
+        "dataEndpointEnabled": "[parameters('dataEndpointEnabled')]",
+        "publicNetworkAccess": "[parameters('publicNetworkAccess')]",
+        "networkRuleBypassOptions": "[parameters('networkRuleBypassOptions')]",
+        "networkRuleSet": "[
+          if
+          (
+            equals('Premium', parameters('skuName')),
+            variables('networkRuleSet'),
+            json('null')
+          )
+        ]",
+        "zoneRedundancy": "[parameters('zoneRedundancy')]",
+        "anonymousPullEnabled": "[parameters('anonymousPullEnabled')]"
       }
     },
     {
@@ -110,68 +222,68 @@
           if
           (
             or(empty(trim(parameters('replicationLocations'))), empty(variables('replicationLocations'))),
-        0,
+            0,
             length(variables('replicationLocations'))
           )
       ]"
+      },
+      "apiVersion": "[variables('apiVersionRegistry')]",
+      "name": "[concat(parameters('registryName'), '/', variables('replicationLocations')[copyIndex()])]",
+      "location": "[variables('replicationLocations')[copyIndex()]]",
+      "dependsOn": [
+        "[resourceId('Microsoft.ContainerRegistry/registries', parameters('registryName'))]"
+      ],
+      "properties": {
+        "regionEndpointEnabled": true,
+        "zoneRedundancy": "[parameters('zoneRedundancy')]"
+      }
     },
-    "apiVersion": "[variables('apiVersionRegistry')]",
-    "name": "[concat(parameters('registryName'), '/', variables('replicationLocations')[copyIndex()])]",
-    "location": "[variables('replicationLocations')[copyIndex()]]",
-    "dependsOn": [
-      "[resourceId('Microsoft.ContainerRegistry/registries', parameters('registryName'))]"
-    ],
-    "properties": {
-      "regionEndpointEnabled": true,
-      "zoneRedundancy": "[parameters('zoneRedundancy')]"
+    {
+      "type": "Microsoft.ContainerRegistry/registries/scopeMaps",
+      "apiVersion": "[variables('apiVersionRegistry')]",
+      "name": "[concat(parameters('registryName'), '/_repositories_admin')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.ContainerRegistry/registries', parameters('registryName'))]"
+      ],
+      "properties": {
+        "description": "Can perform all read, write and delete operations on the registry",
+        "actions": [
+          "repositories/*/metadata/read",
+          "repositories/*/metadata/write",
+          "repositories/*/content/read",
+          "repositories/*/content/write",
+          "repositories/*/content/delete"
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.ContainerRegistry/registries/scopeMaps",
+      "apiVersion": "[variables('apiVersionRegistry')]",
+      "name": "[concat(parameters('registryName'), '/_repositories_pull')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.ContainerRegistry/registries', parameters('registryName'))]"
+      ],
+      "properties": {
+        "description": "Can pull any repository of the registry",
+        "actions": [
+          "repositories/*/content/read"
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.ContainerRegistry/registries/scopeMaps",
+      "apiVersion": "[variables('apiVersionRegistry')]",
+      "name": "[concat(parameters('registryName'), '/_repositories_push')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.ContainerRegistry/registries', parameters('registryName'))]"
+      ],
+      "properties": {
+        "description": "Can push to any repository of the registry",
+        "actions": [
+          "repositories/*/content/read",
+          "repositories/*/content/write"
+        ]
+      }
     }
-  },
-  {
-    "type": "Microsoft.ContainerRegistry/registries/scopeMaps",
-    "apiVersion": "[variables('apiVersionRegistry')]",
-    "name": "[concat(parameters('registryName'), '/_repositories_admin')]",
-    "dependsOn": [
-      "[resourceId('Microsoft.ContainerRegistry/registries', parameters('registryName'))]"
-    ],
-    "properties": {
-      "description": "Can perform all read, write and delete operations on the registry",
-      "actions": [
-        "repositories/*/metadata/read",
-        "repositories/*/metadata/write",
-        "repositories/*/content/read",
-        "repositories/*/content/write",
-        "repositories/*/content/delete"
-      ]
-    }
-  },
-  {
-    "type": "Microsoft.ContainerRegistry/registries/scopeMaps",
-    "apiVersion": "[variables('apiVersionRegistry')]",
-    "name": "[concat(parameters('registryName'), '/_repositories_pull')]",
-    "dependsOn": [
-      "[resourceId('Microsoft.ContainerRegistry/registries', parameters('registryName'))]"
-    ],
-    "properties": {
-      "description": "Can pull any repository of the registry",
-      "actions": [
-        "repositories/*/content/read"
-      ]
-    }
-  },
-  {
-    "type": "Microsoft.ContainerRegistry/registries/scopeMaps",
-    "apiVersion": "[variables('apiVersionRegistry')]",
-    "name": "[concat(parameters('registryName'), '/_repositories_push')]",
-    "dependsOn": [
-      "[resourceId('Microsoft.ContainerRegistry/registries', parameters('registryName'))]"
-    ],
-    "properties": {
-      "description": "Can push to any repository of the registry",
-      "actions": [
-        "repositories/*/content/read",
-        "repositories/*/content/write"
-      ]
-    }
-  }
-]
+  ]
 }
