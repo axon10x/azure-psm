@@ -264,7 +264,19 @@
     "keyVaultReferenceIdentity": "[if(variables('assignUserIdentity'), parameters('userAssignedIdentityResourceId'), if(parameters('assignSystemIdentity'), 'SystemAssigned', ''))]",
     "allowedIpAddressRanges": "[if(empty(parameters('allowedIpAddressRanges')), json('[]'), split(parameters('allowedIpAddressRanges'), ','))]",
     "ipRangeAccessAction": "Allow",
-    "hostNameSslStates": [
+    "hostNameSslStatesDefault": [
+      {
+        "name": "[concat(parameters('appServiceName'), '.azurewebsites.net')]",
+        "sslState": "Enabled",
+        "hostType": "Standard"
+      },
+      {
+        "name": "[concat(parameters('appServiceName'), '.scm.azurewebsites.net')]",
+        "sslState": "Enabled",
+        "hostType": "Repository"
+      }
+    ],
+    "hostNameSslStatesCustomFqdn": [
       {
         "name": "[concat(parameters('appServiceName'), '.azurewebsites.net')]",
         "sslState": "Disabled",
@@ -301,15 +313,14 @@
         "userAssignedIdentities": "[variables('userAssignedIdentities')]"
       },
       "properties": {
-        "hostNameSslStates": "
-          [
-              if
-              (
-                  or(empty(trim(parameters('customFqdn'))), empty(trim(parameters('certificateForAppServiceThumbprint')))),
-                  json('null'),
-                  variables('hostNameSslStates')
-              )
-          ]",
+        "hostNameSslStates": "[
+          if
+          (
+            or(empty(trim(parameters('customFqdn'))), empty(trim(parameters('certificateForAppServiceThumbprint')))),
+            variables('hostNameSslStatesDefault'),
+            variables('hostNameSslStatesCustomFqdn')
+          )
+        ]",
         "clientAffinityEnabled": "[parameters('clientAffinityEnabled')]",
         "httpsOnly": "[parameters('httpsOnly')]",
         "keyVaultReferenceIdentity": "[variables('keyVaultReferenceIdentity')]",
