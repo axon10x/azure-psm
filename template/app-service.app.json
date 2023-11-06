@@ -53,32 +53,6 @@
     "appInsightsResourceId": {
       "type": "string"
     },
-    "storageAccountResourceId": {
-      "type": "string"
-    },
-    "storageAccountName": {
-      "type": "string"
-    },
-    "functionRuntimeVersion": {
-      "type": "string",
-      "defaultValue": "",
-      "allowedValues": [
-        "",
-        "~3",
-        "~4"
-      ]
-    },
-    "functionRuntimeWorker": {
-      "type": "string",
-      "defaultValue": "",
-      "allowedValues": [
-        "",
-        "dotnet",
-        "python",
-        "node",
-        "java"
-      ]
-    },
     "language": {
       "type": "string",
       "defaultValue": "",
@@ -267,7 +241,19 @@
     "keyVaultReferenceIdentity": "[if(variables('assignUserIdentity'), parameters('userAssignedIdentityResourceId'), if(parameters('assignSystemIdentity'), 'SystemAssigned', ''))]",
     "allowedIpAddressRanges": "[if(empty(parameters('allowedIpAddressRanges')), json('[]'), split(parameters('allowedIpAddressRanges'), ','))]",
     "ipRangeAccessAction": "Allow",
-    "hostNameSslStates": [
+    "hostNameSslStatesDefault": [
+      {
+        "name": "[concat(parameters('appServiceName'), '.azurewebsites.net')]",
+        "sslState": "Enabled",
+        "hostType": "Standard"
+      },
+      {
+        "name": "[concat(parameters('appServiceName'), '.scm.azurewebsites.net')]",
+        "sslState": "Enabled",
+        "hostType": "Repository"
+      }
+    ],
+    "hostNameSslStatesCustomFqdn": [
       {
         "name": "[concat(parameters('appServiceName'), '.azurewebsites.net')]",
         "sslState": "Disabled",
@@ -287,8 +273,7 @@
     ],
     "appInsightsExtensionVersion": "~2",
     "apiVersionWeb": "2022-09-01",
-    "apiVersionAppInsights": "2020-02-02",
-    "apiVersionStorage": "2022-09-01"
+    "apiVersionAppInsights": "2020-02-02"
   },
   "resources": [
     {
@@ -303,15 +288,14 @@
         "userAssignedIdentities": "[variables('userAssignedIdentities')]"
       },
       "properties": {
-        "hostNameSslStates": "
-          [
-              if
-              (
-                  or(empty(trim(parameters('customFqdn'))), empty(trim(parameters('certificateForAppServiceThumbprint')))),
-                  json('null'),
-                  variables('hostNameSslStates')
-              )
-          ]",
+        "hostNameSslStates": "[
+          if
+          (
+            or(empty(trim(parameters('customFqdn'))), empty(trim(parameters('certificateForAppServiceThumbprint')))),
+            variables('hostNameSslStatesDefault'),
+            variables('hostNameSslStatesCustomFqdn')
+          )
+        ]",
         "clientAffinityEnabled": "[parameters('clientAffinityEnabled')]",
         "httpsOnly": "[parameters('httpsOnly')]",
         "keyVaultReferenceIdentity": "[variables('keyVaultReferenceIdentity')]",
@@ -343,10 +327,6 @@
             {
               "name": "XDT_MicrosoftApplicationInsights_Mode",
               "value": "default"
-            },
-            {
-              "name": "AzureWebJobsStorage",
-              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', parameters('storageAccountName'), ';AccountKey=', listKeys(parameters('storageAccountResourceId'), variables('apiVersionStorage')).keys[0].value, ';EndpointSuffix=core.windows.net')]"
             }
           ],
           "azureStorageAccounts": {},
