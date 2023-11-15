@@ -117,7 +117,7 @@ function Set-KeyVaultSecret()
     $SecretValue
   )
   $secretNameSafe = Get-KeyVaultSecretName -VarName "$SecretName"
-  #$secretValue = ConvertTo-SecureString "$RawSecretValue" -AsPlainText -Force
+  #$secretValueSafe = ConvertTo-SecureString "$SecretValue" -AsPlainText -Force
 
   az keyvault secret set `
     --vault-name "$KeyVaultName" `
