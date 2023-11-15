@@ -1,3 +1,5 @@
+$debug = $true
+
 function Set-FunctionKey()
 {
   [CmdletBinding()]
@@ -13,7 +15,7 @@ function Set-FunctionKey()
     [string]
     $FunctionKeyName
   )
-  Write-Debug -Debug:$true -Message "Set new function key $FunctionKeyName on app $FunctionAppName and get its value on the output"
+  Write-Debug -Debug:$debug -Message "Set new Function key $FunctionKeyName on Function App $FunctionAppName and get its value on the output"
   $keyValue = "$(az functionapp keys set --key-name $FunctionKeyName --key-type functionKeys --name $FunctionAppName -g $ResourceGroupName -o tsv --query 'value')"
 
   return $keyValue
@@ -31,7 +33,7 @@ function Get-FunctionIdentityPrincipalId()
     [string]
     $FunctionAppName
   )
-  Write-Debug -Debug:$true -Message "Get function identity principal id for app $FunctionAppName"
+  Write-Debug -Debug:$debug -Message "Get function identity principal id for app $FunctionAppName"
   $principalId = "$(az functionapp identity show --name $FunctionAppName -g $ResourceGroupName -o tsv --query 'principalId')"
 
   return $principalId

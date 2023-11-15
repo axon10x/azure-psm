@@ -1,27 +1,6 @@
-function CopyData()
-{
-  $Location = "East US"
+$debug = $true
 
-  $SubscriptionNameSink = ""
-  $StorageAccountNameSink = ""
-
-  $SubscriptionNameSource = ""
-  $StorageAccountNameSource = ""
-
-  $ResourceGroupNameDataFactory = ""
-  $DataFactoryName = ""
-
-  CopyDataWorker `
-    -Location $Location `
-    -SubscriptionNameSink $SubscriptionNameSink `
-    -StorageAccountNameSink $StorageAccountNameSink `
-    -SubscriptionNameSource $SubscriptionNameSource `
-    -StorageAccountNameSource $StorageAccountNameSource `
-    -ResourceGroupNameDataFactory $ResourceGroupNameDataFactory `
-    -DataFactoryName $DataFactoryName
-}
-
-function CopyDataWorker()
+function Copy-Data()
 {
   [CmdletBinding()]
   param
@@ -29,6 +8,9 @@ function CopyDataWorker()
     [Parameter(Mandatory = $true)]
     [string]
     $Location,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $EnvironmentName,
     [Parameter(Mandatory = $true)]
     [string]
     $SubscriptionNameSink,
@@ -46,66 +28,97 @@ function CopyDataWorker()
     $ResourceGroupNameDataFactory,
     [Parameter(Mandatory = $true)]
     [string]
-    $DataFactoryName
+    $DataFactoryName,
+    [Parameter(Mandatory = $true)]
+    [string[]]
+    [AllowEmptyCollection()]
+    $ContainerNamesSource,
+    [Parameter(Mandatory = $true)]
+    [string[]]
+    [AllowEmptyCollection()]
+    $TableNamesSource,
+    [Parameter(Mandatory = $true)]
+    [string[]]
+    [AllowEmptyCollection()]
+    $ContainerNamesSink,
+    [Parameter(Mandatory = $false)]
+    [string[]]
+    [AllowEmptyCollection()]
+    $QueueNamesSink,
+    [Parameter(Mandatory = $true)]
+    [string[]]
+    [AllowEmptyCollection()]
+    $TableNamesSink
   )
   # Expire SAS an hour from now in UTC
   $expiry = (Get-Date -AsUTC).AddMinutes(60).ToString("yyyy-MM-ddTHH:mmZ")
 
-  Write-Debug -Debug:$true -Message "Setting subscription to $SubscriptionNameSource"
+  Write-Debug -Debug:$debug -Message "Set subscription to source $SubscriptionNameSource"
   az account set -s $SubscriptionNameSource
 
-  Write-Debug -Debug:$true -Message "Getting key for $StorageAccountNameSource"
+  Write-Debug -Debug:$debug -Message "Get key for source account $StorageAccountNameSource"
   $accountKeySource = "$(az storage account keys list --account-name $StorageAccountNameSource -o tsv --query '[0].value')"
 
-  Write-Debug -Debug:$true -Message "Create SAS for $StorageAccountNameSource"
+  Write-Debug -Debug:$debug -Message "Create SAS for source account $StorageAccountNameSource"
   $sasSource = az storage account generate-sas -o tsv --only-show-errors `
     --account-name $StorageAccountNameSource `
+    --account-key $accountKeySource `
     --expiry $expiry  `
     --services bfqt `
     --resource-types sco `
     --permissions lr `
     --https-only
 
-  Write-Debug -Debug:$true -Message "Setting subscription to $SubscriptionNameSink"
+  Write-Debug -Debug:$debug -Message "Set subscription to sink $SubscriptionNameSink"
   az account set -s $SubscriptionNameSink
 
-  Write-Debug -Debug:$true -Message "Getting key for $StorageAccountNameSink"
+  Write-Debug -Debug:$debug -Message "Get key for sink $StorageAccountNameSink"
   $accountKeySink = "$(az storage account keys list --account-name $StorageAccountNameSink -o tsv --query '[0].value')"
 
-  Write-Debug -Debug:$true -Message "Create SAS for $StorageAccountNameSink"
+  Write-Debug -Debug:$debug -Message "Create SAS for sink $StorageAccountNameSink"
   $sasSink = az storage account generate-sas -o tsv --only-show-errors `
     --account-name $StorageAccountNameSink `
+    --account-key $accountKeySink `
     --expiry $expiry  `
     --services bfqt `
     --resource-types sco `
     --permissions acdfilprtuwxy `
     --https-only
 
-
-
   # Blobs
-  CopyBlobs `
+  Copy-Blobs `
     -StorageAccountNameSource $StorageAccountNameSource `
     -StorageAccountNameSink $StorageAccountNameSink `
     -SasSource $sasSource `
-    -SasSink $sasSink
+    -SasSink $sasSink `
+    -ContainerNamesSource $ContainerNamesSource `
+    -ContainerNamesSink $ContainerNamesSink
 
   # Queues
-  CopyQueues `
-    -StorageAccountNameSink $StorageAccountNameSink
+  if ($QueueNamesSink -and $QueueNamesSink.Count -gt 0)
+  {
+    Set-Queues `
+      -StorageAccountNameSink $StorageAccountNameSink `
+      -SasSink $sasSink `
+      -QueueNames $QueueNamesSink
+  }
 
   # Tables
-  CopyTables `
+  Copy-Tables `
     -Location $Location `
+    -SubscriptionNameDataFactory $SubscriptionNameSource `
+    -EnvironmentName $EnvironmentName `
     -StorageAccountNameSource $StorageAccountNameSource `
     -StorageAccountNameSink $StorageAccountNameSink `
     -AccountKeySource $accountKeySource `
     -AccountKeySink $accountKeySink `
     -ResourceGroupNameDataFactory $ResourceGroupNameDataFactory `
-    -DataFactoryName $DataFactoryName
+    -DataFactoryName $DataFactoryName `
+    -TableNamesSource $TableNamesSource `
+    -TableNamesSink $TableNamesSink
 }
 
-function CopyBlobs()
+function Copy-Blobs()
 {
   [CmdletBinding()]
   param
@@ -121,41 +134,60 @@ function CopyBlobs()
     $SasSource,
     [Parameter(Mandatory = $true)]
     [string]
-    $SasSink
+    $SasSink,
+    [Parameter(Mandatory = $true)]
+    [string[]]
+    $ContainerNamesSource,
+    [Parameter(Mandatory = $true)]
+    [string[]]
+    $ContainerNamesSink
   )
 
-  $containers = @("container1", "container2") # Could refactor this to just enumerate all containers in source storage account
-
-  foreach ($container in $containers)
+  if (($ContainerNamesSource.Count -eq 0) -or ($ContainerNamesSource.Count -ne $ContainerNamesSink.Count))
   {
-    Write-Debug -Debug:$true -Message "Create container $container"
-    az storage container create --account-name $StorageAccountNameSink -n $container --auth-mode login --verbose
+    Write-Error "Provide source and sink container names arrays with >0 items and same item counts."
+  }
+  else
+  {
+    for ($i = 0; $i -lt $ContainerNamesSource.Count; $i++)
+    {
+      $containerNameSource = $ContainerNamesSource[$i]
+      $containerNameSink = $ContainerNamesSink[$i]
 
-    Write-Debug -Debug:$true -Message "azcopy sync for $container"
-    azcopy sync "https://$StorageAccountNameSource.blob.core.windows.net/$container/?$SasSource" "https://$StorageAccountNameSink.blob.core.windows.net/$container/?$SasSink"
+      Write-Debug -Debug:$debug -Message "Create sink container $containerNameSink"
+      az storage container create --account-name $StorageAccountNameSink --sas-token $SasSink -n $containerNameSink
+
+      Write-Debug -Debug:$debug -Message "Run azcopy sync from source container $containerNameSource to sink container $containerNameSink"
+      azcopy sync "https://$StorageAccountNameSource.blob.core.windows.net/$containerNameSource/?$SasSource" "https://$StorageAccountNameSink.blob.core.windows.net/$containerNameSink/?$SasSink"
+    }
   }
 }
 
-function CopyQueues()
+function Set-Queues()
 {
   [CmdletBinding()]
   param
   (
     [Parameter(Mandatory = $true)]
     [string]
-    $StorageAccountNameSink
+    $StorageAccountName,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $Sas,
+    [Parameter(Mandatory = $true)]
+    [string[]]
+    [AllowEmptyCollection()]
+    $QueueNames
   )
 
-  $queues = @("queue1", "queue2") # Could refactor this to just enumerate all queues in source storage account
-
-  foreach ($queue in $queues)
+  foreach ($queueName in $QueueNames)
   {
-    Write-Debug -Debug:$true -Message "Create queue $queue"
-    az storage queue create --account-name $StorageAccountNameSink -n $queue --auth-mode login --verbose
+    Write-Debug -Debug:$debug -Message "Create queue $queueName"
+    az storage queue create --account-name $StorageAccountName -n $queueName --sas-token $Sas
   }
 }
 
-function CopyTables()
+function Copy-Tables()
 {
   [CmdletBinding()]
   param
@@ -163,6 +195,12 @@ function CopyTables()
     [Parameter(Mandatory = $true)]
     [string]
     $Location,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $SubscriptionNameDataFactory,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $EnvironmentName,
     [Parameter(Mandatory = $true)]
     [string]
     $StorageAccountNameSource,
@@ -180,80 +218,117 @@ function CopyTables()
     $ResourceGroupNameDataFactory,
     [Parameter(Mandatory = $true)]
     [string]
-    $DataFactoryName
+    $DataFactoryName,
+    [Parameter(Mandatory = $true)]
+    [string[]]
+    $TableNamesSource,
+    [Parameter(Mandatory = $true)]
+    [string[]]
+    $TableNamesSink
   )
 
-  # Variables
-  $dfLsNameSource = $StorageAccountNameSource
-  $dfLsNameSink = $StorageAccountNameSink
-
-  $tables = @("table1", "table2") # Could refactor this to just enumerate all tables in source storage account
-
-  Write-Debug -Debug:$true -Message "Create ADF RG $ResourceGroupNameDataFactory"
-  $tags = Get-Tags
-  az group create -n $ResourceGroupNameDataFactory -l $Location --tags $tags --verbose
-
-  Write-Debug -Debug:$true -Message "Create ADF $DataFactoryName"
-  az datafactory create `
-    --location $Location `
-    -g $ResourceGroupNameDataFactory `
-    --factory-name $DataFactoryName
-
-  Write-Debug -Debug:$true -Message "Create linked service $dfLsNameSource"
-  $jsonLsSource = '{"annotations":[],"type":"AzureTableStorage","typeProperties":{"connectionString":"DefaultEndpointsProtocol=https;EndpointSuffix=core.windows.net;AccountName=' + $StorageAccountNameSource + ';AccountKey=' + $AccountKeySource + '"}}'
-  az datafactory linked-service create `
-    -g $ResourceGroupNameDataFactory `
-    --factory-name $DataFactoryName `
-    --linked-service-name $dfLsNameSource `
-    --properties $jsonLsSource
-
-  Write-Debug -Debug:$true -Message "Create linked service $dfLsNameSink"
-  $jsonLsSink = '{"annotations":[],"type":"AzureTableStorage","typeProperties":{"connectionString":"DefaultEndpointsProtocol=https;EndpointSuffix=core.windows.net;AccountName=' + $StorageAccountNameSink + ';AccountKey=' + $AccountKeySink + '"}}'
-  az datafactory linked-service create `
-    -g $ResourceGroupNameDataFactory `
-    --factory-name $DataFactoryName `
-    --linked-service-name $dfLsNameSink `
-    --properties $jsonLsSink
-
-  foreach ($table in $tables)
+  if (($TableNamesSource.Count -eq 0) -or ($TableNamesSource.Count -ne $TableNamesSink.Count))
   {
-    Write-Debug -Debug:$true -Message "Create table $table"
-    az storage table create --account-name $StorageAccountNameSink -n $table --auth-mode login --verbose
+    Write-Error "Provide source and sink container names arrays with >0 items and same item counts."
+  }
+  else
+  {
+    Write-Debug -Debug:$debug -Message "Setting subscription to $SubscriptionNameDataFactory"
+    az account set -s $SubscriptionNameDataFactory
 
-    Write-Debug -Debug:$true -Message "Create dataset $dataSetNameSource"
-    $dataSetNameSource = $dfLsNameSource + "_" + $table
-    $jsonDsSource = '{"linkedServiceName": {"referenceName": "' + $dfLsNameSource + '", "type": "LinkedServiceReference"}, "annotations": [], "type": "AzureTable", "schema": [], "typeProperties": {"tableName": "' + $table + '"}}'
-    az datafactory dataset create `
+      # Variables
+    $dfLsNameSource = $StorageAccountNameSource
+    $dfLsNameSink = $StorageAccountNameSink
+
+    Write-Debug -Debug:$debug -Message "Create ADF RG $ResourceGroupNameDataFactory"
+    $tags = Get-Tags -EnvironmentName $EnvironmentName
+    az group create -n $ResourceGroupNameDataFactory -l $Location --tags $tags
+
+    Write-Debug -Debug:$debug -Message "Create ADF $DataFactoryName"
+    az datafactory create `
+      --location $Location `
+      -g $ResourceGroupNameDataFactory `
+      --factory-name $DataFactoryName
+
+    Write-Debug -Debug:$debug -Message "Create linked service $dfLsNameSource"
+    $jsonLsSource = '{"annotations":[],"type":"AzureTableStorage","typeProperties":{"connectionString":"DefaultEndpointsProtocol=https;EndpointSuffix=core.windows.net;AccountName=' + $StorageAccountNameSource + ';AccountKey=' + $AccountKeySource + '"}}'
+    $jsonLsSource > "ls-source.json"
+    Write-Debug -Debug:$debug -Message $jsonLsSource
+
+    az datafactory linked-service create `
+      -g $ResourceGroupNameDataFactory `
+      --factory-name $DataFactoryName `
+      --linked-service-name $dfLsNameSource `
+      --properties '@ls-source.json'
+
+    Write-Debug -Debug:$debug -Message "Create linked service $dfLsNameSink"
+    $jsonLsSink = '{"annotations":[],"type":"AzureTableStorage","typeProperties":{"connectionString":"DefaultEndpointsProtocol=https;EndpointSuffix=core.windows.net;AccountName=' + $StorageAccountNameSink + ';AccountKey=' + $AccountKeySink + '"}}'
+    $jsonLsSink > "ls-sink.json"
+    Write-Debug -Debug:$debug -Message $jsonLsSink
+
+    az datafactory linked-service create `
+      -g $ResourceGroupNameDataFactory `
+      --factory-name $DataFactoryName `
+      --linked-service-name $dfLsNameSink `
+      --properties '@ls-sink.json'
+
+    for ($i = 0; $i -lt $TableNamesSource.Count; $i++)
+    {
+      $tableNameSource = $TableNamesSource[$i]
+      $tableNameSink = $TableNamesSink[$i]
+
+      Write-Debug -Debug:$debug -Message "Create sink table $tableNameSink"
+      az storage table create --account-name $StorageAccountNameSink --account-key $AccountKeySink -n $tableNameSink
+
+      $dataSetNameSource = $dfLsNameSource + "_" + $tableNameSource
+      Write-Debug -Debug:$debug -Message "Create dataset $dataSetNameSource"
+      $jsonDsSource = '{"linkedServiceName": {"referenceName": "' + $dfLsNameSource + '", "type": "LinkedServiceReference"}, "annotations": [], "type": "AzureTable", "schema": [], "typeProperties": {"tableName": "' + $tableNameSource + '"}}'
+      $jsonDsSource > "dataset-source.json"
+      Write-Debug -Debug:$debug -Message $jsonDsSource
+
+      az datafactory dataset create `
       -g $ResourceGroupNameDataFactory `
       --factory-name $DataFactoryName `
       --dataset-name $dataSetNameSource `
-      --properties $jsonDsSource
+      --properties '@dataset-source.json'
 
-    Write-Debug -Debug:$true -Message "Create dataset $dataSetNameSink"
-    $dataSetNameSink = $dfLsNameSink + "_" + $table
-    $jsonDsSink = '{"linkedServiceName": {"referenceName": "' + $dfLsNameSink + '", "type": "LinkedServiceReference"}, "annotations": [], "type": "AzureTable", "schema": [], "typeProperties": {"tableName": "' + $table + '"}}'
-    az datafactory dataset create `
-      -g $ResourceGroupNameDataFactory `
-      --factory-name $DataFactoryName `
-      --dataset-name $dataSetNameSink `
-      --properties $jsonDsSink
+      $dataSetNameSink = $dfLsNameSink + "_" + $tableNameSink
+      Write-Debug -Debug:$debug -Message "Create dataset $dataSetNameSink"
+      $jsonDsSink = '{"linkedServiceName": {"referenceName": "' + $dfLsNameSink + '", "type": "LinkedServiceReference"}, "annotations": [], "type": "AzureTable", "schema": [], "typeProperties": {"tableName": "' + $tableNameSink + '"}}'
+      $jsonDsSink > "dataset-sink.json"
+      Write-Debug -Debug:$debug -Message $jsonDsSink
 
-    $pipelineName = $table
+      az datafactory dataset create `
+        -g $ResourceGroupNameDataFactory `
+        --factory-name $DataFactoryName `
+        --dataset-name $dataSetNameSink `
+        --properties '@dataset-sink.json'
 
-    Write-Debug -Debug:$true -Message "Create pipeline $pipelineName"
-    $jsonPipeline = '{"activities":[{"name":"Copy Data","type":"Copy","dependsOn":[],"policy":{"timeout":"0.12:00:00","retry":0,"retryIntervalInSeconds":30,"secureOutput":false,"secureInput":false},"userProperties":[],"typeProperties":{"source":{"type":"AzureTableSource","azureTableSourceIgnoreTableNotFound":false},"sink":{"type":"AzureTableSink","azureTableInsertType":"merge","azureTablePartitionKeyName":{"value":"PartitionKey","type":"Expression"},"azureTableRowKeyName":{"value":"RowKey","type":"Expression"},"writeBatchSize":10000},"enableStaging":false,"translator":{"type":"TabularTranslator","typeConversion":true,"typeConversionSettings":{"allowDataTruncation":false,"treatBooleanAsNumber":false}}},"inputs":[{"referenceName":"' + $dataSetNameSource + '","type":"DatasetReference"}],"outputs":[{"referenceName":"' + $dataSetNameSink + '","type":"DatasetReference"}]}],"annotations":[]}'
-    az datafactory pipeline create `
-      -g $ResourceGroupNameDataFactory `
-      --factory-name $DataFactoryName `
-      --pipeline-name $pipelineName `
-      --pipeline $jsonPipeline
+      $pipelineName = $tableNameSource + "-" + $tableNameSink
 
-    Write-Debug -Debug:$true -Message "Trigger pipeline $pipelineName"
-    az datafactory pipeline create-run `
-      -g $ResourceGroupNameDataFactory `
-      --factory-name $DataFactoryName `
-      --pipeline-name $pipelineName
+      Write-Debug -Debug:$debug -Message "Create pipeline $pipelineName"
+      $jsonPipeline = '{"activities": [{"name": "Copy Data", "type": "Copy", "dependsOn": [], "policy": {"timeout": "0.12:00:00", "retry": 0, "retryIntervalInSeconds": 30, "secureOutput": false, "secureInput": false}, "userProperties": [], "typeProperties": {"source": {"type": "AzureTableSource", "azureTableSourceIgnoreTableNotFound": false}, "sink": {"type": "AzureTableSink", "azureTableInsertType": "merge", "azureTablePartitionKeyName": {"value": "PartitionKey", "type": "Expression"}, "azureTableRowKeyName": {"value": "RowKey", "type": "Expression"}, "writeBatchSize": 10000}, "enableStaging": false, "translator": {"type": "TabularTranslator", "typeConversion": true, "typeConversionSettings": {"allowDataTruncation": false, "treatBooleanAsNumber": false}}}, "inputs": [{"referenceName": "' + $dataSetNameSource + '", "type": "DatasetReference"}], "outputs": [{"referenceName": "' + $dataSetNameSink + '", "type": "DatasetReference"}]}], "annotations": []}'
+      $jsonPipeline > "pipeline.json"
+      Write-Debug -Debug:$debug -Message $jsonPipeline
+
+      az datafactory pipeline create `
+        -g $ResourceGroupNameDataFactory `
+        --factory-name $DataFactoryName `
+        --pipeline-name $pipelineName `
+        --pipeline '@pipeline.json'
+
+      Write-Debug -Debug:$debug -Message "Trigger pipeline $pipelineName"
+      az datafactory pipeline create-run `
+        -g $ResourceGroupNameDataFactory `
+        --factory-name $DataFactoryName `
+        --pipeline-name $pipelineName
+    }
   }
+}
+
+function Get-TimestampForObjectNaming()
+{
+  ((Get-Date -AsUTC -format s).Replace(":", "").Replace("-", "") + "Z").ToLower()
 }
 
 function Get-Tags()
@@ -261,13 +336,353 @@ function Get-Tags()
   [CmdletBinding()]
   param
   (
+    [Parameter(Mandatory = $true)]
+    [string]
+    $EnvironmentName
   )
 
   # Replace : with - in the timestamp because : breaks ARM template tag parameter
   $timestampTagValue = (Get-Date -AsUTC -format s).Replace(":", "-") + "Z"
   $timestampTag = "timestamp=$timestampTagValue"
 
-  $tagsCli = @($timestampTag)
+  $envTag = "env=$EnvironmentName"
+
+  $tagsCli = @($envTag, $timestampTag)
 
   return $tagsCli
 }
+
+function Set-PublicNetworkAccess()
+{
+  [CmdletBinding()]
+  param
+  (
+    [Parameter(Mandatory = $true)]
+    [string]
+    $StorageAccountName,
+    [Parameter(Mandatory = $false)]
+    [string]
+    $DefaultAction = "Deny" # Allow or Deny
+  )
+  az storage account update --name $StorageAccountName --default-action $DefaultAction
+}
+
+function Remove-DataFactoriesByAge()
+{
+  [CmdletBinding()]
+  param
+  (
+    [Parameter(Mandatory = $true)]
+    [string]
+    $SubscriptionName,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $ResourceGroupName,
+    [Parameter(Mandatory = $true)]
+    [int]
+    $DaysOlderThan
+  )
+
+  Write-Debug -Debug:$debug -Message "Setting subscription to $SubscriptionName"
+  az account set -s $SubscriptionName
+
+  $query = "[].{Name: name, CreateTime: createTime}"
+  $factories = $(az datafactory list -g $ResourceGroupName --query $query) | ConvertFrom-Json
+
+  $daysBack = -1 * [Math]::Abs($DaysOlderThan) # Just in case someone passes a negative number to begin with
+  $compareDate = (Get-Date).AddDays($daysBack)
+
+  foreach ($factory in $factories)
+  {
+    $deleteThis = ($compareDate -gt [DateTime]$factory.CreateTime)
+
+    if ($deleteThis)
+    {
+      Write-Debug -Debug:$debug -Message ("Deleting factory " + $factory.Name)
+      az datafactory delete -g $ResourceGroupName -n $factory.Name --yes
+    }
+    else
+    {
+      Write-Debug -Debug:$debug -Message ("No Op on factory " + $factory.Name)
+    }
+  }
+}
+
+function Remove-ContainersByNamePrefixAndAge()
+{
+  [CmdletBinding()]
+  param
+  (
+    [Parameter(Mandatory = $true)]
+    [string]
+    $SubscriptionName,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $StorageAccountName,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $NamePrefix,
+    [Parameter(Mandatory = $true)]
+    [int]
+    $DaysOlderThan
+  )
+
+  Write-Debug -Debug:$debug -Message "Setting subscription to $SubscriptionName"
+  az account set -s $SubscriptionName
+
+  $query = "[?starts_with(name, '" + $NamePrefix + "')].{Name: name, LastModified: properties.lastModified}"
+  $containers = $(az storage container list --account-name $StorageAccountName --auth-mode login --query $query) | ConvertFrom-Json
+
+  $daysBack = -1 * [Math]::Abs($DaysOlderThan) # Just in case someone passes a negative number to begin with
+  $compareDate = (Get-Date).AddDays($daysBack)
+
+  foreach ($container in $containers)
+  {
+    $deleteThis = ($compareDate -gt [DateTime]$container.LastModified)
+
+    if ($deleteThis)
+    {
+      Write-Debug -Debug:$debug -Message ("Deleting container " + $container.Name)
+      az storage container delete --account-name $StorageAccountName -n $container.Name --auth-mode login 
+    }
+    else
+    {
+      Write-Debug -Debug:$debug -Message ("No Op on container " + $container.Name)
+    }
+  }
+}
+
+function Remove-TablesByNamePrefixAndAge()
+{
+  [CmdletBinding()]
+  param
+  (
+    [Parameter(Mandatory = $true)]
+    [string]
+    $SubscriptionName,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $StorageAccountName,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $NamePrefix,
+    [Parameter(Mandatory = $true)]
+    [int]
+    $DaysOlderThan
+  )
+
+  Write-Debug -Debug:$debug -Message "Setting subscription to $SubscriptionName"
+  az account set -s $SubscriptionName
+
+  $query = "[?starts_with(name, '" + $NamePrefix + "')].name"
+  $tableNames = $(az storage table list --account-name $StorageAccountName --auth-mode login -o tsv --query $query)
+
+  $daysBack = -1 * [Math]::Abs($DaysOlderThan) # Just in case someone passes a negative number to begin with
+  $compareDate = (Get-Date).AddDays($daysBack)
+
+  foreach ($tableName in $tableNames)
+  {
+    # Get the date block in the table name
+    $d1 = $tableName.Substring(3, 16)
+
+    # Fix the string back to something Powershell DateTime can work with
+    $d2 = `
+      $d1.Substring(0, 4) + `
+      "-" + `
+      $d1.Substring(4, 2) + `
+      "-" + `
+      $d1.Substring(6, 5) + `
+      ":" + `
+      $d1.Substring(11, 2) + `
+      ":" + `
+      $d1.Substring(13)
+
+    # Convert to DateTime for comparison
+    $d3 = [DateTime]$d2
+
+    $deleteThis = ($compareDate -gt $d3)
+
+    if ($deleteThis)
+    {
+      Write-Debug -Debug:$debug -Message ("Deleting table $tableName")
+      az storage table delete --account-name $StorageAccountName -n $tableName --auth-mode login 
+    }
+    else
+    {
+      Write-Debug -Debug:$debug -Message ("No Op on table $tableName")
+    }
+  }
+}
+
+function Remove-ContainersByNamePrefix()
+{
+  [CmdletBinding()]
+  param
+  (
+    [Parameter(Mandatory = $true)]
+    [string]
+    $SubscriptionName,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $StorageAccountName,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $NamePrefix
+  )
+
+  Write-Debug -Debug:$debug -Message "Setting subscription to $SubscriptionName"
+  az account set -s $SubscriptionName
+
+  $query = "[?starts_with(name, '" + $NamePrefix + "')].name"
+  $containerNames = $(az storage container list --account-name $StorageAccountName --auth-mode login -o tsv --query $query)
+
+  foreach ($containerName in $containerNames)
+  {
+    Write-Debug -Debug:$debug -Message "Deleting container $containerName"
+    az storage container delete --account-name $StorageAccountName -n $containerName --auth-mode login 
+  }
+  else
+  {
+    Write-Debug -Debug:$debug -Message ("No Op on container $containerName")
+  }
+}
+
+function Remove-TablesByNamePrefix()
+{
+  [CmdletBinding()]
+  param
+  (
+    [Parameter(Mandatory = $true)]
+    [string]
+    $SubscriptionName,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $StorageAccountName,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $NamePrefix
+  )
+
+  Write-Debug -Debug:$debug -Message "Setting subscription to $SubscriptionName"
+  az account set -s $SubscriptionName
+
+  $query = "[?starts_with(name, '" + $NamePrefix + "')].name"
+  $tableNames = $(az storage table list --account-name $StorageAccountName --auth-mode login -o tsv --query $query)
+
+  foreach ($tableName in $tableNames)
+  {
+    Write-Debug -Debug:$debug -Message "Deleting table $tableName"
+    az storage table delete --account-name $StorageAccountName -n $tableName --auth-mode login 
+  }
+  else
+  {
+    Write-Debug -Debug:$debug -Message ("No Op on table $tableName")
+  }
+}
+
+function Remove-StorageObjects()
+{
+  [CmdletBinding()]
+  param
+  (
+    [Parameter(Mandatory = $true)]
+    [string]
+    $SubscriptionName,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $StorageAccountName,
+    [Parameter(Mandatory = $true)]
+    [string[]]
+    [AllowEmptyCollection()]
+    $ContainerNames,
+    [Parameter(Mandatory = $true)]
+    [string[]]
+    [AllowEmptyCollection()]
+    $QueueNames,
+    [Parameter(Mandatory = $true)]
+    [string[]]
+    [AllowEmptyCollection()]
+    $TableNames
+  )
+
+  Write-Debug -Debug:$debug -Message "Setting subscription to $SubscriptionName"
+  az account set -s $SubscriptionName
+
+  Write-Debug -Debug:$debug -Message "Get key for $StorageAccountName"
+  $accountKey = "$(az storage account keys list --account-name $StorageAccountName -o tsv --query '[0].value')"
+
+  # Blob
+  foreach ($containerName in $ContainerNames)
+  {
+    Write-Debug -Debug:$debug -Message "Delete container $containerName"
+    az storage container delete --account-name $StorageAccountName --account-key $accountKey -n $containerName
+  }
+
+  # Queue
+  foreach ($queueName in $QueueNames)
+  {
+    Write-Debug -Debug:$debug -Message "Delete queue $queueName"
+    az storage queue delete --account-name $StorageAccountName --account-key $accountKey -n $queueName
+  }
+
+  # Table
+  foreach ($tableName in $TableNames)
+  {
+    Write-Debug -Debug:$debug -Message "Delete table $tableName"
+    az storage table delete --account-name $StorageAccountName --account-key $accountKey -n $tableName
+  }
+}
+
+function New-StorageObjects()
+{
+  [CmdletBinding()]
+  param
+  (
+    [Parameter(Mandatory = $true)]
+    [string]
+    $SubscriptionName,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $StorageAccountName,
+    [Parameter(Mandatory = $true)]
+    [string[]]
+    [AllowEmptyCollection()]
+    $ContainerNames,
+    [Parameter(Mandatory = $true)]
+    [string[]]
+    [AllowEmptyCollection()]
+    $QueueNames,
+    [Parameter(Mandatory = $true)]
+    [string[]]
+    [AllowEmptyCollection()]
+    $TableNames
+  )
+
+  Write-Debug -Debug:$debug -Message "Setting subscription to $SubscriptionName"
+  az account set -s $SubscriptionName
+
+  Write-Debug -Debug:$debug -Message "Get key for $StorageAccountName"
+  $accountKey = "$(az storage account keys list --account-name $StorageAccountName -o tsv --query '[0].value')"
+
+  # Blob
+  foreach ($containerName in $ContainerNames)
+  {
+    Write-Debug -Debug:$debug -Message "Create container $containerName"
+    az storage container create --account-name $StorageAccountName --account-key $accountKey -n $containerName
+  }
+
+  # Queue
+  foreach ($queueName in $QueueNames)
+  {
+    Write-Debug -Debug:$debug -Message "Create queue $queueName"
+    az storage queue create --account-name $StorageAccountName --account-key $accountKey -n $queueName
+  }
+
+  # Table
+  foreach ($tableName in $TableNames)
+  {
+    Write-Debug -Debug:$debug -Message "Create table $tableName"
+    az storage table create --account-name $StorageAccountName --account-key $accountKey -n $tableName
+  }
+}
+
