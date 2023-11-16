@@ -96,7 +96,11 @@
     },
     "vnetImagePullEnabled": {
       "type": "bool",
-      "defaultValue": false
+      "defaultValue": false,
+      "metadata": {
+        "displayName": "Enable image pull from ACR in VNet",
+        "description": "If pulling images from an Azure Container Registry in a VNet, set this to true."
+      }
     },
     "publicNetworkAccess": {
       "type": "string",
