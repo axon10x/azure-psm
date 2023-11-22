@@ -114,6 +114,14 @@
         "description": "Optional. Can be retrieved for an existing UAI using az identity show -o tsv --query 'id'."
       }
     },
+    "adminUserEnabled": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "displayName": "Enable admin user",
+        "description": "Enable admin user for the registry. Required true so App Service can pull."
+      }
+    },
     "tags": {
       "type": "object",
       "defaultValue": "[createObject()]"
@@ -182,7 +190,7 @@
       },
       "identity": "[variables('identity')]",
       "properties": {
-        "adminUserEnabled": false,
+        "adminUserEnabled": "[parameters('adminUserEnabled')]",
         "policies": {
           "quarantinePolicy": {
             "status": "disabled"
