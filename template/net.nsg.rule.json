@@ -85,10 +85,10 @@
     }
   },
   "variables": {
-    "sourcePortRange": "[if(and(empty(parameters('sourcePortRange')), empty(parameters('sourcePortRanges'))), '*', parameters('sourcePortRange'))]",
+    "sourcePortRange": "[if(empty(parameters('sourcePortRange')), json('null'), parameters('sourcePortRange'))]",
     "sourcePortRanges": "[if(empty(parameters('sourcePortRanges')), json('[]'), split(parameters('sourcePortRanges'), ','))]",
     "sourceAddressPrefixes": "[if(empty(parameters('sourceAddressPrefixes')), json('[]'), split(parameters('sourceAddressPrefixes'), ','))]",
-    "destinationPortRange": "[if(and(empty(parameters('destinationPortRange')), empty(parameters('destinationPortRanges'))), '*', parameters('destinationPortRange'))]",
+    "destinationPortRange": "[if(empty(parameters('destinationPortRange')), json('null'), parameters('destinationPortRange'))]",
     "destinationPortRanges": "[if(empty(parameters('destinationPortRanges')), json('[]'), split(parameters('destinationPortRanges'), ','))]",
     "destinationAddressPrefixes": "[if(empty(parameters('destinationAddressPrefixes')), json('[]'), split(parameters('destinationAddressPrefixes'), ','))]",
     "apiVersionNet": "2022-07-01"
