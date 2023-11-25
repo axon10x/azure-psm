@@ -21,24 +21,10 @@
         "description": ""
       }
     },
-    "vnetResourceGroup": {
+    "subnetResourceId": {
       "type": "string",
       "metadata": {
-        "displayName": "Virtual Network Resource Group",
-        "description": ""
-      }
-    },
-    "vnetName": {
-      "type": "string",
-      "metadata": {
-        "displayName": "Virtual Network Name",
-        "description": ""
-      }
-    },
-    "subnetName": {
-      "type": "string",
-      "metadata": {
-        "displayName": "Subnet Name",
+        "displayName": "Virtual Network Subnet Resource ID",
         "description": ""
       }
     },
@@ -104,8 +90,6 @@
       "Timestamp": "[parameters('timestamp')]"
     },
     "tags": "[union(parameters('tags'), variables('timeStampTag'))]",
-    "vnetId": "[resourceId(parameters('vnetResourceGroup'), 'Microsoft.Network/virtualNetworks/', parameters('vnetName'))]",
-    "subnetId": "[concat(variables('vnetId'), '/subnets/', parameters('subnetName'))]",
     "apiVersionNetwork": "2022-07-01"
   },
   "resources": [
@@ -121,7 +105,7 @@
             "name": "[parameters('ipConfigName')]",
             "properties": {
               "subnet": {
-                "id": "[variables('subnetId')]"
+                "id": "[parameters('subnetResourceId')]"
               },
               "publicIpAddress": "[if(empty(parameters('publicIpResourceId')), json('null'), createObject('id', parameters('publicIpResourceId')))]",
               "privateIPAddress": "[if(or( empty(parameters('privateIpAddress')), equals(parameters('privateIpAllocationMethod'), 'Dynamic') ), json('null'), parameters('privateIpAddress'))]",
