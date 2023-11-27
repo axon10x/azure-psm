@@ -113,7 +113,7 @@
     },
     "virtualMachineTimeZone": {
       "type": "string",
-      "defaultValue": "Eastern Standard Time",
+      "defaultValue": "UTC",
       "metadata": {
         "displayName": "VM timezone",
         "description": "Possible values can be TimeZoneInfo.Id (https://docs.microsoft.com/dotnet/api/system.timezoneinfo.id) value from time zones returned by TimeZoneInfo.GetSystemTimeZones. See https://docs.microsoft.com/dotnet/api/system.timezoneinfo.getsystemtimezones"
