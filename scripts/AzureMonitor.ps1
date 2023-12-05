@@ -231,3 +231,48 @@ function New-DiagnosticsSetting()
     sendLogs=$SendLogs `
     sendMetrics=$SendMetrics
 }
+
+function New-LogAnalyticsWorkspaceDataExport()
+{
+  [CmdletBinding()]
+  param
+  (
+    [Parameter(Mandatory=$true)]
+    [string]
+    $SubscriptionId,
+    [Parameter(Mandatory=$true)]
+    [string]
+    $ResourceGroupName,
+    [Parameter(Mandatory=$true)]
+    [string]
+    $LogAnalyticsWorkspaceName,
+    [Parameter(Mandatory=$true)]
+    [string]
+    $DataExportName,
+    [Parameter(Mandatory=$true)]
+    [string]
+    $DestinationResourceId,
+    [Parameter(Mandatory=$false)]
+    [string[]]
+    $TableNames = $null
+  )
+  Write-Debug -Debug:$true -Message "New-LogAnalyticsWorkspaceDataExport $LogAnalyticsWorkspaceName on $ResourceId"
+
+  if ($TableNames -eq $null -or $TableNames.Count -eq 0)
+  {
+    New-AzOperationalInsightsDataExport
+      -ResourceGroupName "$ResourceGroupName" `
+      -WorkspaceName "$LogAnalyticsWorkspaceName" `
+      -DataExportName "$DataExportName" `
+      -ResourceId "$DestinationResourceId"
+  }
+  else
+  {
+    New-AzOperationalInsightsDataExport
+      -ResourceGroupName "$ResourceGroupName" `
+      -WorkspaceName "$LogAnalyticsWorkspaceName" `
+      -DataExportName "$DataExportName" `
+      -ResourceId "$DestinationResourceId" `
+      -TableName $TableNames
+  }
+}
