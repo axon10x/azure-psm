@@ -63,7 +63,7 @@ function Test-VarGroupVarExists()
   Write-Debug -Debug:$debug -Message "azdoOrgUrl = $azdoOrgUrl"
   Write-Debug -Debug:$debug -Message "vgId = $vgId"
 
-  # We don't use a JMESPath --query here since some of the CPO-NG var names have special characters like :, which crashes the query
+  # We don't use a JMESPath --query here in case some var names have special characters like :, which crashes the query
   # So instead we get all (wasteful but...) into a Powershell hashtable and then see if the var exists by key lookup on the var name
   $varMatches = "$(az pipelines variable-group variable list --org "$azdoOrgUrl" --project "$AzdoProjectName" --group-id "$vgId")" | ConvertFrom-Json -AsHashtable
   Write-Debug -Debug:$debug -Message "varMatches = $varMatches"
@@ -215,9 +215,9 @@ function Set-VarGroupVar()
     [Parameter(Mandatory=$true)]
     [string]
     $VarName,
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory=$false)]
     [string]
-    $VarValue,
+    $VarValue="",
     [Parameter(Mandatory=$false)]
     [string]
     $Secret="false",

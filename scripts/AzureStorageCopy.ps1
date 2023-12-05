@@ -1,6 +1,6 @@
 $debug = $true
 
-function Copy-Data()
+function Copy-StorageData()
 {
   [CmdletBinding()]
   param
@@ -163,30 +163,6 @@ function Copy-Blobs()
   }
 }
 
-function Set-Queues()
-{
-  [CmdletBinding()]
-  param
-  (
-    [Parameter(Mandatory = $true)]
-    [string]
-    $StorageAccountName,
-    [Parameter(Mandatory = $true)]
-    [string]
-    $Sas,
-    [Parameter(Mandatory = $true)]
-    [string[]]
-    [AllowEmptyCollection()]
-    $QueueNames
-  )
-
-  foreach ($queueName in $QueueNames)
-  {
-    Write-Debug -Debug:$debug -Message "Create queue $queueName"
-    az storage queue create --account-name $StorageAccountName -n $queueName --sas-token $Sas
-  }
-}
-
 function Copy-Tables()
 {
   [CmdletBinding()]
@@ -326,33 +302,7 @@ function Copy-Tables()
   }
 }
 
-function Get-TimestampForObjectNaming()
-{
-  ((Get-Date -AsUTC -format s).Replace(":", "").Replace("-", "") + "Z").ToLower()
-}
-
-function Get-Tags()
-{
-  [CmdletBinding()]
-  param
-  (
-    [Parameter(Mandatory = $true)]
-    [string]
-    $EnvironmentName
-  )
-
-  # Replace : with - in the timestamp because : breaks ARM template tag parameter
-  $timestampTagValue = (Get-Date -AsUTC -format s).Replace(":", "-") + "Z"
-  $timestampTag = "timestamp=$timestampTagValue"
-
-  $envTag = "env=$EnvironmentName"
-
-  $tagsCli = @($envTag, $timestampTag)
-
-  return $tagsCli
-}
-
-function Set-PublicNetworkAccess()
+function Set-Queues()
 {
   [CmdletBinding()]
   param
@@ -360,329 +310,19 @@ function Set-PublicNetworkAccess()
     [Parameter(Mandatory = $true)]
     [string]
     $StorageAccountName,
-    [Parameter(Mandatory = $false)]
-    [string]
-    $DefaultAction = "Deny" # Allow or Deny
-  )
-  az storage account update --name $StorageAccountName --default-action $DefaultAction
-}
-
-function Remove-DataFactoriesByAge()
-{
-  [CmdletBinding()]
-  param
-  (
     [Parameter(Mandatory = $true)]
     [string]
-    $SubscriptionName,
-    [Parameter(Mandatory = $true)]
-    [string]
-    $ResourceGroupName,
-    [Parameter(Mandatory = $true)]
-    [int]
-    $DaysOlderThan
-  )
-
-  Write-Debug -Debug:$debug -Message "Setting subscription to $SubscriptionName"
-  az account set -s $SubscriptionName
-
-  $query = "[].{Name: name, CreateTime: createTime}"
-  $factories = $(az datafactory list -g $ResourceGroupName --query $query) | ConvertFrom-Json
-
-  $daysBack = -1 * [Math]::Abs($DaysOlderThan) # Just in case someone passes a negative number to begin with
-  $compareDate = (Get-Date).AddDays($daysBack)
-
-  foreach ($factory in $factories)
-  {
-    $deleteThis = ($compareDate -gt [DateTime]$factory.CreateTime)
-
-    if ($deleteThis)
-    {
-      Write-Debug -Debug:$debug -Message ("Deleting factory " + $factory.Name)
-      az datafactory delete -g $ResourceGroupName -n $factory.Name --yes
-    }
-    else
-    {
-      Write-Debug -Debug:$debug -Message ("No Op on factory " + $factory.Name)
-    }
-  }
-}
-
-function Remove-ContainersByNamePrefixAndAge()
-{
-  [CmdletBinding()]
-  param
-  (
-    [Parameter(Mandatory = $true)]
-    [string]
-    $SubscriptionName,
-    [Parameter(Mandatory = $true)]
-    [string]
-    $StorageAccountName,
-    [Parameter(Mandatory = $true)]
-    [string]
-    $NamePrefix,
-    [Parameter(Mandatory = $true)]
-    [int]
-    $DaysOlderThan
-  )
-
-  Write-Debug -Debug:$debug -Message "Setting subscription to $SubscriptionName"
-  az account set -s $SubscriptionName
-
-  $query = "[?starts_with(name, '" + $NamePrefix + "')].{Name: name, LastModified: properties.lastModified}"
-  $containers = $(az storage container list --account-name $StorageAccountName --auth-mode login --query $query) | ConvertFrom-Json
-
-  $daysBack = -1 * [Math]::Abs($DaysOlderThan) # Just in case someone passes a negative number to begin with
-  $compareDate = (Get-Date).AddDays($daysBack)
-
-  foreach ($container in $containers)
-  {
-    $deleteThis = ($compareDate -gt [DateTime]$container.LastModified)
-
-    if ($deleteThis)
-    {
-      Write-Debug -Debug:$debug -Message ("Deleting container " + $container.Name)
-      az storage container delete --account-name $StorageAccountName -n $container.Name --auth-mode login 
-    }
-    else
-    {
-      Write-Debug -Debug:$debug -Message ("No Op on container " + $container.Name)
-    }
-  }
-}
-
-function Remove-TablesByNamePrefixAndAge()
-{
-  [CmdletBinding()]
-  param
-  (
-    [Parameter(Mandatory = $true)]
-    [string]
-    $SubscriptionName,
-    [Parameter(Mandatory = $true)]
-    [string]
-    $StorageAccountName,
-    [Parameter(Mandatory = $true)]
-    [string]
-    $NamePrefix,
-    [Parameter(Mandatory = $true)]
-    [int]
-    $DaysOlderThan
-  )
-
-  Write-Debug -Debug:$debug -Message "Setting subscription to $SubscriptionName"
-  az account set -s $SubscriptionName
-
-  $query = "[?starts_with(name, '" + $NamePrefix + "')].name"
-  $tableNames = $(az storage table list --account-name $StorageAccountName --auth-mode login -o tsv --query $query)
-
-  $daysBack = -1 * [Math]::Abs($DaysOlderThan) # Just in case someone passes a negative number to begin with
-  $compareDate = (Get-Date).AddDays($daysBack)
-
-  foreach ($tableName in $tableNames)
-  {
-    # Get the date block in the table name
-    $d1 = $tableName.Substring(3, 16)
-
-    # Fix the string back to something Powershell DateTime can work with
-    $d2 = `
-      $d1.Substring(0, 4) + `
-      "-" + `
-      $d1.Substring(4, 2) + `
-      "-" + `
-      $d1.Substring(6, 5) + `
-      ":" + `
-      $d1.Substring(11, 2) + `
-      ":" + `
-      $d1.Substring(13)
-
-    # Convert to DateTime for comparison
-    $d3 = [DateTime]$d2
-
-    $deleteThis = ($compareDate -gt $d3)
-
-    if ($deleteThis)
-    {
-      Write-Debug -Debug:$debug -Message ("Deleting table $tableName")
-      az storage table delete --account-name $StorageAccountName -n $tableName --auth-mode login 
-    }
-    else
-    {
-      Write-Debug -Debug:$debug -Message ("No Op on table $tableName")
-    }
-  }
-}
-
-function Remove-ContainersByNamePrefix()
-{
-  [CmdletBinding()]
-  param
-  (
-    [Parameter(Mandatory = $true)]
-    [string]
-    $SubscriptionName,
-    [Parameter(Mandatory = $true)]
-    [string]
-    $StorageAccountName,
-    [Parameter(Mandatory = $true)]
-    [string]
-    $NamePrefix
-  )
-
-  Write-Debug -Debug:$debug -Message "Setting subscription to $SubscriptionName"
-  az account set -s $SubscriptionName
-
-  $query = "[?starts_with(name, '" + $NamePrefix + "')].name"
-  $containerNames = $(az storage container list --account-name $StorageAccountName --auth-mode login -o tsv --query $query)
-
-  foreach ($containerName in $containerNames)
-  {
-    Write-Debug -Debug:$debug -Message "Deleting container $containerName"
-    az storage container delete --account-name $StorageAccountName -n $containerName --auth-mode login 
-  }
-  else
-  {
-    Write-Debug -Debug:$debug -Message ("No Op on container $containerName")
-  }
-}
-
-function Remove-TablesByNamePrefix()
-{
-  [CmdletBinding()]
-  param
-  (
-    [Parameter(Mandatory = $true)]
-    [string]
-    $SubscriptionName,
-    [Parameter(Mandatory = $true)]
-    [string]
-    $StorageAccountName,
-    [Parameter(Mandatory = $true)]
-    [string]
-    $NamePrefix
-  )
-
-  Write-Debug -Debug:$debug -Message "Setting subscription to $SubscriptionName"
-  az account set -s $SubscriptionName
-
-  $query = "[?starts_with(name, '" + $NamePrefix + "')].name"
-  $tableNames = $(az storage table list --account-name $StorageAccountName --auth-mode login -o tsv --query $query)
-
-  foreach ($tableName in $tableNames)
-  {
-    Write-Debug -Debug:$debug -Message "Deleting table $tableName"
-    az storage table delete --account-name $StorageAccountName -n $tableName --auth-mode login 
-  }
-  else
-  {
-    Write-Debug -Debug:$debug -Message ("No Op on table $tableName")
-  }
-}
-
-function Remove-StorageObjects()
-{
-  [CmdletBinding()]
-  param
-  (
-    [Parameter(Mandatory = $true)]
-    [string]
-    $SubscriptionName,
-    [Parameter(Mandatory = $true)]
-    [string]
-    $StorageAccountName,
+    $Sas,
     [Parameter(Mandatory = $true)]
     [string[]]
     [AllowEmptyCollection()]
-    $ContainerNames,
-    [Parameter(Mandatory = $true)]
-    [string[]]
-    [AllowEmptyCollection()]
-    $QueueNames,
-    [Parameter(Mandatory = $true)]
-    [string[]]
-    [AllowEmptyCollection()]
-    $TableNames
+    $QueueNames
   )
 
-  Write-Debug -Debug:$debug -Message "Setting subscription to $SubscriptionName"
-  az account set -s $SubscriptionName
-
-  Write-Debug -Debug:$debug -Message "Get key for $StorageAccountName"
-  $accountKey = "$(az storage account keys list --account-name $StorageAccountName -o tsv --query '[0].value')"
-
-  # Blob
-  foreach ($containerName in $ContainerNames)
-  {
-    Write-Debug -Debug:$debug -Message "Delete container $containerName"
-    az storage container delete --account-name $StorageAccountName --account-key $accountKey -n $containerName
-  }
-
-  # Queue
-  foreach ($queueName in $QueueNames)
-  {
-    Write-Debug -Debug:$debug -Message "Delete queue $queueName"
-    az storage queue delete --account-name $StorageAccountName --account-key $accountKey -n $queueName
-  }
-
-  # Table
-  foreach ($tableName in $TableNames)
-  {
-    Write-Debug -Debug:$debug -Message "Delete table $tableName"
-    az storage table delete --account-name $StorageAccountName --account-key $accountKey -n $tableName
-  }
-}
-
-function New-StorageObjects()
-{
-  [CmdletBinding()]
-  param
-  (
-    [Parameter(Mandatory = $true)]
-    [string]
-    $SubscriptionName,
-    [Parameter(Mandatory = $true)]
-    [string]
-    $StorageAccountName,
-    [Parameter(Mandatory = $true)]
-    [string[]]
-    [AllowEmptyCollection()]
-    $ContainerNames,
-    [Parameter(Mandatory = $true)]
-    [string[]]
-    [AllowEmptyCollection()]
-    $QueueNames,
-    [Parameter(Mandatory = $true)]
-    [string[]]
-    [AllowEmptyCollection()]
-    $TableNames
-  )
-
-  Write-Debug -Debug:$debug -Message "Setting subscription to $SubscriptionName"
-  az account set -s $SubscriptionName
-
-  Write-Debug -Debug:$debug -Message "Get key for $StorageAccountName"
-  $accountKey = "$(az storage account keys list --account-name $StorageAccountName -o tsv --query '[0].value')"
-
-  # Blob
-  foreach ($containerName in $ContainerNames)
-  {
-    Write-Debug -Debug:$debug -Message "Create container $containerName"
-    az storage container create --account-name $StorageAccountName --account-key $accountKey -n $containerName
-  }
-
-  # Queue
   foreach ($queueName in $QueueNames)
   {
     Write-Debug -Debug:$debug -Message "Create queue $queueName"
-    az storage queue create --account-name $StorageAccountName --account-key $accountKey -n $queueName
-  }
-
-  # Table
-  foreach ($tableName in $TableNames)
-  {
-    Write-Debug -Debug:$debug -Message "Create table $tableName"
-    az storage table create --account-name $StorageAccountName --account-key $accountKey -n $tableName
+    az storage queue create --account-name $StorageAccountName -n $queueName --sas-token $Sas
   }
 }
 
