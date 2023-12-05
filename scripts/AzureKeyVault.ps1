@@ -98,70 +98,6 @@ function Get-KeyVaultSecretName()
   return $secretName
 }
 
-function Set-KeyVaultSecret()
-{
-  [CmdletBinding()]
-  param
-  (
-    [Parameter(Mandatory = $true)]
-    [string]
-    $SubscriptionId,
-    [Parameter(Mandatory=$true)]
-    [string]
-    $KeyVaultName,
-    [Parameter(Mandatory=$true)]
-    [string]
-    $SecretName,
-    [Parameter(Mandatory=$true)]
-    [string]
-    $SecretValue
-  )
-  $secretNameSafe = Get-KeyVaultSecretName -VarName "$SecretName"
-  #$secretValueSafe = ConvertTo-SecureString "$SecretValue" -AsPlainText -Force
-
-  az keyvault secret set `
-    --vault-name "$KeyVaultName" `
-    --name "$secretNameSafe" `
-    --value "$SecretValue" `
-    --output none
-}
-
-function Set-KeyVaultNetworkSettings()
-{
-  [CmdletBinding()]
-  param
-  (
-    [Parameter(Mandatory = $true)]
-    [string]
-    $SubscriptionId,
-    [Parameter(Mandatory = $true)]
-    [string]
-    $ResourceGroupName,
-    [Parameter(Mandatory = $true)]
-    [string]
-    $KeyVaultName,
-    [Parameter(Mandatory = $false)]
-    [string]
-    $PublicNetworkAccess = "Disabled",
-    [Parameter(Mandatory = $false)]
-    [string]
-    $DefaultAction = "Deny"
-  )
-
-  Write-Debug -Debug:$true -Message "Set Key Vault $KeyVaultName Network Settings"
-
-  $output = az keyvault update `
-    --subscription "$SubscriptionId" `
-    -g "$ResourceGroupName" `
-    -n "$KeyVaultName" `
-    --public-network-access "$PublicNetworkAccess" `
-    --default-action "$DefaultAction" `
-    --bypass AzureServices `
-    | ConvertFrom-Json
-
-  return $output
-}
-
 function New-KeyVaultNetworkRuleForIpAddressOrRange()
 {
   [CmdletBinding()]
@@ -184,37 +120,6 @@ function New-KeyVaultNetworkRuleForIpAddressOrRange()
   Write-Debug -Debug:$true -Message "Add Key Vault $KeyVaultName Network Rule for $IpAddressOrRange"
 
   $output = az keyvault network-rule add `
-    --subscription "$SubscriptionId" `
-    -g "$ResourceGroupName" `
-    -n "$KeyVaultName" `
-    --ip-address "$IpAddressOrRange" `
-    | ConvertFrom-Json
-
-  return $output
-}
-
-function Remove-KeyVaultNetworkRuleForIpAddressOrRange()
-{
-  [CmdletBinding()]
-  param
-  (
-    [Parameter(Mandatory = $true)]
-    [string]
-    $SubscriptionId,
-    [Parameter(Mandatory = $true)]
-    [string]
-    $ResourceGroupName,
-    [Parameter(Mandatory = $true)]
-    [string]
-    $KeyVaultName,
-    [Parameter(Mandatory = $true)]
-    [string]
-    $IpAddressOrRange
-  )
-
-  Write-Debug -Debug:$true -Message "Remove Key Vault $KeyVaultName Network Rule for $IpAddressOrRange"
-
-  $output = az keyvault network-rule remove `
     --subscription "$SubscriptionId" `
     -g "$ResourceGroupName" `
     -n "$KeyVaultName" `
@@ -259,6 +164,37 @@ function New-KeyVaultNetworkRuleForVnetSubnet()
   return $output
 }
 
+function Remove-KeyVaultNetworkRuleForIpAddressOrRange()
+{
+  [CmdletBinding()]
+  param
+  (
+    [Parameter(Mandatory = $true)]
+    [string]
+    $SubscriptionId,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $ResourceGroupName,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $KeyVaultName,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $IpAddressOrRange
+  )
+
+  Write-Debug -Debug:$true -Message "Remove Key Vault $KeyVaultName Network Rule for $IpAddressOrRange"
+
+  $output = az keyvault network-rule remove `
+    --subscription "$SubscriptionId" `
+    -g "$ResourceGroupName" `
+    -n "$KeyVaultName" `
+    --ip-address "$IpAddressOrRange" `
+    | ConvertFrom-Json
+
+  return $output
+}
+
 function Remove-KeyVaultNetworkRuleForVnetSubnet()
 {
   [CmdletBinding()]
@@ -292,4 +228,68 @@ function Remove-KeyVaultNetworkRuleForVnetSubnet()
     | ConvertFrom-Json
 
   return $output
+}
+
+function Set-KeyVaultNetworkSettings()
+{
+  [CmdletBinding()]
+  param
+  (
+    [Parameter(Mandatory = $true)]
+    [string]
+    $SubscriptionId,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $ResourceGroupName,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $KeyVaultName,
+    [Parameter(Mandatory = $false)]
+    [string]
+    $PublicNetworkAccess = "Disabled",
+    [Parameter(Mandatory = $false)]
+    [string]
+    $DefaultAction = "Deny"
+  )
+
+  Write-Debug -Debug:$true -Message "Set Key Vault $KeyVaultName Network Settings"
+
+  $output = az keyvault update `
+    --subscription "$SubscriptionId" `
+    -g "$ResourceGroupName" `
+    -n "$KeyVaultName" `
+    --public-network-access "$PublicNetworkAccess" `
+    --default-action "$DefaultAction" `
+    --bypass AzureServices `
+    | ConvertFrom-Json
+
+  return $output
+}
+
+function Set-KeyVaultSecret()
+{
+  [CmdletBinding()]
+  param
+  (
+    [Parameter(Mandatory = $true)]
+    [string]
+    $SubscriptionId,
+    [Parameter(Mandatory=$true)]
+    [string]
+    $KeyVaultName,
+    [Parameter(Mandatory=$true)]
+    [string]
+    $SecretName,
+    [Parameter(Mandatory=$true)]
+    [string]
+    $SecretValue
+  )
+  $secretNameSafe = Get-KeyVaultSecretName -VarName "$SecretName"
+  #$secretValueSafe = ConvertTo-SecureString "$SecretValue" -AsPlainText -Force
+
+  az keyvault secret set `
+    --vault-name "$KeyVaultName" `
+    --name "$secretNameSafe" `
+    --value "$SecretValue" `
+    --output none
 }

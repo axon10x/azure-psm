@@ -90,8 +90,6 @@ function Deploy-Network()
     Write-Debug -Debug:$debug -Message "$output"
   }
 
-
-
   $vnet = $ConfigMain.Network.VNet
 
   $output = Deploy-VNet `
@@ -139,6 +137,75 @@ function Deploy-Network()
 
     Write-Debug -Debug:$debug -Message "$output"
   }
+}
+
+function Deploy-Nic()
+{
+  [CmdletBinding()]
+  param
+  (
+    [Parameter(Mandatory = $true)]
+    [string]
+    $SubscriptionId,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $Location,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $ResourceGroupName,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $TemplateUri,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $NicName,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $SubnetResourceId,
+    [Parameter(Mandatory = $false)]
+    [bool]
+    $EnableAcceleratedNetworking = $false,
+    [Parameter(Mandatory = $false)]
+    [string]
+    $PrivateIpAllocationMethod = "Dynamic",
+    [Parameter(Mandatory = $false)]
+    [string]
+    $PrivateIpAddress = "",
+    [Parameter(Mandatory = $false)]
+    [string]
+    $PrivateIpAddressVersion = "IPv4",
+    [Parameter(Mandatory = $false)]
+    [string]
+    $PublicIpResourceId = "",
+    [Parameter(Mandatory = $false)]
+    [string]
+    $IpConfigName = "",
+    [Parameter(Mandatory = $false)]
+    [string]
+    $Tags = ""
+  )
+
+  Write-Debug -Debug:$debug -Message "Deploy NIC $NicName"
+
+  $output = az deployment group create --verbose `
+    --subscription "$SubscriptionId" `
+    -n "$NicName" `
+    -g "$ResourceGroupName" `
+    --template-uri "$TemplateUri" `
+    --parameters `
+    location="$Location" `
+    networkInterfaceName="$NicName" `
+    subnetResourceId="$SubnetResourceId" `
+    enableAcceleratedNetworking="$EnableAcceleratedNetworking" `
+    privateIpAllocationMethod="$PrivateIpAllocationMethod" `
+    privateIpAddress="$PrivateIpAddress" `
+    privateIpAddressVersion="$PrivateIpAddressVersion" `
+    publicIpResourceId="$PublicIpResourceId" `
+    ipConfigName="$IpConfigName" `
+    tags=$Tags `
+    | ConvertFrom-Json
+  
+  return $output
 }
 
 function Deploy-NSG() {
@@ -257,116 +324,6 @@ function Deploy-NSGRule() {
   return $output
 }
 
-function Deploy-VNet() {
-  [CmdletBinding()]
-  param
-  (
-    [Parameter(Mandatory = $true)]
-    [string]
-    $SubscriptionId,
-    [Parameter(Mandatory = $true)]
-    [string]
-    $Location,
-    [Parameter(Mandatory = $true)]
-    [string]
-    $ResourceGroupName,
-    [Parameter(Mandatory = $true)]
-    [string]
-    $TemplateUri,
-    [Parameter(Mandatory = $true)]
-    [string]
-    $VNetName,
-    [Parameter(Mandatory = $true)]
-    [string]
-    $VNetPrefix,
-    [Parameter(Mandatory = $false)]
-    [bool]
-    $EnableDdosProtection = $false,
-    [Parameter(Mandatory = $false)]
-    [bool]
-    $EnableVmProtection = $false,
-    [Parameter(Mandatory = $false)]
-    [string]
-    $Tags = ""
-  )
-
-  Write-Debug -Debug:$debug -Message "Deploy VNet $VNetName"
-
-  $output = az deployment group create --verbose `
-    --subscription "$SubscriptionId" `
-    -n "$VNetName" `
-    -g "$ResourceGroupName" `
-    --template-uri "$TemplateUri" `
-    --parameters `
-    location="$Location" `
-    vnetName="$VNetName" `
-    vnetPrefix="$VNetPrefix" `
-    enableDdosProtection="$EnableDdosProtection" `
-    enableVmProtection="$EnableVmProtection" `
-    tags=$Tags `
-    | ConvertFrom-Json
-
-  return $output
-}
-
-function Deploy-Subnet() {
-  [CmdletBinding()]
-  param
-  (
-    [Parameter(Mandatory = $true)]
-    [string]
-    $SubscriptionId,
-    [Parameter(Mandatory = $true)]
-    [string]
-    $ResourceGroupName,
-    [Parameter(Mandatory = $true)]
-    [string]
-    $TemplateUri,
-    [Parameter(Mandatory = $true)]
-    [string]
-    $VNetName,
-    [Parameter(Mandatory = $true)]
-    [string]
-    $SubnetName,
-    [Parameter(Mandatory = $true)]
-    [string]
-    $SubnetPrefix,
-    [Parameter(Mandatory = $false)]
-    [string]
-    $NSGResourceId = "",
-    [Parameter(Mandatory = $false)]
-    [string]
-    $RouteTableResourceId = "",
-    [Parameter(Mandatory = $false)]
-    [string]
-    $DelegationService = "",
-    [Parameter(Mandatory = $false)]
-    [string]
-    $ServiceEndpoints = ""
-  )
-
-  Write-Debug -Debug:$debug -Message "Deploy Subnet $SubnetName"
-
-  $output = az deployment group create --verbose `
-    --subscription "$SubscriptionId" `
-    -n "$SubnetName" `
-    -g "$ResourceGroupName" `
-    --template-uri "$TemplateUri" `
-    --parameters `
-    vnetName="$VNetName" `
-    subnetName="$SubnetName" `
-    subnetPrefix="$SubnetPrefix" `
-    nsgResourceId="$NSGResourceId" `
-    routeTableResourceId="$RouteTableResourceId" `
-    delegationService="$DelegationService" `
-    serviceEndpoints="$ServiceEndpoints" `
-    | ConvertFrom-Json
-
-  return $output
-}
-
-# -------------------------------
-
 function Deploy-Pip()
 {
   [CmdletBinding()]
@@ -419,186 +376,7 @@ function Deploy-Pip()
   return $output
 }
 
-function Deploy-Nic()
-{
-  [CmdletBinding()]
-  param
-  (
-    [Parameter(Mandatory = $true)]
-    [string]
-    $SubscriptionId,
-    [Parameter(Mandatory = $true)]
-    [string]
-    $Location,
-    [Parameter(Mandatory = $true)]
-    [string]
-    $ResourceGroupName,
-    [Parameter(Mandatory = $true)]
-    [string]
-    $TemplateUri,
-    [Parameter(Mandatory = $true)]
-    [string]
-    $NicName,
-    [Parameter(Mandatory = $true)]
-    [string]
-    $SubnetResourceId,
-    [Parameter(Mandatory = $false)]
-    [bool]
-    $EnableAcceleratedNetworking = $false,
-    [Parameter(Mandatory = $false)]
-    [string]
-    $PrivateIpAllocationMethod = "Dynamic",
-    [Parameter(Mandatory = $false)]
-    [string]
-    $PrivateIpAddress = "",
-    [Parameter(Mandatory = $false)]
-    [string]
-    $PrivateIpAddressVersion = "IPv4",
-    [Parameter(Mandatory = $false)]
-    [string]
-    $PublicIpResourceId = "",
-    [Parameter(Mandatory = $false)]
-    [string]
-    $IpConfigName = "",
-    [Parameter(Mandatory = $false)]
-    [string]
-    $Tags = ""
-  )
-
-  Write-Debug -Debug:$debug -Message "Deploy NIC $NicName"
-
-  $output = az deployment group create --verbose `
-    --subscription "$SubscriptionId" `
-    -n "$NicName" `
-    -g "$ResourceGroupName" `
-    --template-uri "$TemplateUri" `
-    --parameters `
-    location="$Location" `
-    networkInterfaceName="$NicName" `
-    subnetResourceId="$SubnetResourceId" `
-    enableAcceleratedNetworking="$EnableAcceleratedNetworking" `
-    privateIpAllocationMethod="$PrivateIpAllocationMethod" `
-    privateIpAddress="$PrivateIpAddress" `
-    privateIpAddressVersion="$PrivateIpAddressVersion" `
-    publicIpResourceId="$PublicIpResourceId" `
-    ipConfigName="$IpConfigName" `
-    tags=$Tags `
-    | ConvertFrom-Json
-  
-  return $output
-}
-
-# -------------------------------
-
-function Deploy-PrivateEndpointAndNic() {
-  [CmdletBinding()]
-  param
-  (
-    [Parameter(Mandatory = $true)]
-    [string]
-    $SubscriptionId,
-    [Parameter(Mandatory = $true)]
-    [string]
-    $Location,
-    [Parameter(Mandatory = $true)]
-    [string]
-    $ResourceGroupName,
-    [Parameter(Mandatory = $true)]
-    [string]
-    $TemplateUri,
-    [Parameter(Mandatory = $true)]
-    [string]
-    $ProtectedWorkloadResourceId,
-    [Parameter(Mandatory = $true)]
-    [string]
-    $ProtectedWorkloadSubResource,
-    [Parameter(Mandatory = $true)]
-    [string]
-    $PrivateEndpointName,
-    [Parameter(Mandatory = $true)]
-    [string]
-    $NetworkInterfaceName,
-    [Parameter(Mandatory = $true)]
-    [string]
-    $SubnetResourceId,
-    [Parameter(Mandatory = $false)]
-    [string]
-    $Tags = ""
-  )
-
-  Write-Debug -Debug:$debug -Message "Deploy Private Endpoint and NIC $PrivateEndpointName"
-
-  $output = az deployment group create --verbose `
-    --subscription "$SubscriptionId" `
-    -n "$PrivateEndpointName" `
-    -g "$ResourceGroupName" `
-    --template-uri "$TemplateUri" `
-    --parameters `
-    location="$Location" `
-    protectedWorkloadResourceId="$ProtectedWorkloadResourceId" `
-    protectedWorkloadSubResource="$ProtectedWorkloadSubResource" `
-    privateEndpointName="$PrivateEndpointName" `
-    networkInterfaceName="$NetworkInterfaceName" `
-    subnetResourceId="$SubnetResourceId" `
-    tags=$Tags `
-    | ConvertFrom-Json
-
-  Write-Debug -Debug:$debug -Message "Wait for NIC provisioning to complete"
-  Watch-NicUntilProvisionSuccess `
-    -SubscriptionID "$SubscriptionId" `
-    -ResourceGroupName "$ResourceGroupName" `
-    -NetworkInterfaceName "$NetworkInterfaceName"
-
-  return $output
-}
-
-function Deploy-PrivateEndpointPrivateDnsZoneGroup() {
-  [CmdletBinding()]
-  param
-  (
-    [Parameter(Mandatory = $true)]
-    [string]
-    $SubscriptionId,
-    [Parameter(Mandatory = $true)]
-    [string]
-    $ResourceGroupName,
-    [Parameter(Mandatory = $true)]
-    [string]
-    $TemplateUri,
-    [Parameter(Mandatory = $true)]
-    [string]
-    $PrivateEndpointName,
-    [Parameter(Mandatory = $true)]
-    [string]
-    $PrivateDnsZoneName,
-    [Parameter(Mandatory = $false)]
-    [string]
-    $PrivateDnsZoneGroupName = "default",
-    [Parameter(Mandatory = $true)]
-    [string]
-    $PrivateDnsZoneResourceId
-  )
-
-  Write-Debug -Debug:$debug -Message "Deploy Private Endpoint $PrivateEndpointName DNS Zone Group for $PrivateDnsZoneName"
-
-  $zoneName = $PrivateDnsZoneName.Replace(".", "_")
-
-  $output = az deployment group create --verbose `
-    --subscription "$SubscriptionId" `
-    -n "$PrivateEndpointName-DNSZone" `
-    -g "$ResourceGroupName" `
-    --template-uri "$TemplateUri" `
-    --parameters `
-    privateEndpointName="$PrivateEndpointName" `
-    privateDnsZoneName="$zoneName" `
-    privateDnsZoneGroupName="$PrivateDnsZoneGroupName" `
-    privateDnsZoneResourceId="$PrivateDnsZoneResourceId" `
-    | ConvertFrom-Json
-
-  return $output
-}
-
-function Watch-NicUntilProvisionSuccess()
+function Deploy-PrivateDnsZone()
 {
   [CmdletBinding()]
   param
@@ -611,29 +389,28 @@ function Watch-NicUntilProvisionSuccess()
     $ResourceGroupName,
     [Parameter(Mandatory = $true)]
     [string]
-    $NetworkInterfaceName
+    $TemplateUri,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $DnsZoneName,
+    [Parameter(Mandatory = $false)]
+    [string]
+    $Tags = ""
   )
 
-  Write-Debug -Debug:$debug -Message "Watch NIC $NetworkInterfaceName until ProvisioningStage=Succeeded"
+  Write-Debug -Debug:$debug -Message "Deploy Private DNS Zone $DnsZoneName"
 
-  $limit = (Get-Date).AddMinutes(55)
+  $output = az deployment group create --verbose `
+    --subscription "$SubscriptionId" `
+    -n "$DnsZoneName" `
+    -g "$ResourceGroupName" `
+    --template-uri "$TemplateUri" `
+    --parameters `
+    privateDnsZoneName="$DnsZoneName" `
+    tags=$Tags `
+    | ConvertFrom-Json
 
-  $currentState = ""
-  $targetState = "Succeeded"
-
-  while ( ($currentState -ne $targetState) -and ((Get-Date) -le $limit) )
-  {
-    $currentState = "$(az network nic show --subscription $SubscriptionId -g $ResourceGroupName -n $NetworkInterfaceName -o tsv --query 'provisioningState')"
-
-    Write-Debug -Debug:$debug -Message "currentState = $currentState"
-
-    if ($currentState -ne $targetState)
-    {
-      Start-Sleep -s 15
-    }
-  }
-
-  return $currentState
+  return $output
 }
 
 function Deploy-PrivateDnsZones()
@@ -698,43 +475,6 @@ function Deploy-PrivateDnsZones()
   }
 }
 
-function Deploy-PrivateDnsZone()
-{
-  [CmdletBinding()]
-  param
-  (
-    [Parameter(Mandatory = $true)]
-    [string]
-    $SubscriptionId,
-    [Parameter(Mandatory = $true)]
-    [string]
-    $ResourceGroupName,
-    [Parameter(Mandatory = $true)]
-    [string]
-    $TemplateUri,
-    [Parameter(Mandatory = $true)]
-    [string]
-    $DnsZoneName,
-    [Parameter(Mandatory = $false)]
-    [string]
-    $Tags = ""
-  )
-
-  Write-Debug -Debug:$debug -Message "Deploy Private DNS Zone $DnsZoneName"
-
-  $output = az deployment group create --verbose `
-    --subscription "$SubscriptionId" `
-    -n "$DnsZoneName" `
-    -g "$ResourceGroupName" `
-    --template-uri "$TemplateUri" `
-    --parameters `
-    privateDnsZoneName="$DnsZoneName" `
-    tags=$Tags `
-    | ConvertFrom-Json
-
-  return $output
-}
-
 function Deploy-PrivateDnsZoneVNetLink()
 {
   [CmdletBinding()]
@@ -777,17 +517,74 @@ function Deploy-PrivateDnsZoneVNetLink()
   return $output
 }
 
-function Get-SubnetResourceIds()
+function Deploy-PrivateEndpointAndNic()
 {
   [CmdletBinding()]
   param
   (
     [Parameter(Mandatory = $true)]
-    [object]
-    $ConfigConstants,
+    [string]
+    $SubscriptionId,
     [Parameter(Mandatory = $true)]
-    [object]
-    $ConfigMain,
+    [string]
+    $Location,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $ResourceGroupName,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $TemplateUri,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $ProtectedWorkloadResourceId,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $ProtectedWorkloadSubResource,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $PrivateEndpointName,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $NetworkInterfaceName,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $SubnetResourceId,
+    [Parameter(Mandatory = $false)]
+    [string]
+    $Tags = ""
+  )
+
+  Write-Debug -Debug:$debug -Message "Deploy Private Endpoint and NIC $PrivateEndpointName"
+
+  $output = az deployment group create --verbose `
+    --subscription "$SubscriptionId" `
+    -n "$PrivateEndpointName" `
+    -g "$ResourceGroupName" `
+    --template-uri "$TemplateUri" `
+    --parameters `
+    location="$Location" `
+    protectedWorkloadResourceId="$ProtectedWorkloadResourceId" `
+    protectedWorkloadSubResource="$ProtectedWorkloadSubResource" `
+    privateEndpointName="$PrivateEndpointName" `
+    networkInterfaceName="$NetworkInterfaceName" `
+    subnetResourceId="$SubnetResourceId" `
+    tags=$Tags `
+    | ConvertFrom-Json
+
+  Write-Debug -Debug:$debug -Message "Wait for NIC provisioning to complete"
+  Watch-NicUntilProvisionSuccess `
+    -SubscriptionID "$SubscriptionId" `
+    -ResourceGroupName "$ResourceGroupName" `
+    -NetworkInterfaceName "$NetworkInterfaceName"
+
+  return $output
+}
+
+function Deploy-PrivateEndpointPrivateDnsZoneGroup()
+{
+  [CmdletBinding()]
+  param
+  (
     [Parameter(Mandatory = $true)]
     [string]
     $SubscriptionId,
@@ -796,26 +593,154 @@ function Get-SubnetResourceIds()
     $ResourceGroupName,
     [Parameter(Mandatory = $true)]
     [string]
-    $VNetName
+    $TemplateUri,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $PrivateEndpointName,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $PrivateDnsZoneName,
+    [Parameter(Mandatory = $false)]
+    [string]
+    $PrivateDnsZoneGroupName = "default",
+    [Parameter(Mandatory = $true)]
+    [string]
+    $PrivateDnsZoneResourceId
   )
 
-  Write-Debug -Debug:$debug -Message "Get Subnet Resource IDs"
+  Write-Debug -Debug:$debug -Message "Deploy Private Endpoint $PrivateEndpointName DNS Zone Group for $PrivateDnsZoneName"
 
-  $result = [System.Collections.ArrayList]@()
+  $zoneName = $PrivateDnsZoneName.Replace(".", "_")
 
-  $vnet = $ConfigMain.Network.VNet
-  $VNetResourceId = Get-ResourceId -SubscriptionId $SubscriptionId -ResourceGroupName $ResourceGroupName -ResourceProviderName "Microsoft.Network" -ResourceTypeName "virtualNetworks" -ResourceName $VNetName
+  $output = az deployment group create --verbose `
+    --subscription "$SubscriptionId" `
+    -n "$PrivateEndpointName-DNSZone" `
+    -g "$ResourceGroupName" `
+    --template-uri "$TemplateUri" `
+    --parameters `
+    privateEndpointName="$PrivateEndpointName" `
+    privateDnsZoneName="$zoneName" `
+    privateDnsZoneGroupName="$PrivateDnsZoneGroupName" `
+    privateDnsZoneResourceId="$PrivateDnsZoneResourceId" `
+    | ConvertFrom-Json
 
-  foreach ($subnet in $vnet.Subnets)
-  {
-    $subnetResourceId = Get-ChildResourceId -ParentResourceId $VNetResourceId -ChildResourceTypeName "subnets" -ChildResourceName $subnet.Name
-
-    $result.Add($subnetResourceId) | Out-Null
-  }
-
-  return $result
+  return $output
 }
 
+function Deploy-Subnet() {
+  [CmdletBinding()]
+  param
+  (
+    [Parameter(Mandatory = $true)]
+    [string]
+    $SubscriptionId,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $ResourceGroupName,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $TemplateUri,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $VNetName,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $SubnetName,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $SubnetPrefix,
+    [Parameter(Mandatory = $false)]
+    [string]
+    $NSGResourceId = "",
+    [Parameter(Mandatory = $false)]
+    [string]
+    $RouteTableResourceId = "",
+    [Parameter(Mandatory = $false)]
+    [string]
+    $DelegationService = "",
+    [Parameter(Mandatory = $false)]
+    [string]
+    $ServiceEndpoints = ""
+  )
+
+  Write-Debug -Debug:$debug -Message "Deploy Subnet $SubnetName"
+
+  $output = az deployment group create --verbose `
+    --subscription "$SubscriptionId" `
+    -n "$SubnetName" `
+    -g "$ResourceGroupName" `
+    --template-uri "$TemplateUri" `
+    --parameters `
+    vnetName="$VNetName" `
+    subnetName="$SubnetName" `
+    subnetPrefix="$SubnetPrefix" `
+    nsgResourceId="$NSGResourceId" `
+    routeTableResourceId="$RouteTableResourceId" `
+    delegationService="$DelegationService" `
+    serviceEndpoints="$ServiceEndpoints" `
+    | ConvertFrom-Json
+
+  return $output
+}
+
+function Deploy-VNet() {
+  [CmdletBinding()]
+  param
+  (
+    [Parameter(Mandatory = $true)]
+    [string]
+    $SubscriptionId,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $Location,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $ResourceGroupName,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $TemplateUri,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $VNetName,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $VNetPrefix,
+    [Parameter(Mandatory = $false)]
+    [bool]
+    $EnableDdosProtection = $false,
+    [Parameter(Mandatory = $false)]
+    [bool]
+    $EnableVmProtection = $false,
+    [Parameter(Mandatory = $false)]
+    [string]
+    $Tags = ""
+  )
+
+  Write-Debug -Debug:$debug -Message "Deploy VNet $VNetName"
+
+  $output = az deployment group create --verbose `
+    --subscription "$SubscriptionId" `
+    -n "$VNetName" `
+    -g "$ResourceGroupName" `
+    --template-uri "$TemplateUri" `
+    --parameters `
+    location="$Location" `
+    vnetName="$VNetName" `
+    vnetPrefix="$VNetPrefix" `
+    enableDdosProtection="$EnableDdosProtection" `
+    enableVmProtection="$EnableVmProtection" `
+    tags=$Tags `
+    | ConvertFrom-Json
+
+  return $output
+}
+
+function Get-MyCurrentPublicIpAddress()
+{
+  $ipAddress = Invoke-RestMethod https://ipinfo.io/json | Select-Object -exp ip
+
+  return $ipAddress
+}
 
 function Get-SubnetResourceIdForPrivateEndpoint()
 {
@@ -857,11 +782,79 @@ function Get-SubnetResourceIdForPrivateEndpoint()
   return $result
 }
 
-# -------------------------------
-
-function Get-MyCurrentPublicIpAddress()
+function Get-SubnetResourceIds()
 {
-  $ipAddress = Invoke-RestMethod https://ipinfo.io/json | Select-Object -exp ip
+  [CmdletBinding()]
+  param
+  (
+    [Parameter(Mandatory = $true)]
+    [object]
+    $ConfigConstants,
+    [Parameter(Mandatory = $true)]
+    [object]
+    $ConfigMain,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $SubscriptionId,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $ResourceGroupName,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $VNetName
+  )
 
-  return $ipAddress
+  Write-Debug -Debug:$debug -Message "Get Subnet Resource IDs"
+
+  $result = [System.Collections.ArrayList]@()
+
+  $vnet = $ConfigMain.Network.VNet
+  $VNetResourceId = Get-ResourceId -SubscriptionId $SubscriptionId -ResourceGroupName $ResourceGroupName -ResourceProviderName "Microsoft.Network" -ResourceTypeName "virtualNetworks" -ResourceName $VNetName
+
+  foreach ($subnet in $vnet.Subnets)
+  {
+    $subnetResourceId = Get-ChildResourceId -ParentResourceId $VNetResourceId -ChildResourceTypeName "subnets" -ChildResourceName $subnet.Name
+
+    $result.Add($subnetResourceId) | Out-Null
+  }
+
+  return $result
+}
+
+function Watch-NicUntilProvisionSuccess()
+{
+  [CmdletBinding()]
+  param
+  (
+    [Parameter(Mandatory = $true)]
+    [string]
+    $SubscriptionId,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $ResourceGroupName,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $NetworkInterfaceName
+  )
+
+  Write-Debug -Debug:$debug -Message "Watch NIC $NetworkInterfaceName until ProvisioningStage=Succeeded"
+
+  $limit = (Get-Date).AddMinutes(55)
+
+  $currentState = ""
+  $targetState = "Succeeded"
+
+  while ( ($currentState -ne $targetState) -and ((Get-Date) -le $limit) )
+  {
+    $currentState = "$(az network nic show --subscription $SubscriptionId -g $ResourceGroupName -n $NetworkInterfaceName -o tsv --query 'provisioningState')"
+
+    Write-Debug -Debug:$debug -Message "currentState = $currentState"
+
+    if ($currentState -ne $targetState)
+    {
+      Start-Sleep -s 15
+    }
+  }
+
+  return $currentState
 }
