@@ -132,7 +132,7 @@ function New-ServicePrincipal()
   az ad sp create-for-rbac --name "$ServicePrincipalName" --role "$RoleName" --scopes "/subscriptions/$subscriptionId" --verbose --sdk-auth
 }
 
-function Remove-RoleAssignmentsSub()
+function Remove-RoleAssignments()
 {
   [CmdletBinding()]
   param
@@ -140,12 +140,22 @@ function Remove-RoleAssignmentsSub()
     [Parameter(Mandatory = $true)]
     [string]
     $SubscriptionId,
+    [Parameter(Mandatory = $false)]
+    [string]
+    $ResourceGroupName = "",
     [Parameter(Mandatory = $true)]
     [string]
     $PrincipalId
   )
 
-  $Scope = "/subscriptions/" + $SubscriptionId
+  if ($ResourceGroupName)
+  {
+    $Scope = "/subscriptions/" + $SubscriptionId + "/resourceGroups/" + $ResourceGroupName
+  }
+  else
+  {
+    $Scope = "/subscriptions/" + $SubscriptionId
+  }
 
   $assignments = "$(az role assignment list --scope $Scope --assignee $principalId --query '[].id')" | ConvertFrom-Json
 
@@ -153,16 +163,27 @@ function Remove-RoleAssignmentsSub()
 
   if ($count -gt 0)
   {
-    Write-Debug -Debug:$true -Message "Delete $count Sub Role Assignment(s) for Scope $Scope and UAI Principal ID $principalId"
+    Write-Debug -Debug:$true -Message "Delete $count Role Assignment(s) for Principal ID $principalId and Scope $Scope"
 
-    $output = az role assignment delete --verbose `
+    if ($ResourceGroupName)
+    {
+      $output = az role assignment delete --verbose `
+      -g $ResourceGroupName `
       --scope $Scope `
-      --assignee $principalId
-
-    return $output
+      --assignee $principalId `
+    }
+    else
+    {
+      $output = az role assignment delete --verbose `
+      --scope $Scope `
+      --assignee $principalId `
+    }
   }
   else
   {
-    Write-Debug -Debug:$true -Message "No Sub Role Assignment(s) for Scope $Scope and UAI Principal ID $principalId"
+    $output = $null
+    Write-Debug -Debug:$true -Message "No Role Assignment(s) for Principal ID $principalId and Scope $Scope"
   }
+
+  return $output
 }
