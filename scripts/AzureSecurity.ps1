@@ -132,7 +132,7 @@ function New-ServicePrincipal()
   az ad sp create-for-rbac --name "$ServicePrincipalName" --role "$RoleName" --scopes "/subscriptions/$subscriptionId" --verbose --sdk-auth
 }
 
-function Remove-RoleAssignmentsSub()
+function Remove-RoleAssignments()
 {
   [CmdletBinding()]
   param
@@ -140,29 +140,36 @@ function Remove-RoleAssignmentsSub()
     [Parameter(Mandatory = $true)]
     [string]
     $SubscriptionId,
+    [Parameter(Mandatory = $false)]
+    [string]
+    $ResourceGroupName = "",
     [Parameter(Mandatory = $true)]
     [string]
     $PrincipalId
   )
 
-  $Scope = "/subscriptions/" + $SubscriptionId
-
-  $assignments = "$(az role assignment list --scope $Scope --assignee $principalId --query '[].id')" | ConvertFrom-Json
-
-  $count = $assignments.Count
-
-  if ($count -gt 0)
+  if ($ResourceGroupName)
   {
-    Write-Debug -Debug:$true -Message "Delete $count Sub Role Assignment(s) for Scope $Scope and UAI Principal ID $principalId"
-
-    $output = az role assignment delete --verbose `
-      --scope $Scope `
-      --assignee $principalId
-
-    return $output
+    $Scope = "/subscriptions/" + $SubscriptionId + "/resourceGroups/" + $ResourceGroupName
   }
   else
   {
-    Write-Debug -Debug:$true -Message "No Sub Role Assignment(s) for Scope $Scope and UAI Principal ID $principalId"
+    $Scope = "/subscriptions/" + $SubscriptionId
+  }
+
+  # Have to do it this way because Powershell will make a one-item result into a string, not an array
+  [System.Collections.ArrayList]$assignments = @()
+  $a = "$(az role assignment list --scope $Scope --assignee $principalId --query '[].id')" | ConvertFrom-Json
+  $assignments.Add($a)
+
+  foreach ($assignment in $assignments)
+  {
+    Write-Debug -Debug:$true -Message "Delete Role Assignment $assignment"
+    az role assignment delete --verbose --ids $assignment
+  }
+
+  if ($assignments.Count -eq 0)
+  {
+    Write-Debug -Debug:$true -Message "No role assignments found for $PrincipalId"
   }
 }
