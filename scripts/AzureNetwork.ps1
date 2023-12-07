@@ -821,6 +821,37 @@ function Get-SubnetResourceIds()
   return $result
 }
 
+function Remove-NSGRule() {
+  [CmdletBinding()]
+  param
+  (
+    [Parameter(Mandatory = $true)]
+    [string]
+    $SubscriptionId,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $ResourceGroupName,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $NSGName,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $NSGRuleName
+  )
+
+  Write-Debug -Debug:$debug -Message "Remove NSG Rule $NSGName/$NSGRuleName"
+
+  $output = az network nsg rule delete --verbose `
+    --subscription "$SubscriptionId" `
+    -g "$ResourceGroupName" `
+    --nsg-name "$NSGName" `
+    --name "$NSGRuleName" `
+    | ConvertFrom-Json
+
+  return $output
+}
+
+
 function Watch-NicUntilProvisionSuccess()
 {
   [CmdletBinding()]
