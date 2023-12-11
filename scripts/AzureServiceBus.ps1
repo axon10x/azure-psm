@@ -1,4 +1,4 @@
-function Set-SyncNamespaceKeys()
+function Set-SyncServiceBusNamespaceKeys()
 {
   [CmdletBinding()]
   param

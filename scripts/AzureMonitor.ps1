@@ -1,4 +1,4 @@
-function Deploy-Ampls()
+function Deploy-MonitorPrivateLinkScope()
 {
   [CmdletBinding()]
   param
@@ -44,7 +44,7 @@ function Deploy-Ampls()
   return $output
 }
 
-function Deploy-DataCollectionEndpoint()
+function Deploy-MonitorDataCollectionEndpoint()
 {
   [CmdletBinding()]
   param
@@ -89,7 +89,7 @@ function Deploy-DataCollectionEndpoint()
   return $output
 }
 
-function Deploy-DataCollectionRule()
+function Deploy-MonitorDataCollectionRule()
 {
   [CmdletBinding()]
   param
@@ -187,7 +187,7 @@ function Deploy-DiagnosticsSetting()
   return $output
 }
 
-function Deploy-LawToAmplsConnection()
+function Deploy-LogAnalyticsToAmplsConnection()
 {
   [CmdletBinding()]
   param

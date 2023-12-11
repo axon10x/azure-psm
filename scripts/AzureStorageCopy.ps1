@@ -84,7 +84,7 @@ function Copy-StorageData()
     --https-only
 
   # Blobs
-  Copy-Blobs `
+  Copy-StorageBlobs `
     -StorageAccountNameSource $StorageAccountNameSource `
     -StorageAccountNameSink $StorageAccountNameSink `
     -SasSource $sasSource `
@@ -95,14 +95,14 @@ function Copy-StorageData()
   # Queues
   if ($QueueNamesSink -and $QueueNamesSink.Count -gt 0)
   {
-    Set-Queues `
+    Set-StorageQueues `
       -StorageAccountNameSink $StorageAccountNameSink `
       -SasSink $sasSink `
       -QueueNames $QueueNamesSink
   }
 
   # Tables
-  Copy-Tables `
+  Copy-StorageTables `
     -Location $Location `
     -SubscriptionNameDataFactory $SubscriptionNameSource `
     -EnvironmentName $EnvironmentName `
@@ -116,7 +116,7 @@ function Copy-StorageData()
     -TableNamesSink $TableNamesSink
 }
 
-function Copy-Blobs()
+function Copy-StorageBlobs()
 {
   [CmdletBinding()]
   param
@@ -161,7 +161,7 @@ function Copy-Blobs()
   }
 }
 
-function Copy-Tables()
+function Copy-StorageTables()
 {
   [CmdletBinding()]
   param
@@ -300,7 +300,7 @@ function Copy-Tables()
   }
 }
 
-function Set-Queues()
+function Set-StorageQueues()
 {
   [CmdletBinding()]
   param

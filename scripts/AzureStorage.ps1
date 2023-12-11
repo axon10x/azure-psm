@@ -161,7 +161,7 @@ function New-StorageObjects()
   }
 }
 
-function Remove-ContainersByNamePrefix()
+function Remove-StorageContainersByNamePrefix()
 {
   [CmdletBinding()]
   param
@@ -194,7 +194,7 @@ function Remove-ContainersByNamePrefix()
   }
 }
 
-function Remove-ContainersByNamePrefixAndAge()
+function Remove-StorageContainersByNamePrefixAndAge()
 {
   [CmdletBinding()]
   param
@@ -291,7 +291,7 @@ function Remove-StorageObjects()
   }
 }
 
-function Remove-TablesByNamePrefix()
+function Remove-StorageTablesByNamePrefix()
 {
   [CmdletBinding()]
   param
@@ -324,7 +324,7 @@ function Remove-TablesByNamePrefix()
   }
 }
 
-function Remove-TablesByNamePrefixAndAge()
+function Remove-StorageTablesByNamePrefixAndAge()
 {
   [CmdletBinding()]
   param

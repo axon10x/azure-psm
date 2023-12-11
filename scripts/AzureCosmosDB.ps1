@@ -1,4 +1,4 @@
-function Set-NewCosmosDbFailoverPolicy()
+function New-CosmosDbFailoverPolicy()
 {
   param
   (
