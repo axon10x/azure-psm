@@ -1,5 +1,3 @@
-$debug = $true
-
 function New-AzureContainerRegistryImage()
 {
   [CmdletBinding()]

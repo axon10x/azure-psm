@@ -1,5 +1,3 @@
-$debug = $true
-
 function Deploy-Network()
 {
   [CmdletBinding()]
@@ -850,7 +848,6 @@ function Remove-NSGRule() {
 
   return $output
 }
-
 
 function Watch-NicUntilProvisionSuccess()
 {
