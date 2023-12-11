@@ -1,145 +1,4 @@
-$debug = $true
-
-function Deploy-Network()
-{
-  [CmdletBinding()]
-  param
-  (
-    [Parameter(Mandatory = $true)]
-    [object]
-    $ConfigConstants,
-    [Parameter(Mandatory = $true)]
-    [object]
-    $ConfigMain,
-    [Parameter(Mandatory = $true)]
-    [string]
-    $SubscriptionId,
-    [Parameter(Mandatory = $true)]
-    [string]
-    $ResourceGroupName,
-    [Parameter(Mandatory = $true)]
-    [string]
-    $NSGName,
-    [Parameter(Mandatory = $true)]
-    [string]
-    $NSGResourceId,
-    [Parameter(Mandatory = $true)]
-    [string]
-    $VNetName,
-    [Parameter(Mandatory = $true)]
-    [string]
-    $VNetResourceId,
-    [Parameter(Mandatory = $false)]
-    [string]
-    $LogAnalyticsWorkspaceName = "",
-    [Parameter(Mandatory = $false)]
-    [string]
-    $LogAnalyticsWorkspaceResourceId = "",
-    [Parameter(Mandatory = $false)]
-    [string]
-    $Tags = ""
-  )
-
-  Write-Debug -Debug:$debug -Message "Deploy Network"
-
-  $nsg = $ConfigMain.Network.NSG
-
-  $output = Deploy-NSG `
-    -SubscriptionID "$SubscriptionId" `
-    -Location $ConfigMain.Location `
-    -ResourceGroupName $ResourceGroupName `
-    -TemplateUri ($ConfigConstants.TemplateUriPrefix + "net.nsg.json") `
-    -NSGName $NSGName `
-    -Tags $Tags
-
-  Write-Debug -Debug:$debug -Message "$output"
-
-  if ($LogAnalyticsWorkspaceName -and $LogAnalyticsWorkspaceResourceId)
-  {
-    $output = Deploy-DiagnosticsSetting `
-      -SubscriptionID "$SubscriptionId" `
-      -ResourceGroupName $ResourceGroupName `
-      -TemplateUri ($ConfigConstants.TemplateUriPrefix + "diagnostic-settings.json") `
-      -ResourceId $NSGResourceId `
-      -DiagnosticsSettingName ("diag-" + "$LogAnalyticsWorkspaceName") `
-      -LogAnalyticsWorkspaceResourceId $LogAnalyticsWorkspaceResourceId `
-      -SendLogs $true `
-      -SendMetrics $false
-    
-    Write-Debug -Debug:$debug -Message "$output"
-  }
-
-  foreach ($nsgRule in $nsg.Rules)
-  {
-    $output = Deploy-NSGRule `
-      -SubscriptionID "$SubscriptionId" `
-      -ResourceGroupName $ResourceGroupName `
-      -TemplateUri ($ConfigConstants.TemplateUriPrefix + "net.nsg.rule.json") `
-      -NSGName $NSGName `
-      -NSGRuleName $nsgRule.Name `
-      -Description $nsgRule.Description `
-      -Priority $nsgRule.Priority `
-      -Direction $nsgRule.Direction `
-      -Access $nsgRule.Access `
-      -Protocol $nsgRule.Protocol `
-      -SourceAddressPrefix $nsgRule.SourceAddressPrefix `
-      -SourcePortRange $nsgRule.SourcePortRange `
-      -DestinationAddressPrefix $nsgRule.DestinationAddressPrefix `
-      -DestinationPortRange $nsgRule.DestinationPortRange
-
-    Write-Debug -Debug:$debug -Message "$output"
-  }
-
-  $vnet = $ConfigMain.Network.VNet
-
-  $output = Deploy-VNet `
-    -SubscriptionID "$SubscriptionId" `
-    -Location $ConfigMain.Location `
-    -ResourceGroupName $ResourceGroupName `
-    -TemplateUri ($ConfigConstants.TemplateUriPrefix + "net.vnet.json") `
-    -VNetName $VNetName `
-    -VNetPrefix $vnet.AddressSpace `
-    -EnableDdosProtection $vnet.EnableDdosProtection `
-    -Tags $Tags
-
-  Write-Debug -Debug:$debug -Message "$output"
-
-  if ($LogAnalyticsWorkspaceName -and $LogAnalyticsWorkspaceResourceId)
-  {
-    $output = Deploy-DiagnosticsSetting `
-      -SubscriptionID "$SubscriptionId" `
-      -ResourceGroupName $ResourceGroupName `
-      -TemplateUri ($ConfigConstants.TemplateUriPrefix + "diagnostic-settings.json") `
-      -ResourceId $VNetResourceId `
-      -DiagnosticsSettingName ("diag-" + "$LogAnalyticsWorkspaceName") `
-      -LogAnalyticsWorkspaceResourceId $LogAnalyticsWorkspaceResourceId `
-      -SendLogs $true `
-      -SendMetrics $true
-
-    Write-Debug -Debug:$debug -Message "$output"
-  }
-
-  foreach ($subnet in $vnet.Subnets)
-  {
-    Write-Debug -Debug:$debug -Message $subnet.Name
-
-    $output = Deploy-Subnet `
-      -SubscriptionID "$SubscriptionId" `
-      -ResourceGroupName $ResourceGroupName `
-      -TemplateUri ($ConfigConstants.TemplateUriPrefix + "net.vnet.subnet.json") `
-      -VNetName $VNetName `
-      -SubnetName $subnet.Name `
-      -SubnetPrefix $subnet.AddressSpace `
-      -NsgResourceId $NSGResourceId `
-      -RouteTableResourceId "" `
-      -DelegationService $subnet.Delegation `
-      -ServiceEndpoints $subnet.ServiceEndpoints
-
-    Write-Debug -Debug:$debug -Message "$output"
-  }
-}
-
-function Deploy-Nic()
+function Deploy-NetworkNic()
 {
   [CmdletBinding()]
   param
@@ -208,7 +67,7 @@ function Deploy-Nic()
   return $output
 }
 
-function Deploy-NSG() {
+function Deploy-NetworkSecurityGroup() {
   [CmdletBinding()]
   param
   (
@@ -248,7 +107,7 @@ function Deploy-NSG() {
   return $output
 }
 
-function Deploy-NSGRule() {
+function Deploy-NetworkSecurityGroupRule() {
   [CmdletBinding()]
   param
   (
@@ -324,7 +183,7 @@ function Deploy-NSGRule() {
   return $output
 }
 
-function Deploy-Pip()
+function Deploy-NetworkPublicIp()
 {
   [CmdletBinding()]
   param
@@ -376,7 +235,7 @@ function Deploy-Pip()
   return $output
 }
 
-function Deploy-PrivateDnsZone()
+function Deploy-NetworkPrivateDnsZone()
 {
   [CmdletBinding()]
   param
@@ -413,7 +272,7 @@ function Deploy-PrivateDnsZone()
   return $output
 }
 
-function Deploy-PrivateDnsZones()
+function Deploy-NetworkPrivateDnsZones()
 {
   [CmdletBinding()]
   param
@@ -454,7 +313,7 @@ function Deploy-PrivateDnsZones()
   {
     $zoneName = $ConfigConstants.$privateDnsZonePropName # Look it up - PSCustomObject... https://learn.microsoft.com/powershell/scripting/learn/deep-dives/everything-about-pscustomobject#dynamically-accessing-properties
 
-    $output = Deploy-PrivateDnsZone `
+    $output = Deploy-NetworkPrivateDnsZone `
       -SubscriptionId $SubscriptionId `
       -ResourceGroupName $ResourceGroupName `
       -TemplateUri ($ConfigConstants.TemplateUriPrefix + "net.private-dns-zone.json") `
@@ -463,7 +322,7 @@ function Deploy-PrivateDnsZones()
 
     Write-Debug -Debug:$debug -Message "$output"
 
-    $output = Deploy-PrivateDnsZoneVNetLink `
+    $output = Deploy-NetworkPrivateDnsZoneVNetLink `
       -SubscriptionId $SubscriptionId `
       -ResourceGroupName $ResourceGroupName `
       -TemplateUri ($ConfigConstants.TemplateUriPrefix + "net.private-dns-zone.vnet-link.json") `
@@ -475,7 +334,7 @@ function Deploy-PrivateDnsZones()
   }
 }
 
-function Deploy-PrivateDnsZoneVNetLink()
+function Deploy-NetworkPrivateDnsZoneVNetLink()
 {
   [CmdletBinding()]
   param
@@ -517,7 +376,7 @@ function Deploy-PrivateDnsZoneVNetLink()
   return $output
 }
 
-function Deploy-PrivateEndpointAndNic()
+function Deploy-NetworkPrivateEndpointAndNic()
 {
   [CmdletBinding()]
   param
@@ -572,7 +431,7 @@ function Deploy-PrivateEndpointAndNic()
     | ConvertFrom-Json
 
   Write-Debug -Debug:$debug -Message "Wait for NIC provisioning to complete"
-  Watch-NicUntilProvisionSuccess `
+  Watch-NetworkNicUntilProvisionSuccess `
     -SubscriptionID "$SubscriptionId" `
     -ResourceGroupName "$ResourceGroupName" `
     -NetworkInterfaceName "$NetworkInterfaceName"
@@ -580,7 +439,7 @@ function Deploy-PrivateEndpointAndNic()
   return $output
 }
 
-function Deploy-PrivateEndpointPrivateDnsZoneGroup()
+function Deploy-NetworkPrivateEndpointPrivateDnsZoneGroup()
 {
   [CmdletBinding()]
   param
@@ -627,7 +486,7 @@ function Deploy-PrivateEndpointPrivateDnsZoneGroup()
   return $output
 }
 
-function Deploy-Subnet() {
+function Deploy-NetworkSubnet() {
   [CmdletBinding()]
   param
   (
@@ -683,7 +542,7 @@ function Deploy-Subnet() {
   return $output
 }
 
-function Deploy-VNet() {
+function Deploy-NetworkVNet() {
   [CmdletBinding()]
   param
   (
@@ -742,7 +601,7 @@ function Get-MyCurrentPublicIpAddress()
   return $ipAddress
 }
 
-function Get-SubnetResourceIdForPrivateEndpoint()
+function Get-NetworkSubnetResourceIdForPrivateEndpoint()
 {
   [CmdletBinding()]
   param
@@ -768,7 +627,7 @@ function Get-SubnetResourceIdForPrivateEndpoint()
 
   $result = ""
 
-  $subnetResourceIds = Get-SubnetResourceIds -ConfigConstants $ConfigConstants -ConfigMain $ConfigMain -SubscriptionId $SubscriptionId -ResourceGroupName "$ResourceGroupName" -VNetName $VNetName
+  $subnetResourceIds = Get-NetworkSubnetResourceIds -ConfigConstants $ConfigConstants -ConfigMain $ConfigMain -SubscriptionId $SubscriptionId -ResourceGroupName "$ResourceGroupName" -VNetName $VNetName
 
   if ($subnetResourceIds -is [Array])
   {
@@ -782,7 +641,7 @@ function Get-SubnetResourceIdForPrivateEndpoint()
   return $result
 }
 
-function Get-SubnetResourceIds()
+function Get-NetworkSubnetResourceIds()
 {
   [CmdletBinding()]
   param
@@ -821,7 +680,7 @@ function Get-SubnetResourceIds()
   return $result
 }
 
-function Remove-NSGRule() {
+function Remove-NetworkSecurityGroupRule() {
   [CmdletBinding()]
   param
   (
@@ -851,8 +710,7 @@ function Remove-NSGRule() {
   return $output
 }
 
-
-function Watch-NicUntilProvisionSuccess()
+function Watch-NetworkNicUntilProvisionSuccess()
 {
   [CmdletBinding()]
   param

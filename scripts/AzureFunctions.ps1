@@ -1,4 +1,20 @@
-$debug = $true
+function Get-FunctionIdentityPrincipalId()
+{
+  [CmdletBinding()]
+  param
+  (
+    [Parameter(Mandatory=$true)]
+    [string]
+    $ResourceGroupName,
+    [Parameter(Mandatory=$true)]
+    [string]
+    $FunctionAppName
+  )
+  Write-Debug -Debug:$debug -Message "Get function identity principal id for app $FunctionAppName"
+  $principalId = "$(az functionapp identity show --name $FunctionAppName -g $ResourceGroupName -o tsv --query 'principalId')"
+
+  return $principalId
+}
 
 function Set-FunctionKey()
 {
@@ -19,22 +35,4 @@ function Set-FunctionKey()
   $keyValue = "$(az functionapp keys set --key-name $FunctionKeyName --key-type functionKeys --name $FunctionAppName -g $ResourceGroupName -o tsv --query 'value')"
 
   return $keyValue
-}
-
-function Get-FunctionIdentityPrincipalId()
-{
-  [CmdletBinding()]
-  param
-  (
-    [Parameter(Mandatory=$true)]
-    [string]
-    $ResourceGroupName,
-    [Parameter(Mandatory=$true)]
-    [string]
-    $FunctionAppName
-  )
-  Write-Debug -Debug:$debug -Message "Get function identity principal id for app $FunctionAppName"
-  $principalId = "$(az functionapp identity show --name $FunctionAppName -g $ResourceGroupName -o tsv --query 'principalId')"
-
-  return $principalId
 }

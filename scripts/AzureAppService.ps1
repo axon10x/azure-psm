@@ -51,6 +51,8 @@ function Deploy-AppInsights()
     publicNetworkAccessForQuery="$PublicNetworkAccessForQuery" `
     tags=$Tags `
     | ConvertFrom-Json
+
+  return $output
 }
 
 function Deploy-AppServiceCertificate()

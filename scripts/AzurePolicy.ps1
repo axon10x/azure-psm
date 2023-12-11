@@ -1,5 +1,3 @@
-$debug = $true
-
 function Get-PolicyAliases()
 {
   [CmdletBinding()]

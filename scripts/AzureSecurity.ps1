@@ -37,7 +37,7 @@ function Deploy-RoleAssignmentSub()
   return $output
 }
 
-function Deploy-UAI()
+function Deploy-UserAssignedIdentity()
 {
   <#
     .SYNOPSIS

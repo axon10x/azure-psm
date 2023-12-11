@@ -58,56 +58,6 @@ function New-RandomString
   return $(-join ((97..122) + (48..57) | Get-Random -Count $Length | ForEach-Object {[char]$_}))
 }
 
-function Set-EnvVarTags()
-{
-  [CmdletBinding()]
-  param
-  (
-    [Parameter(Mandatory = $false)]
-    [object]
-    $ConfigConstants = $null,
-    [Parameter(Mandatory = $false)]
-    [object]
-    $ConfigMain = $null
-  )
-
-  Write-Debug -Debug:$debug -Message ("Set-EnvVarTags")
-
-  $tagsForAzureCli = @()
-  $tag1 = "foo=bar"
-
-  #if ($ConfigConstants)
-  #{
-  #  $tag2 = "baz=bam"
-
-  #  $tagsForAzureCli = @($tag1, $tag2)
-  #}
-  #else
-  #{
-  $tagsForAzureCli = @($tag1)
-  #}
-
-  $tagsObject = @{}
-  $tagsObject['foo'] = "bar"
-
-  #if ($ConfigConstants)
-  #{
-  #  $tagsObject['baz'] ="bam"
-  #}
-
-  # The following manipulations are needed to get through separate un-escaping by Powershell AND by Azure CLI, 
-  # and to get CLI to correctly see the tags as a JSON string passed into ARM templates as an object type.
-  $tagsForArm = ConvertTo-Json -InputObject $tagsObject -Compress
-  $tagsForArm = $tagsForArm.Replace('"', '''')
-  $tagsForArm = "`"$tagsForArm`""
-
-  # Set the env vars
-  # Tags for straight CLI commands
-  Set-EnvVar2 -VarName "AA_TAGS_FOR_CLI" -VarValue "$tagsForAzureCli"
-  # Tags for ARM template tags parameter - do not quote the variable for this, breaks ARM template tags
-  Set-EnvVar2 -VarName "AA_TAGS_FOR_ARM" -VarValue $tagsForArm
-}
-
 function Set-EnvVar2
 {
   <#
