@@ -2728,18 +2728,22 @@ function Remove-RoleAssignments()
 
   # Have to do it this way because Powershell will make a one-item result into a string, not an array
   [System.Collections.ArrayList]$assignments = @()
-  $a = "$(az role assignment list --scope $Scope --assignee $principalId --query '[].id')" | ConvertFrom-Json
+  $a = "$(az role assignment list --scope $Scope --assignee $PrincipalId --query '[].id')" | ConvertFrom-Json
   $assignments.Add($a)
-
-  foreach ($assignment in $assignments)
-  {
-    Write-Debug -Debug:$true -Message "Delete Role Assignment $assignment"
-    az role assignment delete --verbose --ids $assignment
-  }
+  # Have to trim out null items, which Powershell creates when adding arrays
+  $assignments = $assignments.Where({ $null -ne $_ })
 
   if ($assignments.Count -eq 0)
   {
     Write-Debug -Debug:$true -Message "No role assignments found for $PrincipalId"
+  }
+  else
+  {
+    foreach ($assignment in $assignments)
+    {
+      Write-Debug -Debug:$true -Message "Delete Role Assignment $assignment"
+      az role assignment delete --verbose --ids $assignment
+    }
   }
 }
 

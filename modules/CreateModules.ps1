@@ -4,7 +4,7 @@ $companyName = "ALFAADIN"
 $projectUri = "https://github.com/plzm/azure-deploy"
 
 $copyright = "(c) " + (Get-Date).Year + " Patrick El-Azem. All rights reserved."
-$moduleVersion = "1.0.0"
+$moduleVersion = "1.0.1"
 
 $scriptsPath = ".\scripts\"
 $azureModuleFolderName = "plzm.Azure"
