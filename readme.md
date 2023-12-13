@@ -1,8 +1,12 @@
 ![Validate Workflows](https://github.com/plzm/azure-deploy/actions/workflows/validate-workflows.yml/badge.svg)  
 
+![Create Powershell Modules ](https://github.com/plzm/azure-deploy/actions/workflows/create-modules.yml/badge.svg)  
+
 ## Azure deployment artifacts: ARM templates, scripts, etc.
 
 /scripts/ contains mostly Powershell but also some Bash scripts. Some are mostly scratch format, whereas others - particularly in the /scripts/ directory - can be dot-sourced and are higher quality.
+
+/modules/ contains Powershell .psm/.psd1 modules. Currently plzm.Azure is built automatically from all the .ps1 files in /scripts/.
 
 /template/ contains many ARM templates I have put together. The intent is:
 - To provide templates which are each responsible for exactly one Azure resource type - no giant spaghetti templates mingling resources, which are only ever useful once, instead these are templates which can be assembled flexibly in... scripts, infrastructure deployment pipelines, etc.
