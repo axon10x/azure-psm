@@ -19,3 +19,7 @@ jobs:
         shell: pwsh
         run: |
           ./modules/CreateModules.ps1
+
+      - name: Push created module back to repo
+        uses: EndBug/add-and-commit@v9
+        if: success()
