@@ -12,13 +12,13 @@
 RootModule = '.\modules\plzm.Azure\plzm.Azure.psm1'
 
 # Version number of this module.
-ModuleVersion = '1.4'
+ModuleVersion = '1.5'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
 
 # ID used to uniquely identify this module
-GUID = '60be683e-33c3-4897-9b2d-90c84dc0ac66'
+GUID = '2911508c-be03-45f5-8773-861397ed8b8f'
 
 # Author of this module
 Author = 'Patrick El-Azem'
