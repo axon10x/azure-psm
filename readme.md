@@ -1,6 +1,6 @@
 ![Validate Workflows](https://github.com/plzm/azure-deploy/actions/workflows/validate-workflows.yml/badge.svg)  
 
-![Create Powershell Modules ](https://github.com/plzm/azure-deploy/actions/workflows/create-modules.yml/badge.svg)  
+![Create Powershell Modules](https://github.com/plzm/azure-deploy/actions/workflows/create-modules.yml/badge.svg)  
 
 ## Azure deployment artifacts: ARM templates, scripts, etc.
 
