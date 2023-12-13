@@ -14,8 +14,34 @@
         "description": "See https://azure.microsoft.com/regions/."
       }
     },
-    "dataCollectionEndpointName": {
+    "name": {
       "type": "string"
+    },
+    "kind": {
+      "type": "string",
+      "defaultValue": "Linux",
+      "allowedValues": [
+        "Linux",
+        "Windows"
+      ]
+    },
+    "identityType": {
+      "type": "string",
+      "defaultValue": "None",
+      "allowedValues": [
+        "None",
+        "SystemAssigned",
+        "SystemAssigned, UserAssigned",
+        "UserAssigned"
+      ]
+    },
+    "userAssignedIdentityResourceId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "displayName": "User-Assigned Identity Resource ID",
+        "description": "Optional. Can be retrieved for an existing UAI using az identity show -o tsv --query 'id'."
+      }
     },
     "publicNetworkAccess": {
       "type": "string",
@@ -31,6 +57,26 @@
     }
   },
   "variables": {
+    "identity": "[
+      if
+      (
+        equals(parameters('identityType'), 'None'),
+        json('null'),
+        if
+        (
+          equals(parameters('identityType'), 'SystemAssigned'),
+          createObject('type', 'SystemAssigned'),
+          createObject
+          (
+            'type', parameters('identityType'),
+            'userAssignedIdentities', createObject
+            (
+              parameters('userAssignedIdentityResourceId'), createObject()
+            )
+          )
+        )
+      )
+    ]",
     "timeStampTag": {
       "Timestamp": "[parameters('timestamp')]"
     },
@@ -41,9 +87,11 @@
     {
       "type": "Microsoft.Insights/dataCollectionEndpoints",
       "apiVersion": "[variables('apiVersionInsights')]",
-      "name": "[parameters('dataCollectionEndpointName')]",
+      "name": "[parameters('name')]",
       "location": "[parameters('location')]",
       "tags": "[variables('tags')]",
+      "kind": "[parameters('kind')]",
+      "identity": "[variables('identity')]",
       "properties": {
         "networkAcls": {
           "publicNetworkAccess": "[parameters('publicNetworkAccess')]"
@@ -54,7 +102,7 @@
   "outputs": {
     "resourceId": {
       "type": "string",
-      "value": "[resourceId('Microsoft.Insights/dataCollectionEndpoints', parameters('dataCollectionEndpointName'))]"
+      "value": "[resourceId('Microsoft.Insights/dataCollectionEndpoints', parameters('name'))]"
     }
   }
 }

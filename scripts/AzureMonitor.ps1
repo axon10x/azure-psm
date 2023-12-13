@@ -66,6 +66,9 @@ function Deploy-MonitorDataCollectionEndpoint()
     $DataCollectionEndpointName,
     [Parameter(Mandatory = $false)]
     [string]
+    $DataCollectionEndpointKind = "Linux",
+    [Parameter(Mandatory = $false)]
+    [string]
     $PublicNetworkAccess = "Disabled",
     [Parameter(Mandatory = $false)]
     [string]
@@ -76,12 +79,13 @@ function Deploy-MonitorDataCollectionEndpoint()
 
   $output = az deployment group create --verbose `
     --subscription "$SubscriptionId" `
-    -n "$WorkspaceName" `
+    -n "$DataCollectionEndpointName" `
     -g "$ResourceGroupName" `
     --template-uri "$TemplateUri" `
     --parameters `
     location="$Location" `
-    dataCollectionEndpointName="$DataCollectionEndpointName" `
+    name="$DataCollectionEndpointName" `
+    kind="$DataCollectionEndpointKind" `
     publicNetworkAccess="$PublicNetworkAccess" `
     tags=$Tags `
     | ConvertFrom-Json
@@ -133,6 +137,42 @@ function Deploy-MonitorDataCollectionRule()
     logAnalyticsWorkspaceName="$LogAnalyticsWorkspaceName" `
     logAnalyticsWorkspaceResourceId="$LogAnalyticsWorkspaceResourceId" `
     tags=$Tags `
+    | ConvertFrom-Json
+
+  return $output
+}
+
+function Deploy-MonitorDataCollectionRuleAssociation()
+{
+  [CmdletBinding()]
+  param
+  (
+    [Parameter(Mandatory = $true)]
+    [string]
+    $SubscriptionId,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $ResourceGroupName,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $TemplateUri,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $DataCollectionEndpointResourceId,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $DataCollectionRuleResourceId
+  )
+
+  Write-Debug -Debug:$true -Message "Deploy Data Collection Rule Association"
+
+  $output = az deployment group create --verbose `
+    --subscription "$SubscriptionId" `
+    -g "$ResourceGroupName" `
+    --template-uri "$TemplateUri" `
+    --parameters `
+    dataCollectionEndpointResourceId="$DataCollectionEndpointResourceId" `
+    dataCollectionRuleResourceId="$DataCollectionRuleResourceId"
     | ConvertFrom-Json
 
   return $output
