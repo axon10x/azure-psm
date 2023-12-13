@@ -4,19 +4,43 @@ $companyName = "ALFAADIN"
 $projectUri = "https://github.com/plzm/azure-deploy"
 
 $copyright = "(c) " + (Get-Date).Year + " Patrick El-Azem. All rights reserved."
-$moduleVersion = "1.0.1"
 
 $scriptsPath = ".\scripts\"
-$azureModuleFolderName = "plzm.Azure"
-$azureModuleFolderPath = ".\modules\" + $azureModuleFolderName
-$azureModuleFileName = $azureModuleFolderName + ".psm1"
+$azureModuleName = "plzm.Azure"
+$azureModuleFolderPath = ".\modules\" + $azureModuleName
+$azureModuleFileName = $azureModuleName + ".psm1"
 $azureModuleFilePath = $azureModuleFolderPath + "\" + $azureModuleFileName
 $azureModuleFileContents = ""
-$azureModuleManifestFileName = $azureModuleFolderName + ".psd1"
+$azureModuleManifestFileName = $azureModuleName + ".psd1"
 $azureModuleManifestFilPath = $azureModuleFolderPath + "\" + $azureModuleManifestFileName
 
-if (!(Test-Path -Path $azureModuleFolderPath)) {
+if (!(Test-Path -Path $azureModuleFolderPath))
+{
+  Write-Debug -Debug:$true -Message "Create new module folder $azureModuleFolderPath and set moduleVersion to $moduleVersion"
+
   New-Item -Path $azureModuleFolderPath -ItemType "Directory" -Force
+
+  $moduleVersion = "1.0"
+}
+else
+{
+  # We have an existing module folder. Let's try to import the existing module to get its version and increment it by 0.1 (i.e. increment minor version by 1)
+
+  Write-Debug -Debug:$true -Message "Found existing module folder $azureModuleFolderPath"
+
+  Import-Module -Name $azureModuleFolderPath -Force -ErrorAction SilentlyContinue
+  $module = Get-Module $azureModuleName -ErrorAction SilentlyContinue
+
+  if ($module)
+  {
+    $moduleVersion = $module.Version.Major.ToString() + "." + ($module.Version.Minor + 1).ToString()
+    Write-Debug -Debug:$true -Message "Found existing module and setting new version to $moduleVersion"
+  }
+  else
+  {
+    $moduleVersion = "1.0"
+    Write-Debug -Debug:$true -Message "Could not get module, setting new version to $moduleVersion"
+  }
 }
 
 Get-ChildItem -Path $scriptsPath -File -Filter *.ps1 | ForEach-Object {

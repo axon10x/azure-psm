@@ -1,0 +1,21 @@
+name: Create Powershell modules from script files
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'develop'
+
+jobs:
+  create_modules:
+    name: Create Modules
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Run script
+        if: success()
+        shell: pwsh
+        run: |
+          ./modules/CreateModules.ps1
