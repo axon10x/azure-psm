@@ -3709,6 +3709,42 @@ function Deploy-Vm()
   return $output
 }
 
+function Deploy-VmAmaLinux()
+{
+  [CmdletBinding()]
+  param
+  (
+    [Parameter(Mandatory = $true)]
+    [string]
+    $SubscriptionId,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $Location,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $ResourceGroupName,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $TemplateUri,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $VmName
+  )
+
+  Write-Debug -Debug:$true -Message "Deploy VM $VmName AMA-Linux"
+
+  $output = az deployment group create --verbose `
+    --subscription "$SubscriptionId" `
+    -n "$VmName" `
+    -g "$ResourceGroupName" `
+    --template-uri "$TemplateUri" `
+    --parameters `
+    location="$Location" `
+    virtualMachineName="$VmName" `
+    | ConvertFrom-Json
+
+  return $output
+}
 
 # ##################################################
 # Network.ps1
