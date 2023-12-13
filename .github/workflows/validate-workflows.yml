@@ -6,11 +6,15 @@ on:
     branches:
       - develop
       - 'feature/*'
+    paths:
+      - '.github/*'
   pull_request:
     branches:
       - main
       - develop
       - 'release/*'
+    paths:
+      - '.github/*'
 
 jobs:
   lint_workflows:
