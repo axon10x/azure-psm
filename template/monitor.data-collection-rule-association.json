@@ -2,12 +2,13 @@
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "dataCollectionRuleResourceId": {
+    "dataCollectionEndpointResourceId": {
       "type": "string",
       "defaultValue": ""
     },
-    "virtualMachineName": {
-      "type": "string"
+    "dataCollectionRuleResourceId": {
+      "type": "string",
+      "defaultValue": ""
     }
   },
   "variables": {
@@ -19,8 +20,8 @@
       "type": "Microsoft.Insights/dataCollectionRuleAssociations",
       "apiVersion": "[variables('apiVersionInsights')]",
       "name": "[variables('dataCollectionRuleAssociationName')]",
-      "scope": "[format('Microsoft.Compute/virtualMachines/{0}', parameters('virtualMachineName'))]",
       "properties": {
+        "dataCollectionEndpointResourceId": "[parameters('dataCollectionEndpointResourceId')]",
         "dataCollectionRuleId": "[parameters('dataCollectionRuleResourceId')]"
       }
     }
