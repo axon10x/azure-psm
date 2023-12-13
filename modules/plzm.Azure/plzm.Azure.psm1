@@ -984,7 +984,7 @@ function Set-KeyVaultSecret()
 # AzureMonitor.ps1
 # ##################################################
 
-function Deploy-MonitorPrivateLinkScope()
+function Deploy-DiagnosticsSetting()
 {
   [CmdletBinding()]
   param
@@ -1000,30 +1000,81 @@ function Deploy-MonitorPrivateLinkScope()
     $TemplateUri,
     [Parameter(Mandatory = $true)]
     [string]
-    $PrivateLinkScopeName,
+    $ResourceId,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $DiagnosticsSettingName,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $LogAnalyticsWorkspaceResourceId,
+    [Parameter(Mandatory = $false)]
+    [bool]
+    $SendLogs = $true,
+    [Parameter(Mandatory = $false)]
+    [bool]
+    $SendMetrics = $true
+  )
+
+  Write-Debug -Debug:$true -Message "Deploy Diagnostics Setting $DiagnosticsSettingName"
+
+  $output = az deployment group create --verbose `
+    --subscription "$SubscriptionId" `
+    -n "$DiagnosticsSettingName" `
+    -g "$ResourceGroupName" `
+    --template-uri "$TemplateUri" `
+    --parameters `
+    resourceId="$ResourceId" `
+    diagnosticsSettingName="$DiagnosticsSettingName" `
+    logAnalyticsWorkspaceResourceId="$LogAnalyticsWorkspaceResourceId" `
+    sendLogs=$SendLogs `
+    sendMetrics=$SendMetrics `
+    | ConvertFrom-Json
+
+  return $output
+}
+
+function Deploy-LogAnalyticsWorkspace() {
+  [CmdletBinding()]
+  param
+  (
+    [Parameter(Mandatory = $true)]
+    [string]
+    $SubscriptionId,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $Location,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $ResourceGroupName,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $TemplateUri,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $WorkspaceName,
     [Parameter(Mandatory = $false)]
     [string]
-    $QueryAccessMode = "Open",
+    $PublicNetworkAccessForIngestion = "Enabled",
     [Parameter(Mandatory = $false)]
     [string]
-    $IngestionAccessMode = "Open",
+    $PublicNetworkAccessForQuery = "Enabled",
     [Parameter(Mandatory = $false)]
     [string]
     $Tags = ""
   )
 
-  Write-Debug -Debug:$true -Message "Deploy Azure Monitor Private Link Scope $PrivateLinkScopeName"
+  Write-Debug -Debug:$true -Message "Deploy Log Analytics Workspace $WorkspaceName"
 
   $output = az deployment group create --verbose `
     --subscription "$SubscriptionId" `
-    -n "$PrivateLinkScopeName" `
+    -n "$WorkspaceName" `
     -g "$ResourceGroupName" `
     --template-uri "$TemplateUri" `
     --parameters `
-    location=global `
-    linkScopeName=$PrivateLinkScopeName `
-    queryAccessMode=$QueryAccessMode `
-    ingestionAccessMode=$IngestionAccessMode `
+    location="$Location" `
+    workspaceName="$WorkspaceName" `
+    publicNetworkAccessForIngestion="$PublicNetworkAccessForIngestion" `
+    publicNetworkAccessForQuery="$PublicNetworkAccessForQuery" `
     tags=$Tags `
     | ConvertFrom-Json
 
@@ -1147,7 +1198,10 @@ function Deploy-MonitorDataCollectionRuleAssociation()
     $DataCollectionEndpointResourceId,
     [Parameter(Mandatory = $true)]
     [string]
-    $DataCollectionRuleResourceId
+    $DataCollectionRuleResourceId,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $ScopedResourceId
   )
 
   Write-Debug -Debug:$true -Message "Deploy Data Collection Rule Association"
@@ -1158,62 +1212,14 @@ function Deploy-MonitorDataCollectionRuleAssociation()
     --template-uri "$TemplateUri" `
     --parameters `
     dataCollectionEndpointResourceId="$DataCollectionEndpointResourceId" `
-    dataCollectionRuleResourceId="$DataCollectionRuleResourceId"
+    dataCollectionRuleResourceId="$DataCollectionRuleResourceId" `
+    scopedResourceId="$ScopedResourceId" `
     | ConvertFrom-Json
 
   return $output
 }
 
-function Deploy-DiagnosticsSetting()
-{
-  [CmdletBinding()]
-  param
-  (
-    [Parameter(Mandatory = $true)]
-    [string]
-    $SubscriptionId,
-    [Parameter(Mandatory = $true)]
-    [string]
-    $ResourceGroupName,
-    [Parameter(Mandatory = $true)]
-    [string]
-    $TemplateUri,
-    [Parameter(Mandatory = $true)]
-    [string]
-    $ResourceId,
-    [Parameter(Mandatory = $true)]
-    [string]
-    $DiagnosticsSettingName,
-    [Parameter(Mandatory = $true)]
-    [string]
-    $LogAnalyticsWorkspaceResourceId,
-    [Parameter(Mandatory = $false)]
-    [bool]
-    $SendLogs = $true,
-    [Parameter(Mandatory = $false)]
-    [bool]
-    $SendMetrics = $true
-  )
-
-  Write-Debug -Debug:$true -Message "Deploy Diagnostics Setting $DiagnosticsSettingName"
-
-  $output = az deployment group create --verbose `
-    --subscription "$SubscriptionId" `
-    -n "$DiagnosticsSettingName" `
-    -g "$ResourceGroupName" `
-    --template-uri "$TemplateUri" `
-    --parameters `
-    resourceId="$ResourceId" `
-    diagnosticsSettingName="$DiagnosticsSettingName" `
-    logAnalyticsWorkspaceResourceId="$LogAnalyticsWorkspaceResourceId" `
-    sendLogs=$SendLogs `
-    sendMetrics=$SendMetrics `
-    | ConvertFrom-Json
-
-  return $output
-}
-
-function Deploy-LogAnalyticsToAmplsConnection()
+function Deploy-MonitorPrivateLinkScopeResourceConnection()
 {
   [CmdletBinding()]
   param
@@ -1238,7 +1244,7 @@ function Deploy-LogAnalyticsToAmplsConnection()
     $ScopedResourceName
   )
 
-  Write-Debug -Debug:$true -Message "Connect Log Analytics Workspace $ScopedResourceName to AMPLS $PrivateLinkScopeName"
+  Write-Debug -Debug:$true -Message "Connect Resource $ScopedResourceName to AMPLS $PrivateLinkScopeName"
 
   $output = az deployment group create --verbose `
     --subscription "$SubscriptionId" `
@@ -1254,7 +1260,8 @@ function Deploy-LogAnalyticsToAmplsConnection()
   return $output
 }
 
-function Deploy-LogAnalyticsWorkspace() {
+function Deploy-MonitorPrivateLinkScope()
+{
   [CmdletBinding()]
   param
   (
@@ -1263,39 +1270,36 @@ function Deploy-LogAnalyticsWorkspace() {
     $SubscriptionId,
     [Parameter(Mandatory = $true)]
     [string]
-    $Location,
-    [Parameter(Mandatory = $true)]
-    [string]
     $ResourceGroupName,
     [Parameter(Mandatory = $true)]
     [string]
     $TemplateUri,
     [Parameter(Mandatory = $true)]
     [string]
-    $WorkspaceName,
+    $PrivateLinkScopeName,
     [Parameter(Mandatory = $false)]
     [string]
-    $PublicNetworkAccessForIngestion = "Enabled",
+    $QueryAccessMode = "Open",
     [Parameter(Mandatory = $false)]
     [string]
-    $PublicNetworkAccessForQuery = "Enabled",
+    $IngestionAccessMode = "Open",
     [Parameter(Mandatory = $false)]
     [string]
     $Tags = ""
   )
 
-  Write-Debug -Debug:$true -Message "Deploy Log Analytics Workspace $WorkspaceName"
+  Write-Debug -Debug:$true -Message "Deploy Azure Monitor Private Link Scope $PrivateLinkScopeName"
 
   $output = az deployment group create --verbose `
     --subscription "$SubscriptionId" `
-    -n "$WorkspaceName" `
+    -n "$PrivateLinkScopeName" `
     -g "$ResourceGroupName" `
     --template-uri "$TemplateUri" `
     --parameters `
-    location="$Location" `
-    workspaceName="$WorkspaceName" `
-    publicNetworkAccessForIngestion="$PublicNetworkAccessForIngestion" `
-    publicNetworkAccessForQuery="$PublicNetworkAccessForQuery" `
+    location=global `
+    linkScopeName=$PrivateLinkScopeName `
+    queryAccessMode=$QueryAccessMode `
+    ingestionAccessMode=$IngestionAccessMode `
     tags=$Tags `
     | ConvertFrom-Json
 

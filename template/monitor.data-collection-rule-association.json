@@ -9,6 +9,10 @@
     "dataCollectionRuleResourceId": {
       "type": "string",
       "defaultValue": ""
+    },
+    "scopedResourceId": {
+      "type": "string",
+      "defaultValue": ""
     }
   },
   "variables": {
@@ -20,6 +24,7 @@
       "type": "Microsoft.Insights/dataCollectionRuleAssociations",
       "apiVersion": "[variables('apiVersionInsights')]",
       "name": "[variables('dataCollectionRuleAssociationName')]",
+      "scope": "[parameters('scopedResourceId')]",
       "properties": {
         "dataCollectionEndpointResourceId": "[parameters('dataCollectionEndpointResourceId')]",
         "dataCollectionRuleId": "[parameters('dataCollectionRuleResourceId')]"
