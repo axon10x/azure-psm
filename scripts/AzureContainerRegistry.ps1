@@ -16,7 +16,7 @@ function New-AzureContainerRegistryImage()
     [string]
     $Version
   )
-  Write-Debug -Debug:$debug -Message "New-AzureContainerRegistryImage $ImageName/$Version"
+  Write-Debug -Debug:$true -Message "New-AzureContainerRegistryImage $ImageName/$Version"
 
   $registry = $RegistryName.ToLowerInvariant()
   $baseImage = $registry + ".azurecr.io/" + $ImageName
@@ -24,11 +24,11 @@ function New-AzureContainerRegistryImage()
   $latestImage = $baseImage + ":latest"
 
   $dockerBuildCmd = "docker build -f Dockerfile -t $versionedImage -t $latestImage ."
-  Write-Debug -Debug:$debug -Message "dockerBuildCmd: $dockerBuildCmd"
+  Write-Debug -Debug:$true -Message "dockerBuildCmd: $dockerBuildCmd"
   Invoke-Expression $dockerBuildCmd
 
   $dockerPushCmd = "docker image push --all-tags $baseImage"
-  Write-Debug -Debug:$debug -Message "dockerPushCmd: $dockerPushCmd"
+  Write-Debug -Debug:$true -Message "dockerPushCmd: $dockerPushCmd"
   Invoke-Expression $dockerPushCmd
 }
 
@@ -47,7 +47,7 @@ function Set-AzureContainerRegistryAdminUserEnabled()
     [bool]
     $AdminUserEnabled
   )
-  Write-Debug -Debug:$debug -Message "Set-AzureContainerRegistryAdminUserEnabled $RegistryName/$AdminUserEnabled"
+  Write-Debug -Debug:$true -Message "Set-AzureContainerRegistryAdminUserEnabled $RegistryName/$AdminUserEnabled"
 
   $output = az acr update `
     -g $ResourceGroupName `
@@ -55,7 +55,7 @@ function Set-AzureContainerRegistryAdminUserEnabled()
     --admin-enabled $AdminUserEnabled `
     | ConvertFrom-Json
 
-  Write-Debug -Debug:$debug -Message $output
+  Write-Debug -Debug:$true -Message $output
 }
 
 function Set-AzureContainerRegistryImageToAppService()
@@ -82,7 +82,7 @@ function Set-AzureContainerRegistryImageToAppService()
     [string]
     $Version = "latest"
   )
-  Write-Debug -Debug:$debug -Message "Set-AzureContainerRegistryImageToAppService $RegistryName/$ImageName/$Version"
+  Write-Debug -Debug:$true -Message "Set-AzureContainerRegistryImageToAppService $RegistryName/$ImageName/$Version"
 
   $acrFqdn = "$RegistryName.azurecr.io"
   $acrUrl = "https://$acrFqdn"
@@ -113,7 +113,7 @@ function Set-AzureContainerRegistryPublicNetworkAccess()
     [string]
     $DefaultAction = "Deny"
   )
-  Write-Debug -Debug:$debug -Message "Set-AzureContainerRegistryPublicNetworkAccess $RegistryName/$PublicNetworkEnabled"
+  Write-Debug -Debug:$true -Message "Set-AzureContainerRegistryPublicNetworkAccess $RegistryName/$PublicNetworkEnabled"
 
   $output = az acr update `
     -g $ResourceGroupName `
@@ -122,7 +122,7 @@ function Set-AzureContainerRegistryPublicNetworkAccess()
     --default-action $DefaultAction `
     | ConvertFrom-Json
 
-  Write-Debug -Debug:$debug -Message $output
+  Write-Debug -Debug:$true -Message $output
 }
 
 function Set-AzureContainerRegistryNetworkRule()
@@ -143,7 +143,7 @@ function Set-AzureContainerRegistryNetworkRule()
     [string]
     $Action = "Remove"
   )
-  Write-Debug -Debug:$debug -Message "Set-AzureContainerRegistryNetworkRule $RegistryName/$IpAddressRange/$Action"
+  Write-Debug -Debug:$true -Message "Set-AzureContainerRegistryNetworkRule $RegistryName/$IpAddressRange/$Action"
 
   if ($Action.ToLowerInvariant() -eq "add")
   {
@@ -162,5 +162,5 @@ function Set-AzureContainerRegistryNetworkRule()
       | ConvertFrom-Json
   }
 
-  Write-Debug -Debug:$debug -Message $output
+  Write-Debug -Debug:$true -Message $output
 }

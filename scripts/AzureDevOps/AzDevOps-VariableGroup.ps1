@@ -17,17 +17,17 @@ function Get-VarGroupId()
     [string]
     $VarGroupName
   )
-  Write-Debug -Debug:$debug -Message "Get-VarGroupId()"
+  Write-Debug -Debug:$true -Message "Get-VarGroupId()"
 
   $azdoOrgUrl = "https://dev.azure.com/$AzdoOrgName"
 
   $vgId = "$(az pipelines variable-group list --org $azdoOrgUrl --project $AzdoProjectName -o tsv --query "[?name=='$VarGroupName'].id")"
 
-  Write-Debug -Debug:$debug -Message "azdoOrgName = $AzdoOrgName"
-  Write-Debug -Debug:$debug -Message "azdoProjectName = $AzdoProjectName"
-  Write-Debug -Debug:$debug -Message "varGroupName = $VarGroupName"
-  Write-Debug -Debug:$debug -Message "azdoOrgUrl = $azdoOrgUrl"
-  Write-Debug -Debug:$debug -Message "vgId = $vgId"
+  Write-Debug -Debug:$true -Message "azdoOrgName = $AzdoOrgName"
+  Write-Debug -Debug:$true -Message "azdoProjectName = $AzdoProjectName"
+  Write-Debug -Debug:$true -Message "varGroupName = $VarGroupName"
+  Write-Debug -Debug:$true -Message "azdoOrgUrl = $azdoOrgUrl"
+  Write-Debug -Debug:$true -Message "vgId = $vgId"
 
   return $vgId
 }
@@ -50,26 +50,26 @@ function Test-VarGroupVarExists()
     [string]
     $VarName
   )
-  Write-Debug -Debug:$debug -Message "Test-VarGroupVarExists()"
+  Write-Debug -Debug:$true -Message "Test-VarGroupVarExists()"
 
   $azdoOrgUrl = "https://dev.azure.com/$AzdoOrgName"
 
   $vgId = Set-VarGroup -azdoOrgName "$AzdoOrgName" -azdoProjectName "$AzdoProjectName" -varGroupName "$VarGroupName" 
 
-  Write-Debug -Debug:$debug -Message "azdoOrgName = $AzdoOrgName"
-  Write-Debug -Debug:$debug -Message "azdoProjectName = $AzdoProjectName"
-  Write-Debug -Debug:$debug -Message "varGroupName = $VarGroupName"
-  Write-Debug -Debug:$debug -Message "varName = $VarName"
-  Write-Debug -Debug:$debug -Message "azdoOrgUrl = $azdoOrgUrl"
-  Write-Debug -Debug:$debug -Message "vgId = $vgId"
+  Write-Debug -Debug:$true -Message "azdoOrgName = $AzdoOrgName"
+  Write-Debug -Debug:$true -Message "azdoProjectName = $AzdoProjectName"
+  Write-Debug -Debug:$true -Message "varGroupName = $VarGroupName"
+  Write-Debug -Debug:$true -Message "varName = $VarName"
+  Write-Debug -Debug:$true -Message "azdoOrgUrl = $azdoOrgUrl"
+  Write-Debug -Debug:$true -Message "vgId = $vgId"
 
   # We don't use a JMESPath --query here in case some var names have special characters like :, which crashes the query
   # So instead we get all (wasteful but...) into a Powershell hashtable and then see if the var exists by key lookup on the var name
   $varMatches = "$(az pipelines variable-group variable list --org "$azdoOrgUrl" --project "$AzdoProjectName" --group-id "$vgId")" | ConvertFrom-Json -AsHashtable
-  Write-Debug -Debug:$debug -Message "varMatches = $varMatches"
+  Write-Debug -Debug:$true -Message "varMatches = $varMatches"
 
   $varExists = ( $null -ne $varMatches[$VarName])
-  Write-Debug -Debug:$debug -Message "varExists = $varExists"
+  Write-Debug -Debug:$true -Message "varExists = $varExists"
 
   return $varExists
 }
@@ -89,7 +89,7 @@ function Get-VarGroupVars()
     [string]
     $VarGroupName
   )
-  Write-Debug -Debug:$debug -Message "Get-VarGroupVars()"
+  Write-Debug -Debug:$true -Message "Get-VarGroupVars()"
 
   $azdoOrgUrl = "https://dev.azure.com/$AzdoOrgName"
 
@@ -97,12 +97,12 @@ function Get-VarGroupVars()
 
   $varsJson = "$(az pipelines variable-group variable list --org $azdoOrgUrl --project $AzdoProjectName --group-id $vgId)"
 
-  Write-Debug -Debug:$debug -Message "azdoOrgName = $AzdoOrgName"
-  Write-Debug -Debug:$debug -Message "azdoProjectName = $AzdoProjectName"
-  Write-Debug -Debug:$debug -Message "varGroupName = $VarGroupName"
-  Write-Debug -Debug:$debug -Message "azdoOrgUrl = $azdoOrgUrl"
-  Write-Debug -Debug:$debug -Message "vgId = $vgId"
-  Write-Debug -Debug:$debug -Message "varsJson = $varsJson"
+  Write-Debug -Debug:$true -Message "azdoOrgName = $AzdoOrgName"
+  Write-Debug -Debug:$true -Message "azdoProjectName = $AzdoProjectName"
+  Write-Debug -Debug:$true -Message "varGroupName = $VarGroupName"
+  Write-Debug -Debug:$true -Message "azdoOrgUrl = $azdoOrgUrl"
+  Write-Debug -Debug:$true -Message "vgId = $vgId"
+  Write-Debug -Debug:$true -Message "varsJson = $varsJson"
 
   $vars = $varsJson | ConvertFrom-Json -AsHashtable
 
@@ -127,24 +127,24 @@ function Get-VarGroupVar()
     [string]
     $VarName
   )
-  Write-Debug -Debug:$debug -Message "Get-VarGroupVar()"
+  Write-Debug -Debug:$true -Message "Get-VarGroupVar()"
 
   $azdoOrgUrl = "https://dev.azure.com/$AzdoOrgName"
 
   $vgId = "$(az pipelines variable-group list --org $azdoOrgUrl --project $AzdoProjectName -o tsv --query "[?name=='$VarGroupName'].id")"
 
   $varMatches = "$(az pipelines variable-group variable list --org "$azdoOrgUrl" --project "$AzdoProjectName" --group-id "$vgId")" | ConvertFrom-Json -AsHashtable
-  Write-Debug -Debug:$debug -Message "varMatches = $varMatches"
+  Write-Debug -Debug:$true -Message "varMatches = $varMatches"
 
   $var = $varMatches[$VarName]
 
-  Write-Debug -Debug:$debug -Message "azdoOrgName = $AzdoOrgName"
-  Write-Debug -Debug:$debug -Message "azdoProjectName = $AzdoProjectName"
-  Write-Debug -Debug:$debug -Message "varGroupName = $VarGroupName"
-  Write-Debug -Debug:$debug -Message "varName = $VarName"
-  Write-Debug -Debug:$debug -Message "azdoOrgUrl = $azdoOrgUrl"
-  Write-Debug -Debug:$debug -Message "vgId = $vgId"
-  Write-Debug -Debug:$debug -Message ("var = " + $var.value)
+  Write-Debug -Debug:$true -Message "azdoOrgName = $AzdoOrgName"
+  Write-Debug -Debug:$true -Message "azdoProjectName = $AzdoProjectName"
+  Write-Debug -Debug:$true -Message "varGroupName = $VarGroupName"
+  Write-Debug -Debug:$true -Message "varName = $VarName"
+  Write-Debug -Debug:$true -Message "azdoOrgUrl = $azdoOrgUrl"
+  Write-Debug -Debug:$true -Message "vgId = $vgId"
+  Write-Debug -Debug:$true -Message ("var = " + $var.value)
 
   return $var.value
 }
@@ -167,34 +167,34 @@ function Set-VarGroup()
     [bool]
     $AccessibleByAllPipelines=$false
   )
-  Write-Debug -Debug:$debug -Message "Set-VarGroup() $VarGroupName"
+  Write-Debug -Debug:$true -Message "Set-VarGroup() $VarGroupName"
 
   $azdoOrgUrl = "https://dev.azure.com/$AzdoOrgName"
 
-  Write-Debug -Debug:$debug -Message "azdoOrgName = $AzdoOrgName"
-  Write-Debug -Debug:$debug -Message "azdoProjectName = $AzdoProjectName"
-  Write-Debug -Debug:$debug -Message "varGroupName = $VarGroupName"
-  Write-Debug -Debug:$debug -Message "accessibleByAllPipelines = $AccessibleByAllPipelines"
-  Write-Debug -Debug:$debug -Message "azdoOrgUrl = $azdoOrgUrl"
+  Write-Debug -Debug:$true -Message "azdoOrgName = $AzdoOrgName"
+  Write-Debug -Debug:$true -Message "azdoProjectName = $AzdoProjectName"
+  Write-Debug -Debug:$true -Message "varGroupName = $VarGroupName"
+  Write-Debug -Debug:$true -Message "accessibleByAllPipelines = $AccessibleByAllPipelines"
+  Write-Debug -Debug:$true -Message "azdoOrgUrl = $azdoOrgUrl"
 
   $vgMatches = "$(az pipelines variable-group list --org $azdoOrgUrl --project $AzdoProjectName --query "[?name=='$VarGroupName'].id")" | ConvertFrom-Json
-  Write-Debug -Debug:$debug -Message "vgMatches = $vgMatches"
+  Write-Debug -Debug:$true -Message "vgMatches = $vgMatches"
 
   $vgExists = $vgMatches.Length -gt 0
-  Write-Debug -Debug:$debug -Message "vgExists = $vgExists"
+  Write-Debug -Debug:$true -Message "vgExists = $vgExists"
 
   if ($vgExists)
   {
-    Write-Debug -Debug:$debug -Message "Variable Group $VarGroupName already exists, no op"
+    Write-Debug -Debug:$true -Message "Variable Group $VarGroupName already exists, no op"
   }
   else
   {
-    Write-Debug -Debug:$debug -Message "Create Variable Group $VarGroupName"
+    Write-Debug -Debug:$true -Message "Create Variable Group $VarGroupName"
     az pipelines variable-group create --org $azdoOrgUrl --project $AzdoProjectName --name $VarGroupName --authorize $AccessibleByAllPipelines --variables foo=bar
   }
 
   $vgId = "$(az pipelines variable-group list --org $azdoOrgUrl --project $AzdoProjectName -o tsv --query "[?name=='$VarGroupName'].id")"
-  Write-Debug -Debug:$debug -Message "vgId = $vgId"
+  Write-Debug -Debug:$true -Message "vgId = $vgId"
   return $vgId
 }
 
@@ -225,18 +225,18 @@ function Set-VarGroupVar()
     [boolean]
     $Overwrite=$true
   )
-  Write-Debug -Debug:$debug -Message "Set-VarGroupVar() $VarName"
+  Write-Debug -Debug:$true -Message "Set-VarGroupVar() $VarName"
 
   $azdoOrgUrl = "https://dev.azure.com/$AzdoOrgName"
 
   $vgId = Set-VarGroup -azdoOrgName "$AzdoOrgName" -azdoProjectName "$AzdoProjectName" -varGroupName "$VarGroupName"
 
-  Write-Debug -Debug:$debug -Message "azdoOrgName = $AzdoOrgName"
-  Write-Debug -Debug:$debug -Message "azdoProjectName = $AzdoProjectName"
-  Write-Debug -Debug:$debug -Message "varGroupName = $VarGroupName"
-  Write-Debug -Debug:$debug -Message "varName = $VarName"
-  Write-Debug -Debug:$debug -Message "azdoOrgUrl = $azdoOrgUrl"
-  Write-Debug -Debug:$debug -Message "vgId = $vgId"
+  Write-Debug -Debug:$true -Message "azdoOrgName = $AzdoOrgName"
+  Write-Debug -Debug:$true -Message "azdoProjectName = $AzdoProjectName"
+  Write-Debug -Debug:$true -Message "varGroupName = $VarGroupName"
+  Write-Debug -Debug:$true -Message "varName = $VarName"
+  Write-Debug -Debug:$true -Message "azdoOrgUrl = $azdoOrgUrl"
+  Write-Debug -Debug:$true -Message "vgId = $vgId"
 
   $varExists = Test-VarGroupVarExists -azdoOrgName "$AzdoOrgName" -azdoProjectName "$AzdoProjectName" -varGroupName "$VarGroupName" -varName "$varName"
 
@@ -246,7 +246,7 @@ function Set-VarGroupVar()
 
     if ($Overwrite)
     {
-      Write-Debug -Debug:$debug -Message "Variable exists - update: $VarName"
+      Write-Debug -Debug:$true -Message "Variable exists - update: $VarName"
       az pipelines variable-group variable update `
         --org "$azdoOrgUrl" `
         --project "$AzdoProjectName" `
@@ -257,12 +257,12 @@ function Set-VarGroupVar()
     }
     else
     {
-      Write-Debug -Debug:$debug -Message "Variable exists but overwrite is off, no op: $VarName"
+      Write-Debug -Debug:$true -Message "Variable exists but overwrite is off, no op: $VarName"
     }
   }
   else
   {
-    Write-Debug -Debug:$debug -Message "Create variable $VarName"
+    Write-Debug -Debug:$true -Message "Create variable $VarName"
     az pipelines variable-group variable create `
     --org "$azdoOrgUrl" `
     --project "$AzdoProjectName" `

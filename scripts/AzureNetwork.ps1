@@ -44,7 +44,7 @@ function Deploy-NetworkNic()
     $Tags = ""
   )
 
-  Write-Debug -Debug:$debug -Message "Deploy NIC $NicName"
+  Write-Debug -Debug:$true -Message "Deploy NIC $NicName"
 
   $output = az deployment group create --verbose `
     --subscription "$SubscriptionId" `
@@ -91,7 +91,7 @@ function Deploy-NetworkSecurityGroup() {
     $Tags = ""
   )
 
-  Write-Debug -Debug:$debug -Message "Deploy NSG $NSGName"
+  Write-Debug -Debug:$true -Message "Deploy NSG $NSGName"
 
   $output = az deployment group create --verbose `
     --subscription "$SubscriptionId" `
@@ -158,7 +158,7 @@ function Deploy-NetworkSecurityGroupRule() {
     $DestinationPortRanges = ""
   )
 
-  Write-Debug -Debug:$debug -Message "Deploy NSG Rule $NSGRuleName"
+  Write-Debug -Debug:$true -Message "Deploy NSG Rule $NSGRuleName"
 
   $output = az deployment group create --verbose `
     --subscription "$SubscriptionId" `
@@ -216,7 +216,7 @@ function Deploy-NetworkPublicIp()
     [string]
     $Tags = ""
   )
-  Write-Debug -Debug:$debug -Message "Deploy PIP $PublicIpAddressName"
+  Write-Debug -Debug:$true -Message "Deploy PIP $PublicIpAddressName"
 
   $output = az deployment group create --verbose `
     --subscription "$SubscriptionId" `
@@ -257,7 +257,7 @@ function Deploy-NetworkPrivateDnsZone()
     $Tags = ""
   )
 
-  Write-Debug -Debug:$debug -Message "Deploy Private DNS Zone $DnsZoneName"
+  Write-Debug -Debug:$true -Message "Deploy Private DNS Zone $DnsZoneName"
 
   $output = az deployment group create --verbose `
     --subscription "$SubscriptionId" `
@@ -297,7 +297,7 @@ function Deploy-NetworkPrivateDnsZones()
     $Tags = ""
   )
 
-  Write-Debug -Debug:$debug -Message "Deploy Private DNS Zones and VNet links"
+  Write-Debug -Debug:$true -Message "Deploy Private DNS Zones and VNet links"
 
   # Get the private DNS zone property names from the ConfigConstants object
   # Do this so we don't hard-code DNS zone names here, just grab whatever is configured on the config...
@@ -320,7 +320,7 @@ function Deploy-NetworkPrivateDnsZones()
       -DnsZoneName $zoneName `
       -Tags $Tags
 
-    Write-Debug -Debug:$debug -Message "$output"
+    Write-Debug -Debug:$true -Message "$output"
 
     $output = Deploy-NetworkPrivateDnsZoneVNetLink `
       -SubscriptionId $SubscriptionId `
@@ -330,7 +330,7 @@ function Deploy-NetworkPrivateDnsZones()
       -VNetResourceId $VNetResourceId `
       -Tags $Tags
 
-    Write-Debug -Debug:$debug -Message "$output"
+    Write-Debug -Debug:$true -Message "$output"
   }
 }
 
@@ -359,7 +359,7 @@ function Deploy-NetworkPrivateDnsZoneVNetLink()
     $Tags = ""
   )
 
-  Write-Debug -Debug:$debug -Message "Deploy Private DNS Zone VNet Link $DnsZoneName to $VNetResourceId"
+  Write-Debug -Debug:$true -Message "Deploy Private DNS Zone VNet Link $DnsZoneName to $VNetResourceId"
 
   $output = az deployment group create --verbose `
     --subscription "$SubscriptionId" `
@@ -413,7 +413,7 @@ function Deploy-NetworkPrivateEndpointAndNic()
     $Tags = ""
   )
 
-  Write-Debug -Debug:$debug -Message "Deploy Private Endpoint and NIC $PrivateEndpointName"
+  Write-Debug -Debug:$true -Message "Deploy Private Endpoint and NIC $PrivateEndpointName"
 
   $output = az deployment group create --verbose `
     --subscription "$SubscriptionId" `
@@ -430,7 +430,7 @@ function Deploy-NetworkPrivateEndpointAndNic()
     tags=$Tags `
     | ConvertFrom-Json
 
-  Write-Debug -Debug:$debug -Message "Wait for NIC provisioning to complete"
+  Write-Debug -Debug:$true -Message "Wait for NIC provisioning to complete"
   Watch-NetworkNicUntilProvisionSuccess `
     -SubscriptionID "$SubscriptionId" `
     -ResourceGroupName "$ResourceGroupName" `
@@ -467,7 +467,7 @@ function Deploy-NetworkPrivateEndpointPrivateDnsZoneGroup()
     $PrivateDnsZoneResourceId
   )
 
-  Write-Debug -Debug:$debug -Message "Deploy Private Endpoint $PrivateEndpointName DNS Zone Group for $PrivateDnsZoneName"
+  Write-Debug -Debug:$true -Message "Deploy Private Endpoint $PrivateEndpointName DNS Zone Group for $PrivateDnsZoneName"
 
   $zoneName = $PrivateDnsZoneName.Replace(".", "_")
 
@@ -522,7 +522,7 @@ function Deploy-NetworkSubnet() {
     $ServiceEndpoints = ""
   )
 
-  Write-Debug -Debug:$debug -Message "Deploy Subnet $SubnetName"
+  Write-Debug -Debug:$true -Message "Deploy Subnet $SubnetName"
 
   $output = az deployment group create --verbose `
     --subscription "$SubscriptionId" `
@@ -575,7 +575,7 @@ function Deploy-NetworkVNet() {
     $Tags = ""
   )
 
-  Write-Debug -Debug:$debug -Message "Deploy VNet $VNetName"
+  Write-Debug -Debug:$true -Message "Deploy VNet $VNetName"
 
   $output = az deployment group create --verbose `
     --subscription "$SubscriptionId" `
@@ -623,7 +623,7 @@ function Get-NetworkSubnetResourceIdForPrivateEndpoint()
     $VNetName
   )
 
-  Write-Debug -Debug:$debug -Message "Get Subnet Resource ID for Private Endpoint"
+  Write-Debug -Debug:$true -Message "Get Subnet Resource ID for Private Endpoint"
 
   $result = ""
 
@@ -663,7 +663,7 @@ function Get-NetworkSubnetResourceIds()
     $VNetName
   )
 
-  Write-Debug -Debug:$debug -Message "Get Subnet Resource IDs"
+  Write-Debug -Debug:$true -Message "Get Subnet Resource IDs"
 
   $result = [System.Collections.ArrayList]@()
 
@@ -698,7 +698,7 @@ function Remove-NetworkSecurityGroupRule() {
     $NSGRuleName
   )
 
-  Write-Debug -Debug:$debug -Message "Remove NSG Rule $NSGName/$NSGRuleName"
+  Write-Debug -Debug:$true -Message "Remove NSG Rule $NSGName/$NSGRuleName"
 
   $output = az network nsg rule delete --verbose `
     --subscription "$SubscriptionId" `
@@ -726,7 +726,7 @@ function Watch-NetworkNicUntilProvisionSuccess()
     $NetworkInterfaceName
   )
 
-  Write-Debug -Debug:$debug -Message "Watch NIC $NetworkInterfaceName until ProvisioningStage=Succeeded"
+  Write-Debug -Debug:$true -Message "Watch NIC $NetworkInterfaceName until ProvisioningStage=Succeeded"
 
   $limit = (Get-Date).AddMinutes(55)
 
@@ -737,7 +737,7 @@ function Watch-NetworkNicUntilProvisionSuccess()
   {
     $currentState = "$(az network nic show --subscription $SubscriptionId -g $ResourceGroupName -n $NetworkInterfaceName -o tsv --query 'provisioningState')"
 
-    Write-Debug -Debug:$debug -Message "currentState = $currentState"
+    Write-Debug -Debug:$true -Message "currentState = $currentState"
 
     if ($currentState -ne $targetState)
     {

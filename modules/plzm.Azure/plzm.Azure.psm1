@@ -411,7 +411,7 @@ function New-AzureContainerRegistryImage()
     [string]
     $Version
   )
-  Write-Debug -Debug:$debug -Message "New-AzureContainerRegistryImage $ImageName/$Version"
+  Write-Debug -Debug:$true -Message "New-AzureContainerRegistryImage $ImageName/$Version"
 
   $registry = $RegistryName.ToLowerInvariant()
   $baseImage = $registry + ".azurecr.io/" + $ImageName
@@ -419,11 +419,11 @@ function New-AzureContainerRegistryImage()
   $latestImage = $baseImage + ":latest"
 
   $dockerBuildCmd = "docker build -f Dockerfile -t $versionedImage -t $latestImage ."
-  Write-Debug -Debug:$debug -Message "dockerBuildCmd: $dockerBuildCmd"
+  Write-Debug -Debug:$true -Message "dockerBuildCmd: $dockerBuildCmd"
   Invoke-Expression $dockerBuildCmd
 
   $dockerPushCmd = "docker image push --all-tags $baseImage"
-  Write-Debug -Debug:$debug -Message "dockerPushCmd: $dockerPushCmd"
+  Write-Debug -Debug:$true -Message "dockerPushCmd: $dockerPushCmd"
   Invoke-Expression $dockerPushCmd
 }
 
@@ -442,7 +442,7 @@ function Set-AzureContainerRegistryAdminUserEnabled()
     [bool]
     $AdminUserEnabled
   )
-  Write-Debug -Debug:$debug -Message "Set-AzureContainerRegistryAdminUserEnabled $RegistryName/$AdminUserEnabled"
+  Write-Debug -Debug:$true -Message "Set-AzureContainerRegistryAdminUserEnabled $RegistryName/$AdminUserEnabled"
 
   $output = az acr update `
     -g $ResourceGroupName `
@@ -450,7 +450,7 @@ function Set-AzureContainerRegistryAdminUserEnabled()
     --admin-enabled $AdminUserEnabled `
     | ConvertFrom-Json
 
-  Write-Debug -Debug:$debug -Message $output
+  Write-Debug -Debug:$true -Message $output
 }
 
 function Set-AzureContainerRegistryImageToAppService()
@@ -477,7 +477,7 @@ function Set-AzureContainerRegistryImageToAppService()
     [string]
     $Version = "latest"
   )
-  Write-Debug -Debug:$debug -Message "Set-AzureContainerRegistryImageToAppService $RegistryName/$ImageName/$Version"
+  Write-Debug -Debug:$true -Message "Set-AzureContainerRegistryImageToAppService $RegistryName/$ImageName/$Version"
 
   $acrFqdn = "$RegistryName.azurecr.io"
   $acrUrl = "https://$acrFqdn"
@@ -508,7 +508,7 @@ function Set-AzureContainerRegistryPublicNetworkAccess()
     [string]
     $DefaultAction = "Deny"
   )
-  Write-Debug -Debug:$debug -Message "Set-AzureContainerRegistryPublicNetworkAccess $RegistryName/$PublicNetworkEnabled"
+  Write-Debug -Debug:$true -Message "Set-AzureContainerRegistryPublicNetworkAccess $RegistryName/$PublicNetworkEnabled"
 
   $output = az acr update `
     -g $ResourceGroupName `
@@ -517,7 +517,7 @@ function Set-AzureContainerRegistryPublicNetworkAccess()
     --default-action $DefaultAction `
     | ConvertFrom-Json
 
-  Write-Debug -Debug:$debug -Message $output
+  Write-Debug -Debug:$true -Message $output
 }
 
 function Set-AzureContainerRegistryNetworkRule()
@@ -538,7 +538,7 @@ function Set-AzureContainerRegistryNetworkRule()
     [string]
     $Action = "Remove"
   )
-  Write-Debug -Debug:$debug -Message "Set-AzureContainerRegistryNetworkRule $RegistryName/$IpAddressRange/$Action"
+  Write-Debug -Debug:$true -Message "Set-AzureContainerRegistryNetworkRule $RegistryName/$IpAddressRange/$Action"
 
   if ($Action.ToLowerInvariant() -eq "add")
   {
@@ -557,7 +557,7 @@ function Set-AzureContainerRegistryNetworkRule()
       | ConvertFrom-Json
   }
 
-  Write-Debug -Debug:$debug -Message $output
+  Write-Debug -Debug:$true -Message $output
 }
 
 # ##################################################
@@ -609,7 +609,7 @@ function Remove-DataFactoriesByAge()
     $DaysOlderThan
   )
 
-  Write-Debug -Debug:$debug -Message "Setting subscription to $SubscriptionName"
+  Write-Debug -Debug:$true -Message "Setting subscription to $SubscriptionName"
   az account set -s $SubscriptionName
 
   $query = "[].{Name: name, CreateTime: createTime}"
@@ -624,12 +624,12 @@ function Remove-DataFactoriesByAge()
 
     if ($deleteThis)
     {
-      Write-Debug -Debug:$debug -Message ("Deleting factory " + $factory.Name)
+      Write-Debug -Debug:$true -Message ("Deleting factory " + $factory.Name)
       az datafactory delete -g $ResourceGroupName -n $factory.Name --yes
     }
     else
     {
-      Write-Debug -Debug:$debug -Message ("No Op on factory " + $factory.Name)
+      Write-Debug -Debug:$true -Message ("No Op on factory " + $factory.Name)
     }
   }
 }
@@ -651,7 +651,7 @@ function Get-FunctionIdentityPrincipalId()
     [string]
     $FunctionAppName
   )
-  Write-Debug -Debug:$debug -Message "Get function identity principal id for app $FunctionAppName"
+  Write-Debug -Debug:$true -Message "Get function identity principal id for app $FunctionAppName"
   $principalId = "$(az functionapp identity show --name $FunctionAppName -g $ResourceGroupName -o tsv --query 'principalId')"
 
   return $principalId
@@ -672,7 +672,7 @@ function Set-FunctionKey()
     [string]
     $FunctionKeyName
   )
-  Write-Debug -Debug:$debug -Message "Set new Function key $FunctionKeyName on Function App $FunctionAppName and get its value on the output"
+  Write-Debug -Debug:$true -Message "Set new Function key $FunctionKeyName on Function App $FunctionAppName and get its value on the output"
   $keyValue = "$(az functionapp keys set --key-name $FunctionKeyName --key-type functionKeys --name $FunctionAppName -g $ResourceGroupName -o tsv --query 'value')"
 
   return $keyValue
@@ -969,8 +969,9 @@ function Set-KeyVaultSecret()
     [string]
     $SecretValue
   )
+  Write-Debug -Debug:$true -Message "Set Key Vault $KeyVaultName Secret $SecretName"
+
   $secretNameSafe = Get-KeyVaultSecretName -VarName "$SecretName"
-  #$secretValueSafe = ConvertTo-SecureString "$SecretValue" -AsPlainText -Force
 
   az keyvault secret set `
     --vault-name "$KeyVaultName" `
@@ -1595,7 +1596,7 @@ function Deploy-NetworkNic()
     $Tags = ""
   )
 
-  Write-Debug -Debug:$debug -Message "Deploy NIC $NicName"
+  Write-Debug -Debug:$true -Message "Deploy NIC $NicName"
 
   $output = az deployment group create --verbose `
     --subscription "$SubscriptionId" `
@@ -1642,7 +1643,7 @@ function Deploy-NetworkSecurityGroup() {
     $Tags = ""
   )
 
-  Write-Debug -Debug:$debug -Message "Deploy NSG $NSGName"
+  Write-Debug -Debug:$true -Message "Deploy NSG $NSGName"
 
   $output = az deployment group create --verbose `
     --subscription "$SubscriptionId" `
@@ -1709,7 +1710,7 @@ function Deploy-NetworkSecurityGroupRule() {
     $DestinationPortRanges = ""
   )
 
-  Write-Debug -Debug:$debug -Message "Deploy NSG Rule $NSGRuleName"
+  Write-Debug -Debug:$true -Message "Deploy NSG Rule $NSGRuleName"
 
   $output = az deployment group create --verbose `
     --subscription "$SubscriptionId" `
@@ -1767,7 +1768,7 @@ function Deploy-NetworkPublicIp()
     [string]
     $Tags = ""
   )
-  Write-Debug -Debug:$debug -Message "Deploy PIP $PublicIpAddressName"
+  Write-Debug -Debug:$true -Message "Deploy PIP $PublicIpAddressName"
 
   $output = az deployment group create --verbose `
     --subscription "$SubscriptionId" `
@@ -1808,7 +1809,7 @@ function Deploy-NetworkPrivateDnsZone()
     $Tags = ""
   )
 
-  Write-Debug -Debug:$debug -Message "Deploy Private DNS Zone $DnsZoneName"
+  Write-Debug -Debug:$true -Message "Deploy Private DNS Zone $DnsZoneName"
 
   $output = az deployment group create --verbose `
     --subscription "$SubscriptionId" `
@@ -1848,7 +1849,7 @@ function Deploy-NetworkPrivateDnsZones()
     $Tags = ""
   )
 
-  Write-Debug -Debug:$debug -Message "Deploy Private DNS Zones and VNet links"
+  Write-Debug -Debug:$true -Message "Deploy Private DNS Zones and VNet links"
 
   # Get the private DNS zone property names from the ConfigConstants object
   # Do this so we don't hard-code DNS zone names here, just grab whatever is configured on the config...
@@ -1871,7 +1872,7 @@ function Deploy-NetworkPrivateDnsZones()
       -DnsZoneName $zoneName `
       -Tags $Tags
 
-    Write-Debug -Debug:$debug -Message "$output"
+    Write-Debug -Debug:$true -Message "$output"
 
     $output = Deploy-NetworkPrivateDnsZoneVNetLink `
       -SubscriptionId $SubscriptionId `
@@ -1881,7 +1882,7 @@ function Deploy-NetworkPrivateDnsZones()
       -VNetResourceId $VNetResourceId `
       -Tags $Tags
 
-    Write-Debug -Debug:$debug -Message "$output"
+    Write-Debug -Debug:$true -Message "$output"
   }
 }
 
@@ -1910,7 +1911,7 @@ function Deploy-NetworkPrivateDnsZoneVNetLink()
     $Tags = ""
   )
 
-  Write-Debug -Debug:$debug -Message "Deploy Private DNS Zone VNet Link $DnsZoneName to $VNetResourceId"
+  Write-Debug -Debug:$true -Message "Deploy Private DNS Zone VNet Link $DnsZoneName to $VNetResourceId"
 
   $output = az deployment group create --verbose `
     --subscription "$SubscriptionId" `
@@ -1964,7 +1965,7 @@ function Deploy-NetworkPrivateEndpointAndNic()
     $Tags = ""
   )
 
-  Write-Debug -Debug:$debug -Message "Deploy Private Endpoint and NIC $PrivateEndpointName"
+  Write-Debug -Debug:$true -Message "Deploy Private Endpoint and NIC $PrivateEndpointName"
 
   $output = az deployment group create --verbose `
     --subscription "$SubscriptionId" `
@@ -1981,7 +1982,7 @@ function Deploy-NetworkPrivateEndpointAndNic()
     tags=$Tags `
     | ConvertFrom-Json
 
-  Write-Debug -Debug:$debug -Message "Wait for NIC provisioning to complete"
+  Write-Debug -Debug:$true -Message "Wait for NIC provisioning to complete"
   Watch-NetworkNicUntilProvisionSuccess `
     -SubscriptionID "$SubscriptionId" `
     -ResourceGroupName "$ResourceGroupName" `
@@ -2018,7 +2019,7 @@ function Deploy-NetworkPrivateEndpointPrivateDnsZoneGroup()
     $PrivateDnsZoneResourceId
   )
 
-  Write-Debug -Debug:$debug -Message "Deploy Private Endpoint $PrivateEndpointName DNS Zone Group for $PrivateDnsZoneName"
+  Write-Debug -Debug:$true -Message "Deploy Private Endpoint $PrivateEndpointName DNS Zone Group for $PrivateDnsZoneName"
 
   $zoneName = $PrivateDnsZoneName.Replace(".", "_")
 
@@ -2073,7 +2074,7 @@ function Deploy-NetworkSubnet() {
     $ServiceEndpoints = ""
   )
 
-  Write-Debug -Debug:$debug -Message "Deploy Subnet $SubnetName"
+  Write-Debug -Debug:$true -Message "Deploy Subnet $SubnetName"
 
   $output = az deployment group create --verbose `
     --subscription "$SubscriptionId" `
@@ -2126,7 +2127,7 @@ function Deploy-NetworkVNet() {
     $Tags = ""
   )
 
-  Write-Debug -Debug:$debug -Message "Deploy VNet $VNetName"
+  Write-Debug -Debug:$true -Message "Deploy VNet $VNetName"
 
   $output = az deployment group create --verbose `
     --subscription "$SubscriptionId" `
@@ -2174,7 +2175,7 @@ function Get-NetworkSubnetResourceIdForPrivateEndpoint()
     $VNetName
   )
 
-  Write-Debug -Debug:$debug -Message "Get Subnet Resource ID for Private Endpoint"
+  Write-Debug -Debug:$true -Message "Get Subnet Resource ID for Private Endpoint"
 
   $result = ""
 
@@ -2214,7 +2215,7 @@ function Get-NetworkSubnetResourceIds()
     $VNetName
   )
 
-  Write-Debug -Debug:$debug -Message "Get Subnet Resource IDs"
+  Write-Debug -Debug:$true -Message "Get Subnet Resource IDs"
 
   $result = [System.Collections.ArrayList]@()
 
@@ -2249,7 +2250,7 @@ function Remove-NetworkSecurityGroupRule() {
     $NSGRuleName
   )
 
-  Write-Debug -Debug:$debug -Message "Remove NSG Rule $NSGName/$NSGRuleName"
+  Write-Debug -Debug:$true -Message "Remove NSG Rule $NSGName/$NSGRuleName"
 
   $output = az network nsg rule delete --verbose `
     --subscription "$SubscriptionId" `
@@ -2277,7 +2278,7 @@ function Watch-NetworkNicUntilProvisionSuccess()
     $NetworkInterfaceName
   )
 
-  Write-Debug -Debug:$debug -Message "Watch NIC $NetworkInterfaceName until ProvisioningStage=Succeeded"
+  Write-Debug -Debug:$true -Message "Watch NIC $NetworkInterfaceName until ProvisioningStage=Succeeded"
 
   $limit = (Get-Date).AddMinutes(55)
 
@@ -2288,7 +2289,7 @@ function Watch-NetworkNicUntilProvisionSuccess()
   {
     $currentState = "$(az network nic show --subscription $SubscriptionId -g $ResourceGroupName -n $NetworkInterfaceName -o tsv --query 'provisioningState')"
 
-    Write-Debug -Debug:$debug -Message "currentState = $currentState"
+    Write-Debug -Debug:$true -Message "currentState = $currentState"
 
     if ($currentState -ne $targetState)
     {
@@ -2333,14 +2334,14 @@ function Get-PolicyInfo()
   # Get policy state summary for each custom policy definition
   ForEach ($definition in $definitions)
   {
-    Write-Debug -Debug:$debug -Message "Policy State Summary"
+    Write-Debug -Debug:$true -Message "Policy State Summary"
     Get-AzPolicyStateSummary -SubscriptionId $SubscriptionId -PolicyDefinitionName $definition.Name
 
-    Write-Debug -Debug:$debug -Message "Policy Assignments"
+    Write-Debug -Debug:$true -Message "Policy Assignments"
     $assignments = Get-AzPolicyAssignment -PolicyDefinitionId $definition.PolicyDefinitionId
 
     ForEach ($assignment in $assignments) {
-      Write-Debug -Debug:$debug -Message "Policy State for the Policy Assignment"
+      Write-Debug -Debug:$true -Message "Policy State for the Policy Assignment"
       Get-AzPolicyState -SubscriptionId $SubscriptionId -PolicyAssignmentName $assignment.Name
     }
   }
@@ -2451,7 +2452,7 @@ function Get-ChildResourceId()
     $ChildResourceName
   )
 
-  Write-Debug -Debug:$debug -Message ("Get-ChildResourceId: ParentResourceId: " + "$ParentResourceId" + ", ChildResourceTypeName: " + "$ChildResourceTypeName" + ", ChildResourceName: " + "$ChildResourceName")
+  Write-Debug -Debug:$true -Message ("Get-ChildResourceId: ParentResourceId: " + "$ParentResourceId" + ", ChildResourceTypeName: " + "$ChildResourceTypeName" + ", ChildResourceName: " + "$ChildResourceName")
 
   $result = $ParentResourceId + "/" + $ChildResourceTypeName + "/" + $ChildResourceName
 
@@ -2489,7 +2490,7 @@ function Get-ResourceId()
     $ChildResourceName = ""
   )
 
-  Write-Debug -Debug:$debug -Message ("Get-ResourceId: SubscriptionId: " + "$SubscriptionId" + ", ResourceGroupName: " + "$ResourceGroupName" + ", ResourceProviderName: " + "$ResourceProviderName" + ", ResourceTypeName: " + "$ResourceTypeName" + ", ResourceName: " + "$ResourceName" + ", ChildResourceTypeName: " + "$ChildResourceTypeName" + ", ChildResourceName: " + "$ChildResourceName")
+  Write-Debug -Debug:$true -Message ("Get-ResourceId: SubscriptionId: " + "$SubscriptionId" + ", ResourceGroupName: " + "$ResourceGroupName" + ", ResourceProviderName: " + "$ResourceProviderName" + ", ResourceTypeName: " + "$ResourceTypeName" + ", ResourceName: " + "$ResourceName" + ", ChildResourceTypeName: " + "$ChildResourceTypeName" + ", ChildResourceName: " + "$ChildResourceName")
 
   $result = "/subscriptions/" + $SubscriptionId + "/resourceGroups/" + $ResourceGroupName + "/providers/" + $ResourceProviderName + "/" + $ResourceTypeName + "/"
   
@@ -2533,7 +2534,7 @@ function Get-ResourceName()
     $IncludeDelimiter = $true
   )
 
-  Write-Debug -Debug:$debug -Message ("Get-ResourceName: Prefix: " + "$Prefix" + ", Sequence: " + "$Sequence" + ", Suffix: " + "$Suffix" + ", IncludeDelimiter: " + "$IncludeDelimiter")
+  Write-Debug -Debug:$true -Message ("Get-ResourceName: Prefix: " + "$Prefix" + ", Sequence: " + "$Sequence" + ", Suffix: " + "$Suffix" + ", IncludeDelimiter: " + "$IncludeDelimiter")
 
   if ($IncludeDelimiter)
   {
@@ -2977,30 +2978,30 @@ function New-StorageObjects()
     $TableNames
   )
 
-  Write-Debug -Debug:$debug -Message "Setting subscription to $SubscriptionName"
+  Write-Debug -Debug:$true -Message "Setting subscription to $SubscriptionName"
   az account set -s $SubscriptionName
 
-  Write-Debug -Debug:$debug -Message "Get key for $StorageAccountName"
+  Write-Debug -Debug:$true -Message "Get key for $StorageAccountName"
   $accountKey = "$(az storage account keys list --account-name $StorageAccountName -o tsv --query '[0].value')"
 
   # Blob
   foreach ($containerName in $ContainerNames)
   {
-    Write-Debug -Debug:$debug -Message "Create container $containerName"
+    Write-Debug -Debug:$true -Message "Create container $containerName"
     az storage container create --account-name $StorageAccountName --account-key $accountKey -n $containerName
   }
 
   # Queue
   foreach ($queueName in $QueueNames)
   {
-    Write-Debug -Debug:$debug -Message "Create queue $queueName"
+    Write-Debug -Debug:$true -Message "Create queue $queueName"
     az storage queue create --account-name $StorageAccountName --account-key $accountKey -n $queueName
   }
 
   # Table
   foreach ($tableName in $TableNames)
   {
-    Write-Debug -Debug:$debug -Message "Create table $tableName"
+    Write-Debug -Debug:$true -Message "Create table $tableName"
     az storage table create --account-name $StorageAccountName --account-key $accountKey -n $tableName
   }
 }
@@ -3021,7 +3022,7 @@ function Remove-StorageContainersByNamePrefix()
     $NamePrefix
   )
 
-  Write-Debug -Debug:$debug -Message "Setting subscription to $SubscriptionName"
+  Write-Debug -Debug:$true -Message "Setting subscription to $SubscriptionName"
   az account set -s $SubscriptionName
 
   $query = "[?starts_with(name, '" + $NamePrefix + "')].name"
@@ -3029,12 +3030,12 @@ function Remove-StorageContainersByNamePrefix()
 
   foreach ($containerName in $containerNames)
   {
-    Write-Debug -Debug:$debug -Message "Deleting container $containerName"
+    Write-Debug -Debug:$true -Message "Deleting container $containerName"
     az storage container delete --account-name $StorageAccountName -n $containerName --auth-mode login 
   }
   else
   {
-    Write-Debug -Debug:$debug -Message ("No Op on container $containerName")
+    Write-Debug -Debug:$true -Message ("No Op on container $containerName")
   }
 }
 
@@ -3057,7 +3058,7 @@ function Remove-StorageContainersByNamePrefixAndAge()
     $DaysOlderThan
   )
 
-  Write-Debug -Debug:$debug -Message "Setting subscription to $SubscriptionName"
+  Write-Debug -Debug:$true -Message "Setting subscription to $SubscriptionName"
   az account set -s $SubscriptionName
 
   $query = "[?starts_with(name, '" + $NamePrefix + "')].{Name: name, LastModified: properties.lastModified}"
@@ -3072,12 +3073,12 @@ function Remove-StorageContainersByNamePrefixAndAge()
 
     if ($deleteThis)
     {
-      Write-Debug -Debug:$debug -Message ("Deleting container " + $container.Name)
+      Write-Debug -Debug:$true -Message ("Deleting container " + $container.Name)
       az storage container delete --account-name $StorageAccountName -n $container.Name --auth-mode login 
     }
     else
     {
-      Write-Debug -Debug:$debug -Message ("No Op on container " + $container.Name)
+      Write-Debug -Debug:$true -Message ("No Op on container " + $container.Name)
     }
   }
 }
@@ -3107,30 +3108,30 @@ function Remove-StorageObjects()
     $TableNames
   )
 
-  Write-Debug -Debug:$debug -Message "Setting subscription to $SubscriptionName"
+  Write-Debug -Debug:$true -Message "Setting subscription to $SubscriptionName"
   az account set -s $SubscriptionName
 
-  Write-Debug -Debug:$debug -Message "Get key for $StorageAccountName"
+  Write-Debug -Debug:$true -Message "Get key for $StorageAccountName"
   $accountKey = "$(az storage account keys list --account-name $StorageAccountName -o tsv --query '[0].value')"
 
   # Blob
   foreach ($containerName in $ContainerNames)
   {
-    Write-Debug -Debug:$debug -Message "Delete container $containerName"
+    Write-Debug -Debug:$true -Message "Delete container $containerName"
     az storage container delete --account-name $StorageAccountName --account-key $accountKey -n $containerName
   }
 
   # Queue
   foreach ($queueName in $QueueNames)
   {
-    Write-Debug -Debug:$debug -Message "Delete queue $queueName"
+    Write-Debug -Debug:$true -Message "Delete queue $queueName"
     az storage queue delete --account-name $StorageAccountName --account-key $accountKey -n $queueName
   }
 
   # Table
   foreach ($tableName in $TableNames)
   {
-    Write-Debug -Debug:$debug -Message "Delete table $tableName"
+    Write-Debug -Debug:$true -Message "Delete table $tableName"
     az storage table delete --account-name $StorageAccountName --account-key $accountKey -n $tableName
   }
 }
@@ -3151,7 +3152,7 @@ function Remove-StorageTablesByNamePrefix()
     $NamePrefix
   )
 
-  Write-Debug -Debug:$debug -Message "Setting subscription to $SubscriptionName"
+  Write-Debug -Debug:$true -Message "Setting subscription to $SubscriptionName"
   az account set -s $SubscriptionName
 
   $query = "[?starts_with(name, '" + $NamePrefix + "')].name"
@@ -3159,12 +3160,12 @@ function Remove-StorageTablesByNamePrefix()
 
   foreach ($tableName in $tableNames)
   {
-    Write-Debug -Debug:$debug -Message "Deleting table $tableName"
+    Write-Debug -Debug:$true -Message "Deleting table $tableName"
     az storage table delete --account-name $StorageAccountName -n $tableName --auth-mode login 
   }
   else
   {
-    Write-Debug -Debug:$debug -Message ("No Op on table $tableName")
+    Write-Debug -Debug:$true -Message ("No Op on table $tableName")
   }
 }
 
@@ -3187,7 +3188,7 @@ function Remove-StorageTablesByNamePrefixAndAge()
     $DaysOlderThan
   )
 
-  Write-Debug -Debug:$debug -Message "Setting subscription to $SubscriptionName"
+  Write-Debug -Debug:$true -Message "Setting subscription to $SubscriptionName"
   az account set -s $SubscriptionName
 
   $query = "[?starts_with(name, '" + $NamePrefix + "')].name"
@@ -3220,12 +3221,12 @@ function Remove-StorageTablesByNamePrefixAndAge()
 
     if ($deleteThis)
     {
-      Write-Debug -Debug:$debug -Message ("Deleting table $tableName")
+      Write-Debug -Debug:$true -Message ("Deleting table $tableName")
       az storage table delete --account-name $StorageAccountName -n $tableName --auth-mode login 
     }
     else
     {
-      Write-Debug -Debug:$debug -Message ("No Op on table $tableName")
+      Write-Debug -Debug:$true -Message ("No Op on table $tableName")
     }
   }
 }
@@ -3303,13 +3304,13 @@ function Copy-StorageData()
   # Expire SAS an hour from now in UTC
   $expiry = (Get-Date -AsUTC).AddMinutes(60).ToString("yyyy-MM-ddTHH:mmZ")
 
-  Write-Debug -Debug:$debug -Message "Set subscription to source $SubscriptionNameSource"
+  Write-Debug -Debug:$true -Message "Set subscription to source $SubscriptionNameSource"
   az account set -s $SubscriptionNameSource
 
-  Write-Debug -Debug:$debug -Message "Get key for source account $StorageAccountNameSource"
+  Write-Debug -Debug:$true -Message "Get key for source account $StorageAccountNameSource"
   $accountKeySource = "$(az storage account keys list --account-name $StorageAccountNameSource -o tsv --query '[0].value')"
 
-  Write-Debug -Debug:$debug -Message "Create SAS for source account $StorageAccountNameSource"
+  Write-Debug -Debug:$true -Message "Create SAS for source account $StorageAccountNameSource"
   $sasSource = az storage account generate-sas -o tsv --only-show-errors `
     --account-name $StorageAccountNameSource `
     --account-key $accountKeySource `
@@ -3319,13 +3320,13 @@ function Copy-StorageData()
     --permissions lr `
     --https-only
 
-  Write-Debug -Debug:$debug -Message "Set subscription to sink $SubscriptionNameSink"
+  Write-Debug -Debug:$true -Message "Set subscription to sink $SubscriptionNameSink"
   az account set -s $SubscriptionNameSink
 
-  Write-Debug -Debug:$debug -Message "Get key for sink $StorageAccountNameSink"
+  Write-Debug -Debug:$true -Message "Get key for sink $StorageAccountNameSink"
   $accountKeySink = "$(az storage account keys list --account-name $StorageAccountNameSink -o tsv --query '[0].value')"
 
-  Write-Debug -Debug:$debug -Message "Create SAS for sink $StorageAccountNameSink"
+  Write-Debug -Debug:$true -Message "Create SAS for sink $StorageAccountNameSink"
   $sasSink = az storage account generate-sas -o tsv --only-show-errors `
     --account-name $StorageAccountNameSink `
     --account-key $accountKeySink `
@@ -3404,10 +3405,10 @@ function Copy-StorageBlobs()
       $containerNameSource = $ContainerNamesSource[$i]
       $containerNameSink = $ContainerNamesSink[$i]
 
-      Write-Debug -Debug:$debug -Message "Create sink container $containerNameSink"
+      Write-Debug -Debug:$true -Message "Create sink container $containerNameSink"
       az storage container create --account-name $StorageAccountNameSink --sas-token $SasSink -n $containerNameSink
 
-      Write-Debug -Debug:$debug -Message "Run azcopy sync from source container $containerNameSource to sink container $containerNameSink"
+      Write-Debug -Debug:$true -Message "Run azcopy sync from source container $containerNameSource to sink container $containerNameSink"
       azcopy sync "https://$StorageAccountNameSource.blob.core.windows.net/$containerNameSource/?$SasSource" "https://$StorageAccountNameSink.blob.core.windows.net/$containerNameSink/?$SasSink"
     }
   }
@@ -3459,27 +3460,27 @@ function Copy-StorageTables()
   }
   else
   {
-    Write-Debug -Debug:$debug -Message "Setting subscription to $SubscriptionNameDataFactory"
+    Write-Debug -Debug:$true -Message "Setting subscription to $SubscriptionNameDataFactory"
     az account set -s $SubscriptionNameDataFactory
 
       # Variables
     $dfLsNameSource = $StorageAccountNameSource
     $dfLsNameSink = $StorageAccountNameSink
 
-    Write-Debug -Debug:$debug -Message "Create ADF RG $ResourceGroupNameDataFactory"
+    Write-Debug -Debug:$true -Message "Create ADF RG $ResourceGroupNameDataFactory"
     $tags = Get-Tags -EnvironmentName $EnvironmentName
     az group create -n $ResourceGroupNameDataFactory -l $Location --tags $tags
 
-    Write-Debug -Debug:$debug -Message "Create ADF $DataFactoryName"
+    Write-Debug -Debug:$true -Message "Create ADF $DataFactoryName"
     az datafactory create `
       --location $Location `
       -g $ResourceGroupNameDataFactory `
       --factory-name $DataFactoryName
 
-    Write-Debug -Debug:$debug -Message "Create linked service $dfLsNameSource"
+    Write-Debug -Debug:$true -Message "Create linked service $dfLsNameSource"
     $jsonLsSource = '{"annotations":[],"type":"AzureTableStorage","typeProperties":{"connectionString":"DefaultEndpointsProtocol=https;EndpointSuffix=core.windows.net;AccountName=' + $StorageAccountNameSource + ';AccountKey=' + $AccountKeySource + '"}}'
     $jsonLsSource > "ls-source.json"
-    Write-Debug -Debug:$debug -Message $jsonLsSource
+    Write-Debug -Debug:$true -Message $jsonLsSource
 
     az datafactory linked-service create `
       -g $ResourceGroupNameDataFactory `
@@ -3487,10 +3488,10 @@ function Copy-StorageTables()
       --linked-service-name $dfLsNameSource `
       --properties '@ls-source.json'
 
-    Write-Debug -Debug:$debug -Message "Create linked service $dfLsNameSink"
+    Write-Debug -Debug:$true -Message "Create linked service $dfLsNameSink"
     $jsonLsSink = '{"annotations":[],"type":"AzureTableStorage","typeProperties":{"connectionString":"DefaultEndpointsProtocol=https;EndpointSuffix=core.windows.net;AccountName=' + $StorageAccountNameSink + ';AccountKey=' + $AccountKeySink + '"}}'
     $jsonLsSink > "ls-sink.json"
-    Write-Debug -Debug:$debug -Message $jsonLsSink
+    Write-Debug -Debug:$true -Message $jsonLsSink
 
     az datafactory linked-service create `
       -g $ResourceGroupNameDataFactory `
@@ -3503,14 +3504,14 @@ function Copy-StorageTables()
       $tableNameSource = $TableNamesSource[$i]
       $tableNameSink = $TableNamesSink[$i]
 
-      Write-Debug -Debug:$debug -Message "Create sink table $tableNameSink"
+      Write-Debug -Debug:$true -Message "Create sink table $tableNameSink"
       az storage table create --account-name $StorageAccountNameSink --account-key $AccountKeySink -n $tableNameSink
 
       $dataSetNameSource = $dfLsNameSource + "_" + $tableNameSource
-      Write-Debug -Debug:$debug -Message "Create dataset $dataSetNameSource"
+      Write-Debug -Debug:$true -Message "Create dataset $dataSetNameSource"
       $jsonDsSource = '{"linkedServiceName": {"referenceName": "' + $dfLsNameSource + '", "type": "LinkedServiceReference"}, "annotations": [], "type": "AzureTable", "schema": [], "typeProperties": {"tableName": "' + $tableNameSource + '"}}'
       $jsonDsSource > "dataset-source.json"
-      Write-Debug -Debug:$debug -Message $jsonDsSource
+      Write-Debug -Debug:$true -Message $jsonDsSource
 
       az datafactory dataset create `
       -g $ResourceGroupNameDataFactory `
@@ -3519,10 +3520,10 @@ function Copy-StorageTables()
       --properties '@dataset-source.json'
 
       $dataSetNameSink = $dfLsNameSink + "_" + $tableNameSink
-      Write-Debug -Debug:$debug -Message "Create dataset $dataSetNameSink"
+      Write-Debug -Debug:$true -Message "Create dataset $dataSetNameSink"
       $jsonDsSink = '{"linkedServiceName": {"referenceName": "' + $dfLsNameSink + '", "type": "LinkedServiceReference"}, "annotations": [], "type": "AzureTable", "schema": [], "typeProperties": {"tableName": "' + $tableNameSink + '"}}'
       $jsonDsSink > "dataset-sink.json"
-      Write-Debug -Debug:$debug -Message $jsonDsSink
+      Write-Debug -Debug:$true -Message $jsonDsSink
 
       az datafactory dataset create `
         -g $ResourceGroupNameDataFactory `
@@ -3532,10 +3533,10 @@ function Copy-StorageTables()
 
       $pipelineName = $tableNameSource + "-" + $tableNameSink
 
-      Write-Debug -Debug:$debug -Message "Create pipeline $pipelineName"
+      Write-Debug -Debug:$true -Message "Create pipeline $pipelineName"
       $jsonPipeline = '{"activities": [{"name": "Copy Data", "type": "Copy", "dependsOn": [], "policy": {"timeout": "0.12:00:00", "retry": 0, "retryIntervalInSeconds": 30, "secureOutput": false, "secureInput": false}, "userProperties": [], "typeProperties": {"source": {"type": "AzureTableSource", "azureTableSourceIgnoreTableNotFound": false}, "sink": {"type": "AzureTableSink", "azureTableInsertType": "merge", "azureTablePartitionKeyName": {"value": "PartitionKey", "type": "Expression"}, "azureTableRowKeyName": {"value": "RowKey", "type": "Expression"}, "writeBatchSize": 10000}, "enableStaging": false, "translator": {"type": "TabularTranslator", "typeConversion": true, "typeConversionSettings": {"allowDataTruncation": false, "treatBooleanAsNumber": false}}}, "inputs": [{"referenceName": "' + $dataSetNameSource + '", "type": "DatasetReference"}], "outputs": [{"referenceName": "' + $dataSetNameSink + '", "type": "DatasetReference"}]}], "annotations": []}'
       $jsonPipeline > "pipeline.json"
-      Write-Debug -Debug:$debug -Message $jsonPipeline
+      Write-Debug -Debug:$true -Message $jsonPipeline
 
       az datafactory pipeline create `
         -g $ResourceGroupNameDataFactory `
@@ -3543,7 +3544,7 @@ function Copy-StorageTables()
         --pipeline-name $pipelineName `
         --pipeline '@pipeline.json'
 
-      Write-Debug -Debug:$debug -Message "Trigger pipeline $pipelineName"
+      Write-Debug -Debug:$true -Message "Trigger pipeline $pipelineName"
       az datafactory pipeline create-run `
         -g $ResourceGroupNameDataFactory `
         --factory-name $DataFactoryName `
@@ -3571,7 +3572,7 @@ function Set-StorageQueues()
 
   foreach ($queueName in $QueueNames)
   {
-    Write-Debug -Debug:$debug -Message "Create queue $queueName"
+    Write-Debug -Debug:$true -Message "Create queue $queueName"
     az storage queue create --account-name $StorageAccountName -n $queueName --sas-token $Sas
   }
 }
@@ -3787,10 +3788,10 @@ function Get-MyPublicIpAddress() {
     $myPublicIpAddress = Invoke-RestMethod "$ipUrl"
     $myPublicIpAddress += "/32"
 
-    Write-Debug -Debug:$Debug -Message "Got my public IP address: $myPublicIpAddress."
+    Write-Debug -Debug:$true -Message "Got my public IP address: $myPublicIpAddress."
   }
   else {
-    Write-Debug -Debug:$Debug -Message "Error! Could not get my public IP address."
+    Write-Debug -Debug:$true -Message "Error! Could not get my public IP address."
   }
 
   return $myPublicIpAddress
@@ -3951,23 +3952,23 @@ function Test-IsIpInCidr() {
     $Cidr
   )
 
-  Write-Debug -Debug:$Debug -Message ("Test-IsIpInCidr :: IpAddress=" + $IpAddress + ", Cidr=" + $Cidr)
+  Write-Debug -Debug:$true -Message ("Test-IsIpInCidr :: IpAddress=" + $IpAddress + ", Cidr=" + $Cidr)
 
   $ip = $IpAddress.Split('/')[0]
   $cidrIp = $Cidr.Split('/')[0]
   $cidrBitsToMask = $Cidr.Split('/')[1]
 
-  #Write-Debug -Debug:$Debug -Message ("ip=" + $ip + ", cidrIp=" + $cidrIp + ", cidrBitsToMask=" + $cidrBitsToMask)
+  #Write-Debug -Debug:$true -Message ("ip=" + $ip + ", cidrIp=" + $cidrIp + ", cidrBitsToMask=" + $cidrBitsToMask)
 
   [int]$BaseAddress = [System.BitConverter]::ToInt32((([System.Net.IPAddress]::Parse($cidrIp)).GetAddressBytes()), 0)
   [int]$Address = [System.BitConverter]::ToInt32(([System.Net.IPAddress]::Parse($ip).GetAddressBytes()), 0)
   [int]$Mask = [System.Net.IPAddress]::HostToNetworkOrder(-1 -shl (32 - $cidrBitsToMask))
 
-  #Write-Debug -Debug:$Debug -Message ("BaseAddress=" + $BaseAddress + ", Address=" + $Address + ", Mask=" + $Mask)
+  #Write-Debug -Debug:$true -Message ("BaseAddress=" + $BaseAddress + ", Address=" + $Address + ", Mask=" + $Mask)
 
   $result = (($BaseAddress -band $Mask) -eq ($Address -band $Mask))
 
-  #Write-Debug -Debug:$Debug -Message ("Result=" + $result)
+  #Write-Debug -Debug:$true -Message ("Result=" + $result)
 
   return $result
 }
@@ -4002,7 +4003,7 @@ function Get-ServiceTagsForAzurePublicIp() {
 
   $result = @()
 
-  Write-Debug -Debug:$Debug -Message "Processing - please wait... this will take a couple of minutes"
+  Write-Debug -Debug:$true -Message "Processing - please wait... this will take a couple of minutes"
 
   foreach ($ipRange in $ipRanges)
   {
@@ -4012,7 +4013,7 @@ function Get-ServiceTagsForAzurePublicIp() {
     $region = $ipRange.properties.region
     $cidrs = $ipRange.properties.addressPrefixes | Where-Object { $_ -like "*.*.*.*/*" } # filter to only IPv4
 
-    Write-Debug -Debug:$Debug -Message "Checking ipRangeName = $ipRangeName"
+    Write-Debug -Debug:$true -Message "Checking ipRangeName = $ipRangeName"
 
     if (!$region) { $region = "(N/A)" }
 
@@ -4039,7 +4040,7 @@ function Get-ServiceTagsForAzurePublicIp() {
   }
 
   if ($isFound -eq $false) {
-    Write-Debug -Debug:$Debug -Message ($IpAddress + ": Not found in any range")
+    Write-Debug -Debug:$true -Message ($IpAddress + ": Not found in any range")
   }
 
   , ($result | Sort-Object -Property "Name")
@@ -4098,7 +4099,7 @@ function ConvertTo-BinaryIpAddress() {
 
   $result = $addressBinary + "/" + $maskBinary
 
-  #Write-Debug -Debug:$Debug -Message ("ConvertTo-BinaryIpAddress :: IpAddress = " + $IpAddress + " :: Result = " + $result)
+  #Write-Debug -Debug:$true -Message ("ConvertTo-BinaryIpAddress :: IpAddress = " + $IpAddress + " :: Result = " + $result)
 
   return $result
 }
@@ -4184,7 +4185,7 @@ function ConvertFrom-BinaryIpAddress() {
     $result = $ipFinal
   }
 
-  #Write-Debug -Debug:$Debug -Message ("ConvertFrom-BinaryIpAddress :: IpAddressBinary = " + $IpAddressBinary + " :: Result = " + $result)
+  #Write-Debug -Debug:$true -Message ("ConvertFrom-BinaryIpAddress :: IpAddressBinary = " + $IpAddressBinary + " :: Result = " + $result)
 
   return $result
 }
@@ -4220,7 +4221,7 @@ function Get-EndIpForCidr() {
 
   $result = Get-EndIp -StartIp $startIp -Prefix $prefix
 
-  #Write-Debug -Debug:$Debug -Message ("Get-EndIpForCidr :: Cidr = " + $Cidr + " :: Result = " + $result)
+  #Write-Debug -Debug:$true -Message ("Get-EndIpForCidr :: Cidr = " + $Cidr + " :: Result = " + $result)
 
   return $result
 }
@@ -4270,12 +4271,12 @@ function Get-EndIp() {
 
     $result = $endIp.ToString()
 
-    #Write-Debug -Debug:$Debug -Message ("Get-EndIp: StartIp = " + $StartIp + " :: Prefix = " + $Prefix + " :: Result = " + $result)
+    #Write-Debug -Debug:$true -Message ("Get-EndIp: StartIp = " + $StartIp + " :: Prefix = " + $Prefix + " :: Result = " + $result)
 
     return $result
   }
   catch {
-    Write-Debug -Debug:$Debug -Message "Get-EndIp: Could not find end IP for $($StartIp)/$($Prefix)"
+    Write-Debug -Debug:$true -Message "Get-EndIp: Could not find end IP for $($StartIp)/$($Prefix)"
 
     throw
   }
@@ -4320,7 +4321,7 @@ function Get-CidrRangeBetweenIps() {
   $smallestIp = $binaryIps[0]
   $biggestIp = $binaryIps[$binaryIps.Count - 1]
 
-  #Write-Debug -Debug:$Debug -Message ("Get-CidrRangeBetweenIps :: IpAddresses = " + $IpAddresses + " :: SmallestIP = " + $smallestIp + " :: BiggestIP = " + $biggestIp)
+  #Write-Debug -Debug:$true -Message ("Get-CidrRangeBetweenIps :: IpAddresses = " + $IpAddresses + " :: SmallestIP = " + $smallestIp + " :: BiggestIP = " + $biggestIp)
 
   for ($i = 0; $i -lt $smallestIp.Length; $i++) {
     if ($smallestIp[$i] -ne $biggestIp[$i]) {
@@ -4375,7 +4376,7 @@ function Get-CidrRanges() {
     $AddCidrToSingleIPs = $true
   )
 
-  Write-Debug -Debug:$Debug -Message ("Get-CidrRanges: MaxSizePrefix=" + $MaxSizePrefix + ", AddCidrToSingleIPs=" + $AddCidrToSingleIPs + ", IpAddresses=" + $IpAddresses)
+  Write-Debug -Debug:$true -Message ("Get-CidrRanges: MaxSizePrefix=" + $MaxSizePrefix + ", AddCidrToSingleIPs=" + $AddCidrToSingleIPs + ", IpAddresses=" + $IpAddresses)
 
   $ipAddressesBinary = [System.Collections.ArrayList]@()
   $ipAddressesSorted = [System.Collections.ArrayList]@()
@@ -4463,7 +4464,7 @@ function Get-CondensedCidrRanges() {
     $AddCidrToSingleIPs = $true
   )
 
-  Write-Debug -Debug:$Debug -Message ("Get-CondensedCidrRanges :: MaxSizePrefix = " + $MaxSizePrefix + " :: AddCidrToSingleIPs = " + $AddCidrToSingleIPs + " :: CidrRanges = " + $CidrRanges)
+  Write-Debug -Debug:$true -Message ("Get-CondensedCidrRanges :: MaxSizePrefix = " + $MaxSizePrefix + " :: AddCidrToSingleIPs = " + $AddCidrToSingleIPs + " :: CidrRanges = " + $CidrRanges)
 
   [string[]]$finalCidrRanges = @()
   $cidrObjs = @()
@@ -4492,7 +4493,7 @@ function Get-CondensedCidrRanges() {
       $isSameRange = ($testRange.startIp -eq $curRange.startIp) -and ($testRange.endIp -eq $curRange.endIp)
 
       if (($testRange.prefix -lt $MaxSizePrefix) -and ($isSameRange -eq $false)) {
-        #Write-Debug -Debug:$Debug -Message ("Range too big")
+        #Write-Debug -Debug:$true -Message ("Range too big")
 
         # This range is too big. Apply the existing range & set the current IP to the start
         $cidrToAdd = $curRange.startIp
@@ -4526,7 +4527,7 @@ function Get-CondensedCidrRanges() {
 
   $result = $finalCidrRanges | Get-Unique
 
-  Write-Debug -Debug:$Debug -Message ("Get-CondensedCidrRanges :: Result Count = " + $result.Count + " :: Result = " + $result)
+  Write-Debug -Debug:$true -Message ("Get-CondensedCidrRanges :: Result Count = " + $result.Count + " :: Result = " + $result)
 
   return $result
 }
@@ -4602,14 +4603,14 @@ function Get-ConfigFromFile()
     $ConfigFilePath
   )
 
-  Write-Debug -Debug:$debug -Message ("Get-ConfigConstants: ConfigFilePath: " + "$ConfigFilePath")
+  Write-Debug -Debug:$true -Message ("Get-ConfigConstants: ConfigFilePath: " + "$ConfigFilePath")
 
   Get-Content -Path "$ConfigFilePath" | ConvertFrom-Json
 }
 
 function Get-EnvVars()
 {
-  Write-Debug -Debug:$debug -Message ("Get-EnvVars")
+  Write-Debug -Debug:$true -Message ("Get-EnvVars")
 
   Get-ChildItem env:
 }
@@ -4684,7 +4685,7 @@ function Set-EnvVar2
     $VarValue
   )
 
-  Write-Debug -Debug:$debug -Message ("Set-EnvVar2: VarName: " + "$VarName" + ", VarValue: " + "$VarValue")
+  Write-Debug -Debug:$true -Message ("Set-EnvVar2: VarName: " + "$VarName" + ", VarValue: " + "$VarValue")
 
   if ($env:GITHUB_ENV)
   {
@@ -4727,7 +4728,7 @@ function Set-EnvVar1()
     $VarPair
   )
 
-  Write-Debug -Debug:$debug -Message ("Set-EnvVar1: VarPair: " + "$VarPair")
+  Write-Debug -Debug:$true -Message ("Set-EnvVar1: VarPair: " + "$VarPair")
 
   if ($VarPair -like "*=*")
   {
