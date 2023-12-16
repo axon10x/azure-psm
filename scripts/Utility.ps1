@@ -8,14 +8,14 @@ function Get-ConfigFromFile()
     $ConfigFilePath
   )
 
-  Write-Debug -Debug:$debug -Message ("Get-ConfigConstants: ConfigFilePath: " + "$ConfigFilePath")
+  Write-Debug -Debug:$true -Message ("Get-ConfigConstants: ConfigFilePath: " + "$ConfigFilePath")
 
   Get-Content -Path "$ConfigFilePath" | ConvertFrom-Json
 }
 
 function Get-EnvVars()
 {
-  Write-Debug -Debug:$debug -Message ("Get-EnvVars")
+  Write-Debug -Debug:$true -Message ("Get-EnvVars")
 
   Get-ChildItem env:
 }
@@ -90,7 +90,7 @@ function Set-EnvVar2
     $VarValue
   )
 
-  Write-Debug -Debug:$debug -Message ("Set-EnvVar2: VarName: " + "$VarName" + ", VarValue: " + "$VarValue")
+  Write-Debug -Debug:$true -Message ("Set-EnvVar2: VarName: " + "$VarName" + ", VarValue: " + "$VarValue")
 
   if ($env:GITHUB_ENV)
   {
@@ -133,7 +133,7 @@ function Set-EnvVar1()
     $VarPair
   )
 
-  Write-Debug -Debug:$debug -Message ("Set-EnvVar1: VarPair: " + "$VarPair")
+  Write-Debug -Debug:$true -Message ("Set-EnvVar1: VarPair: " + "$VarPair")
 
   if ($VarPair -like "*=*")
   {

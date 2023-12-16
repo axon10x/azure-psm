@@ -31,10 +31,10 @@ function Get-MyPublicIpAddress() {
     $myPublicIpAddress = Invoke-RestMethod "$ipUrl"
     $myPublicIpAddress += "/32"
 
-    Write-Debug -Debug:$Debug -Message "Got my public IP address: $myPublicIpAddress."
+    Write-Debug -Debug:$true -Message "Got my public IP address: $myPublicIpAddress."
   }
   else {
-    Write-Debug -Debug:$Debug -Message "Error! Could not get my public IP address."
+    Write-Debug -Debug:$true -Message "Error! Could not get my public IP address."
   }
 
   return $myPublicIpAddress
@@ -195,23 +195,23 @@ function Test-IsIpInCidr() {
     $Cidr
   )
 
-  Write-Debug -Debug:$Debug -Message ("Test-IsIpInCidr :: IpAddress=" + $IpAddress + ", Cidr=" + $Cidr)
+  Write-Debug -Debug:$true -Message ("Test-IsIpInCidr :: IpAddress=" + $IpAddress + ", Cidr=" + $Cidr)
 
   $ip = $IpAddress.Split('/')[0]
   $cidrIp = $Cidr.Split('/')[0]
   $cidrBitsToMask = $Cidr.Split('/')[1]
 
-  #Write-Debug -Debug:$Debug -Message ("ip=" + $ip + ", cidrIp=" + $cidrIp + ", cidrBitsToMask=" + $cidrBitsToMask)
+  #Write-Debug -Debug:$true -Message ("ip=" + $ip + ", cidrIp=" + $cidrIp + ", cidrBitsToMask=" + $cidrBitsToMask)
 
   [int]$BaseAddress = [System.BitConverter]::ToInt32((([System.Net.IPAddress]::Parse($cidrIp)).GetAddressBytes()), 0)
   [int]$Address = [System.BitConverter]::ToInt32(([System.Net.IPAddress]::Parse($ip).GetAddressBytes()), 0)
   [int]$Mask = [System.Net.IPAddress]::HostToNetworkOrder(-1 -shl (32 - $cidrBitsToMask))
 
-  #Write-Debug -Debug:$Debug -Message ("BaseAddress=" + $BaseAddress + ", Address=" + $Address + ", Mask=" + $Mask)
+  #Write-Debug -Debug:$true -Message ("BaseAddress=" + $BaseAddress + ", Address=" + $Address + ", Mask=" + $Mask)
 
   $result = (($BaseAddress -band $Mask) -eq ($Address -band $Mask))
 
-  #Write-Debug -Debug:$Debug -Message ("Result=" + $result)
+  #Write-Debug -Debug:$true -Message ("Result=" + $result)
 
   return $result
 }
@@ -246,7 +246,7 @@ function Get-ServiceTagsForAzurePublicIp() {
 
   $result = @()
 
-  Write-Debug -Debug:$Debug -Message "Processing - please wait... this will take a couple of minutes"
+  Write-Debug -Debug:$true -Message "Processing - please wait... this will take a couple of minutes"
 
   foreach ($ipRange in $ipRanges)
   {
@@ -256,7 +256,7 @@ function Get-ServiceTagsForAzurePublicIp() {
     $region = $ipRange.properties.region
     $cidrs = $ipRange.properties.addressPrefixes | Where-Object { $_ -like "*.*.*.*/*" } # filter to only IPv4
 
-    Write-Debug -Debug:$Debug -Message "Checking ipRangeName = $ipRangeName"
+    Write-Debug -Debug:$true -Message "Checking ipRangeName = $ipRangeName"
 
     if (!$region) { $region = "(N/A)" }
 
@@ -283,7 +283,7 @@ function Get-ServiceTagsForAzurePublicIp() {
   }
 
   if ($isFound -eq $false) {
-    Write-Debug -Debug:$Debug -Message ($IpAddress + ": Not found in any range")
+    Write-Debug -Debug:$true -Message ($IpAddress + ": Not found in any range")
   }
 
   , ($result | Sort-Object -Property "Name")
@@ -342,7 +342,7 @@ function ConvertTo-BinaryIpAddress() {
 
   $result = $addressBinary + "/" + $maskBinary
 
-  #Write-Debug -Debug:$Debug -Message ("ConvertTo-BinaryIpAddress :: IpAddress = " + $IpAddress + " :: Result = " + $result)
+  #Write-Debug -Debug:$true -Message ("ConvertTo-BinaryIpAddress :: IpAddress = " + $IpAddress + " :: Result = " + $result)
 
   return $result
 }
@@ -428,7 +428,7 @@ function ConvertFrom-BinaryIpAddress() {
     $result = $ipFinal
   }
 
-  #Write-Debug -Debug:$Debug -Message ("ConvertFrom-BinaryIpAddress :: IpAddressBinary = " + $IpAddressBinary + " :: Result = " + $result)
+  #Write-Debug -Debug:$true -Message ("ConvertFrom-BinaryIpAddress :: IpAddressBinary = " + $IpAddressBinary + " :: Result = " + $result)
 
   return $result
 }
@@ -464,7 +464,7 @@ function Get-EndIpForCidr() {
 
   $result = Get-EndIp -StartIp $startIp -Prefix $prefix
 
-  #Write-Debug -Debug:$Debug -Message ("Get-EndIpForCidr :: Cidr = " + $Cidr + " :: Result = " + $result)
+  #Write-Debug -Debug:$true -Message ("Get-EndIpForCidr :: Cidr = " + $Cidr + " :: Result = " + $result)
 
   return $result
 }
@@ -514,12 +514,12 @@ function Get-EndIp() {
 
     $result = $endIp.ToString()
 
-    #Write-Debug -Debug:$Debug -Message ("Get-EndIp: StartIp = " + $StartIp + " :: Prefix = " + $Prefix + " :: Result = " + $result)
+    #Write-Debug -Debug:$true -Message ("Get-EndIp: StartIp = " + $StartIp + " :: Prefix = " + $Prefix + " :: Result = " + $result)
 
     return $result
   }
   catch {
-    Write-Debug -Debug:$Debug -Message "Get-EndIp: Could not find end IP for $($StartIp)/$($Prefix)"
+    Write-Debug -Debug:$true -Message "Get-EndIp: Could not find end IP for $($StartIp)/$($Prefix)"
 
     throw
   }
@@ -564,7 +564,7 @@ function Get-CidrRangeBetweenIps() {
   $smallestIp = $binaryIps[0]
   $biggestIp = $binaryIps[$binaryIps.Count - 1]
 
-  #Write-Debug -Debug:$Debug -Message ("Get-CidrRangeBetweenIps :: IpAddresses = " + $IpAddresses + " :: SmallestIP = " + $smallestIp + " :: BiggestIP = " + $biggestIp)
+  #Write-Debug -Debug:$true -Message ("Get-CidrRangeBetweenIps :: IpAddresses = " + $IpAddresses + " :: SmallestIP = " + $smallestIp + " :: BiggestIP = " + $biggestIp)
 
   for ($i = 0; $i -lt $smallestIp.Length; $i++) {
     if ($smallestIp[$i] -ne $biggestIp[$i]) {
@@ -619,7 +619,7 @@ function Get-CidrRanges() {
     $AddCidrToSingleIPs = $true
   )
 
-  Write-Debug -Debug:$Debug -Message ("Get-CidrRanges: MaxSizePrefix=" + $MaxSizePrefix + ", AddCidrToSingleIPs=" + $AddCidrToSingleIPs + ", IpAddresses=" + $IpAddresses)
+  Write-Debug -Debug:$true -Message ("Get-CidrRanges: MaxSizePrefix=" + $MaxSizePrefix + ", AddCidrToSingleIPs=" + $AddCidrToSingleIPs + ", IpAddresses=" + $IpAddresses)
 
   $ipAddressesBinary = [System.Collections.ArrayList]@()
   $ipAddressesSorted = [System.Collections.ArrayList]@()
@@ -707,7 +707,7 @@ function Get-CondensedCidrRanges() {
     $AddCidrToSingleIPs = $true
   )
 
-  Write-Debug -Debug:$Debug -Message ("Get-CondensedCidrRanges :: MaxSizePrefix = " + $MaxSizePrefix + " :: AddCidrToSingleIPs = " + $AddCidrToSingleIPs + " :: CidrRanges = " + $CidrRanges)
+  Write-Debug -Debug:$true -Message ("Get-CondensedCidrRanges :: MaxSizePrefix = " + $MaxSizePrefix + " :: AddCidrToSingleIPs = " + $AddCidrToSingleIPs + " :: CidrRanges = " + $CidrRanges)
 
   [string[]]$finalCidrRanges = @()
   $cidrObjs = @()
@@ -736,7 +736,7 @@ function Get-CondensedCidrRanges() {
       $isSameRange = ($testRange.startIp -eq $curRange.startIp) -and ($testRange.endIp -eq $curRange.endIp)
 
       if (($testRange.prefix -lt $MaxSizePrefix) -and ($isSameRange -eq $false)) {
-        #Write-Debug -Debug:$Debug -Message ("Range too big")
+        #Write-Debug -Debug:$true -Message ("Range too big")
 
         # This range is too big. Apply the existing range & set the current IP to the start
         $cidrToAdd = $curRange.startIp
@@ -770,7 +770,7 @@ function Get-CondensedCidrRanges() {
 
   $result = $finalCidrRanges | Get-Unique
 
-  Write-Debug -Debug:$Debug -Message ("Get-CondensedCidrRanges :: Result Count = " + $result.Count + " :: Result = " + $result)
+  Write-Debug -Debug:$true -Message ("Get-CondensedCidrRanges :: Result Count = " + $result.Count + " :: Result = " + $result)
 
   return $result
 }

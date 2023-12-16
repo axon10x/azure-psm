@@ -27,14 +27,14 @@ function Get-PolicyInfo()
   # Get policy state summary for each custom policy definition
   ForEach ($definition in $definitions)
   {
-    Write-Debug -Debug:$debug -Message "Policy State Summary"
+    Write-Debug -Debug:$true -Message "Policy State Summary"
     Get-AzPolicyStateSummary -SubscriptionId $SubscriptionId -PolicyDefinitionName $definition.Name
 
-    Write-Debug -Debug:$debug -Message "Policy Assignments"
+    Write-Debug -Debug:$true -Message "Policy Assignments"
     $assignments = Get-AzPolicyAssignment -PolicyDefinitionId $definition.PolicyDefinitionId
 
     ForEach ($assignment in $assignments) {
-      Write-Debug -Debug:$debug -Message "Policy State for the Policy Assignment"
+      Write-Debug -Debug:$true -Message "Policy State for the Policy Assignment"
       Get-AzPolicyState -SubscriptionId $SubscriptionId -PolicyAssignmentName $assignment.Name
     }
   }

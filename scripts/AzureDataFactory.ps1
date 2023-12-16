@@ -14,7 +14,7 @@ function Remove-DataFactoriesByAge()
     $DaysOlderThan
   )
 
-  Write-Debug -Debug:$debug -Message "Setting subscription to $SubscriptionName"
+  Write-Debug -Debug:$true -Message "Setting subscription to $SubscriptionName"
   az account set -s $SubscriptionName
 
   $query = "[].{Name: name, CreateTime: createTime}"
@@ -29,12 +29,12 @@ function Remove-DataFactoriesByAge()
 
     if ($deleteThis)
     {
-      Write-Debug -Debug:$debug -Message ("Deleting factory " + $factory.Name)
+      Write-Debug -Debug:$true -Message ("Deleting factory " + $factory.Name)
       az datafactory delete -g $ResourceGroupName -n $factory.Name --yes
     }
     else
     {
-      Write-Debug -Debug:$debug -Message ("No Op on factory " + $factory.Name)
+      Write-Debug -Debug:$true -Message ("No Op on factory " + $factory.Name)
     }
   }
 }

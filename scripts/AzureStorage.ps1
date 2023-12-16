@@ -133,30 +133,30 @@ function New-StorageObjects()
     $TableNames
   )
 
-  Write-Debug -Debug:$debug -Message "Setting subscription to $SubscriptionName"
+  Write-Debug -Debug:$true -Message "Setting subscription to $SubscriptionName"
   az account set -s $SubscriptionName
 
-  Write-Debug -Debug:$debug -Message "Get key for $StorageAccountName"
+  Write-Debug -Debug:$true -Message "Get key for $StorageAccountName"
   $accountKey = "$(az storage account keys list --account-name $StorageAccountName -o tsv --query '[0].value')"
 
   # Blob
   foreach ($containerName in $ContainerNames)
   {
-    Write-Debug -Debug:$debug -Message "Create container $containerName"
+    Write-Debug -Debug:$true -Message "Create container $containerName"
     az storage container create --account-name $StorageAccountName --account-key $accountKey -n $containerName
   }
 
   # Queue
   foreach ($queueName in $QueueNames)
   {
-    Write-Debug -Debug:$debug -Message "Create queue $queueName"
+    Write-Debug -Debug:$true -Message "Create queue $queueName"
     az storage queue create --account-name $StorageAccountName --account-key $accountKey -n $queueName
   }
 
   # Table
   foreach ($tableName in $TableNames)
   {
-    Write-Debug -Debug:$debug -Message "Create table $tableName"
+    Write-Debug -Debug:$true -Message "Create table $tableName"
     az storage table create --account-name $StorageAccountName --account-key $accountKey -n $tableName
   }
 }
@@ -177,7 +177,7 @@ function Remove-StorageContainersByNamePrefix()
     $NamePrefix
   )
 
-  Write-Debug -Debug:$debug -Message "Setting subscription to $SubscriptionName"
+  Write-Debug -Debug:$true -Message "Setting subscription to $SubscriptionName"
   az account set -s $SubscriptionName
 
   $query = "[?starts_with(name, '" + $NamePrefix + "')].name"
@@ -185,12 +185,12 @@ function Remove-StorageContainersByNamePrefix()
 
   foreach ($containerName in $containerNames)
   {
-    Write-Debug -Debug:$debug -Message "Deleting container $containerName"
+    Write-Debug -Debug:$true -Message "Deleting container $containerName"
     az storage container delete --account-name $StorageAccountName -n $containerName --auth-mode login 
   }
   else
   {
-    Write-Debug -Debug:$debug -Message ("No Op on container $containerName")
+    Write-Debug -Debug:$true -Message ("No Op on container $containerName")
   }
 }
 
@@ -213,7 +213,7 @@ function Remove-StorageContainersByNamePrefixAndAge()
     $DaysOlderThan
   )
 
-  Write-Debug -Debug:$debug -Message "Setting subscription to $SubscriptionName"
+  Write-Debug -Debug:$true -Message "Setting subscription to $SubscriptionName"
   az account set -s $SubscriptionName
 
   $query = "[?starts_with(name, '" + $NamePrefix + "')].{Name: name, LastModified: properties.lastModified}"
@@ -228,12 +228,12 @@ function Remove-StorageContainersByNamePrefixAndAge()
 
     if ($deleteThis)
     {
-      Write-Debug -Debug:$debug -Message ("Deleting container " + $container.Name)
+      Write-Debug -Debug:$true -Message ("Deleting container " + $container.Name)
       az storage container delete --account-name $StorageAccountName -n $container.Name --auth-mode login 
     }
     else
     {
-      Write-Debug -Debug:$debug -Message ("No Op on container " + $container.Name)
+      Write-Debug -Debug:$true -Message ("No Op on container " + $container.Name)
     }
   }
 }
@@ -263,30 +263,30 @@ function Remove-StorageObjects()
     $TableNames
   )
 
-  Write-Debug -Debug:$debug -Message "Setting subscription to $SubscriptionName"
+  Write-Debug -Debug:$true -Message "Setting subscription to $SubscriptionName"
   az account set -s $SubscriptionName
 
-  Write-Debug -Debug:$debug -Message "Get key for $StorageAccountName"
+  Write-Debug -Debug:$true -Message "Get key for $StorageAccountName"
   $accountKey = "$(az storage account keys list --account-name $StorageAccountName -o tsv --query '[0].value')"
 
   # Blob
   foreach ($containerName in $ContainerNames)
   {
-    Write-Debug -Debug:$debug -Message "Delete container $containerName"
+    Write-Debug -Debug:$true -Message "Delete container $containerName"
     az storage container delete --account-name $StorageAccountName --account-key $accountKey -n $containerName
   }
 
   # Queue
   foreach ($queueName in $QueueNames)
   {
-    Write-Debug -Debug:$debug -Message "Delete queue $queueName"
+    Write-Debug -Debug:$true -Message "Delete queue $queueName"
     az storage queue delete --account-name $StorageAccountName --account-key $accountKey -n $queueName
   }
 
   # Table
   foreach ($tableName in $TableNames)
   {
-    Write-Debug -Debug:$debug -Message "Delete table $tableName"
+    Write-Debug -Debug:$true -Message "Delete table $tableName"
     az storage table delete --account-name $StorageAccountName --account-key $accountKey -n $tableName
   }
 }
@@ -307,7 +307,7 @@ function Remove-StorageTablesByNamePrefix()
     $NamePrefix
   )
 
-  Write-Debug -Debug:$debug -Message "Setting subscription to $SubscriptionName"
+  Write-Debug -Debug:$true -Message "Setting subscription to $SubscriptionName"
   az account set -s $SubscriptionName
 
   $query = "[?starts_with(name, '" + $NamePrefix + "')].name"
@@ -315,12 +315,12 @@ function Remove-StorageTablesByNamePrefix()
 
   foreach ($tableName in $tableNames)
   {
-    Write-Debug -Debug:$debug -Message "Deleting table $tableName"
+    Write-Debug -Debug:$true -Message "Deleting table $tableName"
     az storage table delete --account-name $StorageAccountName -n $tableName --auth-mode login 
   }
   else
   {
-    Write-Debug -Debug:$debug -Message ("No Op on table $tableName")
+    Write-Debug -Debug:$true -Message ("No Op on table $tableName")
   }
 }
 
@@ -343,7 +343,7 @@ function Remove-StorageTablesByNamePrefixAndAge()
     $DaysOlderThan
   )
 
-  Write-Debug -Debug:$debug -Message "Setting subscription to $SubscriptionName"
+  Write-Debug -Debug:$true -Message "Setting subscription to $SubscriptionName"
   az account set -s $SubscriptionName
 
   $query = "[?starts_with(name, '" + $NamePrefix + "')].name"
@@ -376,12 +376,12 @@ function Remove-StorageTablesByNamePrefixAndAge()
 
     if ($deleteThis)
     {
-      Write-Debug -Debug:$debug -Message ("Deleting table $tableName")
+      Write-Debug -Debug:$true -Message ("Deleting table $tableName")
       az storage table delete --account-name $StorageAccountName -n $tableName --auth-mode login 
     }
     else
     {
-      Write-Debug -Debug:$debug -Message ("No Op on table $tableName")
+      Write-Debug -Debug:$true -Message ("No Op on table $tableName")
     }
   }
 }
