@@ -150,6 +150,52 @@ function Remove-ResourceGroup()
   }
 }
 
+function Test-ResourceExists()
+{
+  [CmdletBinding()]
+  param
+  (
+    [Parameter(Mandatory=$true)]
+    [string]
+    $SubscriptionId,
+    [Parameter(Mandatory=$true)]
+    [string]
+    $ResourceGroupName,
+    [Parameter(Mandatory=$true)]
+    [string]
+    $ResourceType,
+    [Parameter(Mandatory=$true)]
+    [string]
+    $ResourceName
+  )
+
+  Write-Debug -Debug:$true -Message "Test-ResourceExists: SubscriptionId: $SubscriptionId, ResourceGroupName: $ResourceGroupName, ResourceType: $ResourceType, ResourceName: $ResourceName"
+
+  $resourceId = az resource show `
+    --subscription $SubscriptionId `
+    -g $ResourceGroupName `
+    --resource-type $ResourceType `
+    -n $ResourceName `
+    -o tsv `
+    --query 'id' 2>&1
+
+  if (!$?)
+  {
+    $resourceId = ""
+  }
+
+  if ($resourceId)
+  {
+    $resourceExists = $true
+  }
+  else
+  {
+    $resourceExists = $false
+  }
+
+  return $resourceExists
+}
+
 function Test-ResourceGroupExists()
 {
   [CmdletBinding()]
@@ -162,6 +208,8 @@ function Test-ResourceGroupExists()
     [string]
     $ResourceGroupName
   )
+
+  Write-Debug -Debug:$true -Message "Test-ResourceGroupExists: SubscriptionId: $SubscriptionId, ResourceGroupName: $ResourceGroupName"
 
   $rgExists = [System.Convert]::ToBoolean("$(az group exists --subscription $SubscriptionId -n $ResourceGroupName)")
 
