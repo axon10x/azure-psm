@@ -83,6 +83,45 @@ function Deploy-KeyVault()
   return $output
 }
 
+function Get-KeyVaultSecret()
+{
+  [CmdletBinding()]
+  param
+  (
+    [Parameter(Mandatory = $true)]
+    [string]
+    $SubscriptionId,
+    [Parameter(Mandatory=$true)]
+    [string]
+    $KeyVaultName,
+    [Parameter(Mandatory=$true)]
+    [string]
+    $SecretName
+  )
+  Write-Debug -Debug:$true -Message "Get Key Vault $KeyVaultName Secret $SecretName"
+
+  $secretValue = ""
+
+  if ($SecretName)
+  {
+    $secretNameSafe = Get-KeyVaultSecretName -VarName "$SecretName"
+
+    $secretValue = az keyvault secret show `
+      --subscription "$SubscriptionId" `
+      --vault-name "$KeyVaultName" `
+      --name "$secretNameSafe" `
+      -o tsv `
+      --query 'value' 2>&1
+
+    if (!$?)
+    {
+      $secretValue = ""
+    }
+  }
+
+  return $secretValue
+}
+
 function Get-KeyVaultSecretName()
 {
   [CmdletBinding()]
