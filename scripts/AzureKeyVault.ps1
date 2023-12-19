@@ -269,6 +269,37 @@ function Remove-KeyVaultNetworkRuleForVnetSubnet()
   return $output
 }
 
+function Remove-KeyVaultSecret()
+{
+  [CmdletBinding()]
+  param
+  (
+    [Parameter(Mandatory = $true)]
+    [string]
+    $SubscriptionId,
+    [Parameter(Mandatory=$true)]
+    [string]
+    $KeyVaultName,
+    [Parameter(Mandatory=$true)]
+    [string]
+    $SecretName
+  )
+  Write-Debug -Debug:$true -Message "Remove Key Vault $KeyVaultName Secret $SecretName"
+
+  if ($SecretName)
+  {
+    $secretNameSafe = Get-KeyVaultSecretName -VarName "$SecretName"
+
+    $output = az keyvault secret delete `
+      --subscription "$SubscriptionId" `
+      --vault-name "$KeyVaultName" `
+      --name "$secretNameSafe" `
+      | ConvertFrom-Json
+  }
+
+  return $output
+}
+
 function Set-KeyVaultNetworkSettings()
 {
   [CmdletBinding()]
