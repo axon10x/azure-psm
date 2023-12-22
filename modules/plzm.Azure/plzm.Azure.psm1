@@ -1007,7 +1007,7 @@ function Set-KeyVaultNetworkSettings()
     $DefaultAction = "Deny"
   )
 
-  Write-Debug -Debug:$true -Message "Set Key Vault $KeyVaultName Network Settings"
+  Write-Debug -Debug:$true -Message "Set Key Vault $KeyVaultName Network Settings: PublicNetworkAccess=$PublicNetworkAccess, DefaultAction=$DefaultAction"
 
   $output = az keyvault update `
     --subscription "$SubscriptionId" `
