@@ -1763,15 +1763,24 @@ function Deploy-NetworkSecurityGroupRule() {
     [Parameter(Mandatory = $false)]
     [string]
     $Protocol = "Tcp",
-    [Parameter(Mandatory = $true)]
+    [Parameter(Mandatory = $false)]
     [string]
-    $SourceAddressPrefix,
+    $SourceAddressPrefix = "",
+    [Parameter(Mandatory = $false)]
+    [string]
+    $SourceAddressPrefixes = "",
     [Parameter(Mandatory = $false)]
     [string]
     $SourcePortRange = "*",
-    [Parameter(Mandatory = $true)]
+    [Parameter(Mandatory = $false)]
     [string]
-    $DestinationAddressPrefix,
+    $SourcePortRanges = "",
+    [Parameter(Mandatory = $false)]
+    [string]
+    $DestinationAddressPrefix = "",
+    [Parameter(Mandatory = $false)]
+    [string]
+    $DestinationAddressPrefixes = "",
     [Parameter(Mandatory = $false)]
     [string]
     $DestinationPortRange = "",
@@ -1796,8 +1805,11 @@ function Deploy-NetworkSecurityGroupRule() {
     access="$Access" `
     protocol="$Protocol" `
     sourceAddressPrefix="$SourceAddressPrefix" `
+    sourceAddressPrefixes="$SourceAddressPrefixes" `
     sourcePortRange="$SourcePortRange" `
+    sourcePortRanges="$SourcePortRanges" `
     destinationAddressPrefix="$DestinationAddressPrefix" `
+    destinationAddressPrefixes="$DestinationAddressPrefixes" `
     destinationPortRange="$DestinationPortRange" `
     destinationPortRanges="$DestinationPortRanges" `
     | ConvertFrom-Json
