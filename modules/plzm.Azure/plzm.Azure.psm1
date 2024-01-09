@@ -1055,6 +1055,56 @@ function Set-KeyVaultSecret()
 # AzureMonitor.ps1
 # ##################################################
 
+function Deploy-ActionGroup()
+{
+  [CmdletBinding()]
+  param
+  (
+    [Parameter(Mandatory = $true)]
+    [string]
+    $SubscriptionId,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $ResourceGroupName,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $TemplateUri,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $ActionGroupName,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $ActionGroupShortName,
+    [Parameter(Mandatory = $false)]
+    [string]
+    $EmailReceivers = "",
+    [Parameter(Mandatory = $false)]
+    [string]
+    $SmsReceivers = "",
+    [Parameter(Mandatory = $false)]
+    [string]
+    $AzureAppPushReceivers = ""
+  )
+
+  Write-Debug -Debug:$true -Message "Deploy Action Group $ActionGroupName"
+
+  $output = az deployment group create --verbose `
+    --subscription "$SubscriptionId" `
+    -n "$ActionGroupName" `
+    -g "$ResourceGroupName" `
+    --template-uri "$TemplateUri" `
+    --parameters `
+    actionGroupName="$ActionGroupName" `
+    actionGroupShortName=acg1="$ActionGroupShortName" `
+    emailReceivers="$EmailReceivers" `
+    smsReceivers="$SmsReceivers" `
+    azureAppPushReceivers="$AzureAppPushReceivers" `
+    tags=$Tags `
+    | ConvertFrom-Json
+
+  return $output
+}
+
 function Deploy-DiagnosticsSetting()
 {
   [CmdletBinding()]
