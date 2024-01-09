@@ -207,7 +207,7 @@ function Deploy-MetricAlert()
     $Tags = ""
   )
 
-  Write-Debug -Debug:$true -Message "Deploy Metric Alert $ActionGroupName"
+  Write-Debug -Debug:$true -Message "Deploy Metric Alert $MetricAlertName"
 
   $output = az deployment group create --verbose `
     --subscription "$SubscriptionId" `
