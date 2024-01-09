@@ -1266,6 +1266,8 @@ function Deploy-MetricAlert()
 
   Write-Debug -Debug:$true -Message "Deploy Metric Alert $MetricAlertName"
 
+  $tagsForTemplate = Get-TagsForArmTemplate -Tags $Tags
+
   $output = az deployment group create --verbose `
     --subscription "$SubscriptionId" `
     -n "$MetricAlertName" `
@@ -1285,7 +1287,7 @@ function Deploy-MetricAlert()
     threshold="$Threshold" `
     timeAggregation="$TimeAggregation" `
     actionGroupId="$ActionGroupId" `
-    tags=$Tags `
+    tags=$tagsForTemplate `
     | ConvertFrom-Json
 
   return $output
@@ -3851,6 +3853,37 @@ function Set-StorageQueues()
 # ##################################################
 # AzureUtility.ps1
 # ##################################################
+
+function Get-TagsForArmTemplate()
+{
+  [CmdletBinding()]
+  param
+  (
+    [Parameter(Mandatory = $false)]
+    [string]
+    $Tags = ""
+  )
+
+  Write-Debug -Debug:$true -Message "Get-TagsForArmTemplate: $Tags"
+
+  $tagsObject = @{}
+
+  if ($Tags)
+  {
+    $tagKVPairs = $Tags.Split(",")
+    foreach ($tagKVPair in $tagKVPairs)
+    {
+      $tagKVArray = $tagKVPair.Split("=")
+      $tagsObject[$tagKVArray[0]] = $tagKVArray[1]
+    }
+  }
+
+  $tagsForArm = ConvertTo-Json -InputObject $tagsObject -Compress
+  $tagsForArm = $tagsForArm.Replace('"', '''')
+  $tagsForArm = "`"$tagsForArm`""
+
+  return $tagsForArm
+}
 
 function Remove-AzPackages()
 {
