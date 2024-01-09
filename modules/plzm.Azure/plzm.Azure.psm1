@@ -1251,7 +1251,7 @@ function Deploy-MetricAlert()
     [string]
     $Operator,
     [Parameter(Mandatory = $true)]
-    [int]
+    [long]
     $Threshold,
     [Parameter(Mandatory = $true)]
     [string]
