@@ -209,6 +209,8 @@ function Deploy-MetricAlert()
 
   Write-Debug -Debug:$true -Message "Deploy Metric Alert $MetricAlertName"
 
+  $tagsForTemplate = Get-TagsForArmTemplate -Tags $Tags
+
   $output = az deployment group create --verbose `
     --subscription "$SubscriptionId" `
     -n "$MetricAlertName" `
@@ -228,7 +230,7 @@ function Deploy-MetricAlert()
     threshold="$Threshold" `
     timeAggregation="$TimeAggregation" `
     actionGroupId="$ActionGroupId" `
-    tags=$Tags `
+    tags=$tagsForTemplate `
     | ConvertFrom-Json
 
   return $output
