@@ -1083,7 +1083,10 @@ function Deploy-ActionGroup()
     $SmsReceivers = "",
     [Parameter(Mandatory = $false)]
     [string]
-    $AzureAppPushReceivers = ""
+    $AzureAppPushReceivers = "",
+    [Parameter(Mandatory = $false)]
+    [string]
+    $Tags = ""
   )
 
   Write-Debug -Debug:$true -Message "Deploy Action Group $ActionGroupName"
@@ -1154,7 +1157,8 @@ function Deploy-DiagnosticsSetting()
   return $output
 }
 
-function Deploy-LogAnalyticsWorkspace() {
+function Deploy-LogAnalyticsWorkspace()
+{
   [CmdletBinding()]
   param
   (
@@ -1196,6 +1200,91 @@ function Deploy-LogAnalyticsWorkspace() {
     workspaceName="$WorkspaceName" `
     publicNetworkAccessForIngestion="$PublicNetworkAccessForIngestion" `
     publicNetworkAccessForQuery="$PublicNetworkAccessForQuery" `
+    tags=$Tags `
+    | ConvertFrom-Json
+
+  return $output
+}
+
+function Deploy-MetricAlert()
+{
+  [CmdletBinding()]
+  param
+  (
+    [Parameter(Mandatory = $true)]
+    [string]
+    $SubscriptionId,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $ResourceGroupName,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $TemplateUri,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $MetricAlertName,
+    [Parameter(Mandatory = $true)]
+    [int]
+    $Severity,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $TargetResourceType,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $TargetResourceId,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $EvaluationFrequency,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $WindowSize,
+    [Parameter(Mandatory = $false)]
+    [bool]
+    $AutoMitigate = $true,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $MetricNamespace,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $MetricName,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $Operator,
+    [Parameter(Mandatory = $true)]
+    [int]
+    $Threshold,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $TimeAggregation,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $ActionGroupId,
+    [Parameter(Mandatory = $false)]
+    [string]
+    $Tags = ""
+  )
+
+  Write-Debug -Debug:$true -Message "Deploy Metric Alert $ActionGroupName"
+
+  $output = az deployment group create --verbose `
+    --subscription "$SubscriptionId" `
+    -n "$MetricAlertName" `
+    -g "$ResourceGroupName" `
+    --template-uri "$TemplateUri" `
+    --parameters `
+    metricAlertName="$MetricAlertName" `
+    severity="$Severity" `
+    targetResourceType="$TargetResourceType" `
+    targetResourceId="$TargetResourceId" `
+    evaluationFrequency="$EvaluationFrequency" `
+    windowSize="$WindowSize" `
+    autoMitigate="$AutoMitigate" `
+    metricNamespace="$MetricNamespace" `
+    metricName="$MetricName" `
+    operator="$Operator" `
+    threshold="$Threshold" `
+    timeAggregation="$TimeAggregation" `
+    actionGroupId="$ActionGroupId" `
     tags=$Tags `
     | ConvertFrom-Json
 
