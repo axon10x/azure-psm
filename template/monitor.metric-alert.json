@@ -1,0 +1,135 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "timestamp": {
+      "type": "string",
+      "defaultValue": "[utcNow('u')]"
+    },
+    "metricAlertName": {
+      "type": "string"
+    },
+    "severity": {
+      "type": "int",
+      "defaultValue": 3,
+      "minValue": 0,
+      "maxValue": 4
+    },
+    "targetResourceType": {
+      "type": "string",
+      "defaultValue": "Microsoft.Compute/virtualMachines"
+    },
+    "targetResourceId": {
+      "type": "string"
+    },
+    "evaluationFrequency": {
+      "type": "string",
+      "defaultValue": "PT5M"
+    },
+    "windowSize": {
+      "type": "string",
+      "defaultValue": "PT5M"
+    },
+    "autoMitigate": {
+      "type": "bool",
+      "defaultValue": true
+    },
+    "criterionType": {
+      "type": "string",
+      "defaultValue": "StaticThresholdCriterion"
+    },
+    "criterionName": {
+      "type": "string",
+      "defaultValue": "Metric1"
+    },
+    "metricNamespace": {
+      "type": "string",
+      "defaultValue": "Microsoft.Compute/virtualMachines"
+    },
+    "metricName": {
+      "type": "string"
+    },
+    "operator": {
+      "type": "string",
+      "allowedValues": [
+        "GreaterOrLessThan",
+        "GreaterThan",
+        "LessThan"
+      ]
+    },
+    "threshold": {
+      "type": "int"
+    },
+    "timeAggregation": {
+      "type": "string",
+      "defaultValue": "Average",
+      "allowedValues": [
+        "Average",
+        "Count",
+        "Maximum",
+        "Minimum",
+        "Total"
+      ]
+    },
+    "skipMetricValidation": {
+      "type": "bool",
+      "defaultValue": false
+    },
+    "actionGroupId": {
+      "type": "string"
+    },
+    "tags": {
+      "type": "object",
+      "defaultValue": "[createObject()]"
+    }
+  },
+  "variables": {
+    "timeStampTag":
+    {
+      "Timestamp": "[parameters('timestamp')]"
+    },
+    "tags": "[union(parameters('tags'), variables('timeStampTag'))]",
+    "apiVersion": "2018-03-01"
+  },
+  "resources": [
+    {
+      "type": "microsoft.insights/metricAlerts",
+      "apiVersion": "[variables('apiVersion')]",
+      "name": "[parameters('metricAlertName')]",
+      "location": "global",
+      "tags": "[variables('tags')]",
+      "properties": {
+        "severity": "[parameters('severity')]",
+        "enabled": true,
+        "targetResourceType": "[parameters('targetResourceType')]",
+        "scopes": [
+          "[parameters('targetResourceId')]"
+        ],
+        "evaluationFrequency": "[parameters('evaluationFrequency')]",
+        "windowSize": "[parameters('windowSize')]",
+        "autoMitigate": "[parameters('autoMitigate')]",
+        "criteria": {
+          "allOf": [
+            {
+              "criterionType": "[parameters('criterionType')]",
+              "name": "[parameters('criterionName')]",
+              "metricNamespace": "[parameters('metricNamespace')]",
+              "metricName": "[parameters('metricName')]",
+              "operator": "[parameters('operator')]",
+              "skipMetricValidation": "[parameters('skipMetricValidation')]",
+              "threshold": "[parameters('threshold')]",
+              "timeAggregation": "[parameters('timeAggregation')]"
+            }
+          ],
+          "odata.type": "Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria"
+        },
+        "actions": [
+          {
+            "actionGroupId": "[parameters('actionGroupId')]",
+            "webHookProperties": {}
+          }
+        ]
+      }
+    }
+  ]
+}
