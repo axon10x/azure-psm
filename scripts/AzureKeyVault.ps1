@@ -58,6 +58,8 @@ function Deploy-KeyVault()
 
   Write-Debug -Debug:$true -Message "Deploy Key Vault $KeyVaultName"
 
+  $tagsForTemplate = Get-TagsForArmTemplate -Tags $Tags
+
   $output = az deployment group create --verbose `
     --subscription "$SubscriptionId" `
     -n "$KeyVaultName" `
@@ -77,7 +79,7 @@ function Deploy-KeyVault()
     defaultAction="$DefaultAction" `
     allowedIpAddressRanges="$AllowedIpAddressRangesCsv" `
     allowedSubnetResourceIds="$AllowedSubnetResourceIdsCsv" `
-    tags=$Tags `
+    tags=$tagsForTemplate `
     | ConvertFrom-Json
 
   return $output

@@ -215,7 +215,7 @@ function Copy-StorageTables()
     $dfLsNameSink = $StorageAccountNameSink
 
     Write-Debug -Debug:$true -Message "Create ADF RG $ResourceGroupNameDataFactory"
-    $tags = Get-Tags -EnvironmentName $EnvironmentName
+    $tags = Get-TagsForAzureCli -Tags "EnvironmentName=$EnvironmentName"
     az group create -n $ResourceGroupNameDataFactory -l $Location --tags $tags
 
     Write-Debug -Debug:$true -Message "Create ADF $DataFactoryName"

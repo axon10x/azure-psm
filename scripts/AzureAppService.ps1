@@ -37,6 +37,8 @@ function Deploy-AppInsights()
 
   Write-Debug -Debug:$true -Message "Deploy App Insights $AppInsightsName"
 
+  $tagsForTemplate = Get-TagsForArmTemplate -Tags $Tags
+
   $output = az deployment group create --verbose `
     --subscription "$SubscriptionId" `
     -n "$AppInsightsName" `
@@ -49,7 +51,7 @@ function Deploy-AppInsights()
     linkedStorageAccountResourceId="$LinkedStorageAccountResourceId" `
     publicNetworkAccessForIngestion="$PublicNetworkAccessForIngestion" `
     publicNetworkAccessForQuery="$PublicNetworkAccessForQuery" `
-    tags=$Tags `
+    tags=$tagsForTemplate `
     | ConvertFrom-Json
 
   return $output
@@ -91,6 +93,8 @@ function Deploy-AppServiceCertificate()
 
   Write-Debug -Debug:$true -Message "Deploy App Service Certificate $AppServiceCertificateName"
 
+  $tagsForTemplate = Get-TagsForArmTemplate -Tags $Tags
+
   $output = az deployment group create --verbose `
     --subscription "$SubscriptionId" `
     -n "$AppServiceCertificateName" `
@@ -102,7 +106,7 @@ function Deploy-AppServiceCertificate()
     certificateName="$AppServiceCertificateName" `
     keyVaultResourceId="$KeyVaultResourceId" `
     keyVaultSecretName="$KeyVaultSecretName" `
-    tags=$Tags `
+    tags=$tagsForTemplate `
     | ConvertFrom-Json
 
   return $output
@@ -195,6 +199,8 @@ function Deploy-AppService()
 
   Write-Debug -Debug:$true -Message "Deploy App Service $AppServiceName"
 
+  $tagsForTemplate = Get-TagsForArmTemplate -Tags $Tags
+
   $output = az deployment group create --verbose `
     --subscription "$SubscriptionId" `
     -n "$AppServiceName" `
@@ -223,7 +229,7 @@ function Deploy-AppService()
     allowedIpAddressRanges="$AllowedIpAddressRanges" `
     customFqdn="$CustomFqdn" `
     certificateForAppServiceThumbprint="$CertificateForAppServiceThumbprint" `
-    tags=$Tags `
+    tags=$tagsForTemplate `
     | ConvertFrom-Json
 
   return $output
@@ -274,6 +280,8 @@ function Deploy-AppServicePlan()
 
   Write-Debug -Debug:$true -Message "Deploy App Service Plan $AppServicePlanName"
 
+  $tagsForTemplate = Get-TagsForArmTemplate -Tags $Tags
+
   $output = az deployment group create --verbose `
     --subscription "$SubscriptionId" `
     -n "$AppServicePlanName" `
@@ -288,7 +296,7 @@ function Deploy-AppServicePlan()
     capacity="$Capacity" `
     kind="$Kind" `
     zoneRedundant="$ZoneRedundant" `
-    tags=$Tags `
+    tags=$tagsForTemplate `
     | ConvertFrom-Json
 
   return $output
@@ -333,6 +341,8 @@ function Deploy-AppServicePlanAutoscaleSettings()
 
   Write-Debug -Debug:$true -Message "Deploy App Service Plan Autoscale Settings $AutoscaleSettingsName"
 
+  $tagsForTemplate = Get-TagsForArmTemplate -Tags $Tags
+
   $output = az deployment group create --verbose `
     --subscription "$SubscriptionId" `
     -n "$AutoscaleSettingsName" `
@@ -345,7 +355,7 @@ function Deploy-AppServicePlanAutoscaleSettings()
     minimumInstances="$MinimumInstances" `
     maximumInstances="$MaximumInstances" `
     defaultInstances="$DefaultInstances" `
-    tags=$Tags `
+    tags=$tagsForTemplate `
     | ConvertFrom-Json
 
   return $output
