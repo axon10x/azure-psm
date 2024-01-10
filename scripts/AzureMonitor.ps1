@@ -34,6 +34,8 @@ function Deploy-ActionGroup()
 
   Write-Debug -Debug:$true -Message "Deploy Action Group $ActionGroupName"
 
+  $tagsForTemplate = Get-TagsForArmTemplate -Tags $Tags
+
   $output = az deployment group create --verbose `
     --subscription "$SubscriptionId" `
     -n "$ActionGroupName" `
@@ -45,7 +47,7 @@ function Deploy-ActionGroup()
     emailReceivers="$EmailReceivers" `
     smsReceivers="$SmsReceivers" `
     azureAppPushReceivers="$AzureAppPushReceivers" `
-    tags=$Tags `
+    tags=$tagsForTemplate `
     | ConvertFrom-Json
 
   return $output
@@ -133,6 +135,8 @@ function Deploy-LogAnalyticsWorkspace()
 
   Write-Debug -Debug:$true -Message "Deploy Log Analytics Workspace $WorkspaceName"
 
+  $tagsForTemplate = Get-TagsForArmTemplate -Tags $Tags
+
   $output = az deployment group create --verbose `
     --subscription "$SubscriptionId" `
     -n "$WorkspaceName" `
@@ -143,7 +147,7 @@ function Deploy-LogAnalyticsWorkspace()
     workspaceName="$WorkspaceName" `
     publicNetworkAccessForIngestion="$PublicNetworkAccessForIngestion" `
     publicNetworkAccessForQuery="$PublicNetworkAccessForQuery" `
-    tags=$Tags `
+    tags=$tagsForTemplate `
     | ConvertFrom-Json
 
   return $output
@@ -269,6 +273,8 @@ function Deploy-MonitorDataCollectionEndpoint()
 
   Write-Debug -Debug:$true -Message "Deploy Data Collection Endpoint $DataCollectionEndpointName"
 
+  $tagsForTemplate = Get-TagsForArmTemplate -Tags $Tags
+
   $output = az deployment group create --verbose `
     --subscription "$SubscriptionId" `
     -n "$DataCollectionEndpointName" `
@@ -279,7 +285,7 @@ function Deploy-MonitorDataCollectionEndpoint()
     name="$DataCollectionEndpointName" `
     kind="$DataCollectionEndpointKind" `
     publicNetworkAccess="$PublicNetworkAccess" `
-    tags=$Tags `
+    tags=$tagsForTemplate `
     | ConvertFrom-Json
 
   return $output
@@ -318,6 +324,8 @@ function Deploy-MonitorDataCollectionRule()
 
   Write-Debug -Debug:$true -Message "Deploy Data Collection Endpoint $DataCollectionRuleName"
 
+  $tagsForTemplate = Get-TagsForArmTemplate -Tags $Tags
+
   $output = az deployment group create --verbose `
     --subscription "$SubscriptionId" `
     -n "$DataCollectionRuleName" `
@@ -328,7 +336,7 @@ function Deploy-MonitorDataCollectionRule()
     dataCollectionRuleName="$DataCollectionRuleName" `
     logAnalyticsWorkspaceName="$LogAnalyticsWorkspaceName" `
     logAnalyticsWorkspaceResourceId="$LogAnalyticsWorkspaceResourceId" `
-    tags=$Tags `
+    tags=$tagsForTemplate `
     | ConvertFrom-Json
 
   return $output
@@ -445,6 +453,8 @@ function Deploy-MonitorPrivateLinkScope()
 
   Write-Debug -Debug:$true -Message "Deploy Azure Monitor Private Link Scope $PrivateLinkScopeName"
 
+  $tagsForTemplate = Get-TagsForArmTemplate -Tags $Tags
+
   $output = az deployment group create --verbose `
     --subscription "$SubscriptionId" `
     -n "$PrivateLinkScopeName" `
@@ -455,7 +465,7 @@ function Deploy-MonitorPrivateLinkScope()
     linkScopeName=$PrivateLinkScopeName `
     queryAccessMode=$QueryAccessMode `
     ingestionAccessMode=$IngestionAccessMode `
-    tags=$Tags `
+    tags=$tagsForTemplate `
     | ConvertFrom-Json
 
   return $output

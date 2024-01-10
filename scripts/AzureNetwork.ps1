@@ -46,6 +46,8 @@ function Deploy-NetworkNic()
 
   Write-Debug -Debug:$true -Message "Deploy NIC $NicName"
 
+  $tagsForTemplate = Get-TagsForArmTemplate -Tags $Tags
+
   $output = az deployment group create --verbose `
     --subscription "$SubscriptionId" `
     -n "$NicName" `
@@ -61,7 +63,7 @@ function Deploy-NetworkNic()
     privateIpAddressVersion="$PrivateIpAddressVersion" `
     publicIpResourceId="$PublicIpResourceId" `
     ipConfigName="$IpConfigName" `
-    tags=$Tags `
+    tags=$tagsForTemplate `
     | ConvertFrom-Json
   
   return $output
@@ -93,6 +95,8 @@ function Deploy-NetworkSecurityGroup() {
 
   Write-Debug -Debug:$true -Message "Deploy NSG $NSGName"
 
+  $tagsForTemplate = Get-TagsForArmTemplate -Tags $Tags
+
   $output = az deployment group create --verbose `
     --subscription "$SubscriptionId" `
     -n "$NSGName" `
@@ -101,7 +105,7 @@ function Deploy-NetworkSecurityGroup() {
     --parameters `
     location="$Location" `
     nsgName="$NSGName" `
-    tags=$Tags `
+    tags=$tagsForTemplate `
     | ConvertFrom-Json
   
   return $output
@@ -230,6 +234,8 @@ function Deploy-NetworkPublicIp()
   )
   Write-Debug -Debug:$true -Message "Deploy PIP $PublicIpAddressName"
 
+  $tagsForTemplate = Get-TagsForArmTemplate -Tags $Tags
+
   $output = az deployment group create --verbose `
     --subscription "$SubscriptionId" `
     -n "$PublicIpAddressName" `
@@ -241,7 +247,7 @@ function Deploy-NetworkPublicIp()
     publicIpType="$PublicIpAddressType" `
     publicIpSku="$PublicIpAddressSku" `
     domainNameLabel="$HostName" `
-    tags=$Tags `
+    tags=$tagsForTemplate `
     | ConvertFrom-Json
   
   return $output
@@ -271,6 +277,8 @@ function Deploy-NetworkPrivateDnsZone()
 
   Write-Debug -Debug:$true -Message "Deploy Private DNS Zone $DnsZoneName"
 
+  $tagsForTemplate = Get-TagsForArmTemplate -Tags $Tags
+
   $output = az deployment group create --verbose `
     --subscription "$SubscriptionId" `
     -n "$DnsZoneName" `
@@ -278,7 +286,7 @@ function Deploy-NetworkPrivateDnsZone()
     --template-uri "$TemplateUri" `
     --parameters `
     privateDnsZoneName="$DnsZoneName" `
-    tags=$Tags `
+    tags=$tagsForTemplate `
     | ConvertFrom-Json
 
   return $output
@@ -373,6 +381,8 @@ function Deploy-NetworkPrivateDnsZoneVNetLink()
 
   Write-Debug -Debug:$true -Message "Deploy Private DNS Zone VNet Link $DnsZoneName to $VNetResourceId"
 
+  $tagsForTemplate = Get-TagsForArmTemplate -Tags $Tags
+
   $output = az deployment group create --verbose `
     --subscription "$SubscriptionId" `
     -n "$DnsZoneName" `
@@ -382,7 +392,7 @@ function Deploy-NetworkPrivateDnsZoneVNetLink()
     privateDnsZoneName="$DnsZoneName" `
     vnetResourceId="$VNetResourceId" `
     enableAutoRegistration=$false `
-    tags=$Tags `
+    tags=$tagsForTemplate `
     | ConvertFrom-Json
 
   return $output
@@ -427,6 +437,8 @@ function Deploy-NetworkPrivateEndpointAndNic()
 
   Write-Debug -Debug:$true -Message "Deploy Private Endpoint and NIC $PrivateEndpointName"
 
+  $tagsForTemplate = Get-TagsForArmTemplate -Tags $Tags
+
   $output = az deployment group create --verbose `
     --subscription "$SubscriptionId" `
     -n "$PrivateEndpointName" `
@@ -439,7 +451,7 @@ function Deploy-NetworkPrivateEndpointAndNic()
     privateEndpointName="$PrivateEndpointName" `
     networkInterfaceName="$NetworkInterfaceName" `
     subnetResourceId="$SubnetResourceId" `
-    tags=$Tags `
+    tags=$tagsForTemplate `
     | ConvertFrom-Json
 
   Write-Debug -Debug:$true -Message "Wait for NIC provisioning to complete"
@@ -589,6 +601,8 @@ function Deploy-NetworkVNet() {
 
   Write-Debug -Debug:$true -Message "Deploy VNet $VNetName"
 
+  $tagsForTemplate = Get-TagsForArmTemplate -Tags $Tags
+
   $output = az deployment group create --verbose `
     --subscription "$SubscriptionId" `
     -n "$VNetName" `
@@ -600,7 +614,7 @@ function Deploy-NetworkVNet() {
     vnetPrefix="$VNetPrefix" `
     enableDdosProtection="$EnableDdosProtection" `
     enableVmProtection="$EnableVmProtection" `
-    tags=$Tags `
+    tags=$tagsForTemplate `
     | ConvertFrom-Json
 
   return $output

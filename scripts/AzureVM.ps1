@@ -85,6 +85,8 @@ function Deploy-Vm()
 
   Write-Debug -Debug:$true -Message "Deploy VM $VmName"
 
+  $tagsForTemplate = Get-TagsForArmTemplate -Tags $Tags
+
   $output = az deployment group create --verbose `
     --subscription "$SubscriptionId" `
     -n "$VmName" `
@@ -113,7 +115,7 @@ function Deploy-Vm()
       networkInterfaceResourceId="$NetworkInterfaceResourceId" `
       enableBootDiagnostics=$EnableBootDiagnostics `
       bootDiagnosticsStorageAccountName="$BootDiagnosticsStorageAccountName" `
-      tags=$Tags `
+      tags=$tagsForTemplate `
     | ConvertFrom-Json
 
   return $output

@@ -97,6 +97,8 @@ function Deploy-UserAssignedIdentity()
 
   Write-Debug -Debug:$true -Message "Deploy UAI $UAIName"
 
+  $tagsForTemplate = Get-TagsForArmTemplate -Tags $Tags
+
   $output = az deployment group create --verbose `
     --subscription "$SubscriptionId" `
     -n "$UAIName" `
@@ -106,7 +108,7 @@ function Deploy-UserAssignedIdentity()
     location="$Location" `
     tenantId="$TenantId" `
     identityName="$UAIName" `
-    tags=$Tags `
+    tags=$tagsForTemplate `
     | ConvertFrom-Json
 
   return $output

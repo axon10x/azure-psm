@@ -46,6 +46,8 @@ function Deploy-StorageAccount()
 
   Write-Debug -Debug:$true -Message "Deploy Storage Account $StorageAccountName"
 
+  $tagsForTemplate = Get-TagsForArmTemplate -Tags $Tags
+
   $output = az deployment group create --verbose `
     --subscription "$SubscriptionId" `
     -n "$StorageAccountName" `
@@ -61,7 +63,7 @@ function Deploy-StorageAccount()
     allowedSubnetResourceIds="$AllowedSubnetResourceIdsCsv" `
     allowedIpAddressRanges="$AllowedIpAddressRangesCsv" `
     defaultAccessAction=$DefaultAction `
-    tags=$Tags `
+    tags=$tagsForTemplate `
     | ConvertFrom-Json
 
   return $output
