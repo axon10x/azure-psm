@@ -74,6 +74,8 @@ function Deploy-AppInsights()
 
   Write-Debug -Debug:$true -Message "Deploy App Insights $AppInsightsName"
 
+  $tagsForTemplate = Get-TagsForArmTemplate -Tags $Tags
+
   $output = az deployment group create --verbose `
     --subscription "$SubscriptionId" `
     -n "$AppInsightsName" `
@@ -86,7 +88,7 @@ function Deploy-AppInsights()
     linkedStorageAccountResourceId="$LinkedStorageAccountResourceId" `
     publicNetworkAccessForIngestion="$PublicNetworkAccessForIngestion" `
     publicNetworkAccessForQuery="$PublicNetworkAccessForQuery" `
-    tags=$Tags `
+    tags=$tagsForTemplate `
     | ConvertFrom-Json
 
   return $output
@@ -128,6 +130,8 @@ function Deploy-AppServiceCertificate()
 
   Write-Debug -Debug:$true -Message "Deploy App Service Certificate $AppServiceCertificateName"
 
+  $tagsForTemplate = Get-TagsForArmTemplate -Tags $Tags
+
   $output = az deployment group create --verbose `
     --subscription "$SubscriptionId" `
     -n "$AppServiceCertificateName" `
@@ -139,7 +143,7 @@ function Deploy-AppServiceCertificate()
     certificateName="$AppServiceCertificateName" `
     keyVaultResourceId="$KeyVaultResourceId" `
     keyVaultSecretName="$KeyVaultSecretName" `
-    tags=$Tags `
+    tags=$tagsForTemplate `
     | ConvertFrom-Json
 
   return $output
@@ -232,6 +236,8 @@ function Deploy-AppService()
 
   Write-Debug -Debug:$true -Message "Deploy App Service $AppServiceName"
 
+  $tagsForTemplate = Get-TagsForArmTemplate -Tags $Tags
+
   $output = az deployment group create --verbose `
     --subscription "$SubscriptionId" `
     -n "$AppServiceName" `
@@ -260,7 +266,7 @@ function Deploy-AppService()
     allowedIpAddressRanges="$AllowedIpAddressRanges" `
     customFqdn="$CustomFqdn" `
     certificateForAppServiceThumbprint="$CertificateForAppServiceThumbprint" `
-    tags=$Tags `
+    tags=$tagsForTemplate `
     | ConvertFrom-Json
 
   return $output
@@ -311,6 +317,8 @@ function Deploy-AppServicePlan()
 
   Write-Debug -Debug:$true -Message "Deploy App Service Plan $AppServicePlanName"
 
+  $tagsForTemplate = Get-TagsForArmTemplate -Tags $Tags
+
   $output = az deployment group create --verbose `
     --subscription "$SubscriptionId" `
     -n "$AppServicePlanName" `
@@ -325,7 +333,7 @@ function Deploy-AppServicePlan()
     capacity="$Capacity" `
     kind="$Kind" `
     zoneRedundant="$ZoneRedundant" `
-    tags=$Tags `
+    tags=$tagsForTemplate `
     | ConvertFrom-Json
 
   return $output
@@ -370,6 +378,8 @@ function Deploy-AppServicePlanAutoscaleSettings()
 
   Write-Debug -Debug:$true -Message "Deploy App Service Plan Autoscale Settings $AutoscaleSettingsName"
 
+  $tagsForTemplate = Get-TagsForArmTemplate -Tags $Tags
+
   $output = az deployment group create --verbose `
     --subscription "$SubscriptionId" `
     -n "$AutoscaleSettingsName" `
@@ -382,7 +392,7 @@ function Deploy-AppServicePlanAutoscaleSettings()
     minimumInstances="$MinimumInstances" `
     maximumInstances="$MaximumInstances" `
     defaultInstances="$DefaultInstances" `
-    tags=$Tags `
+    tags=$tagsForTemplate `
     | ConvertFrom-Json
 
   return $output
@@ -743,6 +753,8 @@ function Deploy-KeyVault()
 
   Write-Debug -Debug:$true -Message "Deploy Key Vault $KeyVaultName"
 
+  $tagsForTemplate = Get-TagsForArmTemplate -Tags $Tags
+
   $output = az deployment group create --verbose `
     --subscription "$SubscriptionId" `
     -n "$KeyVaultName" `
@@ -762,7 +774,7 @@ function Deploy-KeyVault()
     defaultAction="$DefaultAction" `
     allowedIpAddressRanges="$AllowedIpAddressRangesCsv" `
     allowedSubnetResourceIds="$AllowedSubnetResourceIdsCsv" `
-    tags=$Tags `
+    tags=$tagsForTemplate `
     | ConvertFrom-Json
 
   return $output
@@ -1091,6 +1103,8 @@ function Deploy-ActionGroup()
 
   Write-Debug -Debug:$true -Message "Deploy Action Group $ActionGroupName"
 
+  $tagsForTemplate = Get-TagsForArmTemplate -Tags $Tags
+
   $output = az deployment group create --verbose `
     --subscription "$SubscriptionId" `
     -n "$ActionGroupName" `
@@ -1102,7 +1116,7 @@ function Deploy-ActionGroup()
     emailReceivers="$EmailReceivers" `
     smsReceivers="$SmsReceivers" `
     azureAppPushReceivers="$AzureAppPushReceivers" `
-    tags=$Tags `
+    tags=$tagsForTemplate `
     | ConvertFrom-Json
 
   return $output
@@ -1190,6 +1204,8 @@ function Deploy-LogAnalyticsWorkspace()
 
   Write-Debug -Debug:$true -Message "Deploy Log Analytics Workspace $WorkspaceName"
 
+  $tagsForTemplate = Get-TagsForArmTemplate -Tags $Tags
+
   $output = az deployment group create --verbose `
     --subscription "$SubscriptionId" `
     -n "$WorkspaceName" `
@@ -1200,7 +1216,7 @@ function Deploy-LogAnalyticsWorkspace()
     workspaceName="$WorkspaceName" `
     publicNetworkAccessForIngestion="$PublicNetworkAccessForIngestion" `
     publicNetworkAccessForQuery="$PublicNetworkAccessForQuery" `
-    tags=$Tags `
+    tags=$tagsForTemplate `
     | ConvertFrom-Json
 
   return $output
@@ -1326,6 +1342,8 @@ function Deploy-MonitorDataCollectionEndpoint()
 
   Write-Debug -Debug:$true -Message "Deploy Data Collection Endpoint $DataCollectionEndpointName"
 
+  $tagsForTemplate = Get-TagsForArmTemplate -Tags $Tags
+
   $output = az deployment group create --verbose `
     --subscription "$SubscriptionId" `
     -n "$DataCollectionEndpointName" `
@@ -1336,7 +1354,7 @@ function Deploy-MonitorDataCollectionEndpoint()
     name="$DataCollectionEndpointName" `
     kind="$DataCollectionEndpointKind" `
     publicNetworkAccess="$PublicNetworkAccess" `
-    tags=$Tags `
+    tags=$tagsForTemplate `
     | ConvertFrom-Json
 
   return $output
@@ -1375,6 +1393,8 @@ function Deploy-MonitorDataCollectionRule()
 
   Write-Debug -Debug:$true -Message "Deploy Data Collection Endpoint $DataCollectionRuleName"
 
+  $tagsForTemplate = Get-TagsForArmTemplate -Tags $Tags
+
   $output = az deployment group create --verbose `
     --subscription "$SubscriptionId" `
     -n "$DataCollectionRuleName" `
@@ -1385,7 +1405,7 @@ function Deploy-MonitorDataCollectionRule()
     dataCollectionRuleName="$DataCollectionRuleName" `
     logAnalyticsWorkspaceName="$LogAnalyticsWorkspaceName" `
     logAnalyticsWorkspaceResourceId="$LogAnalyticsWorkspaceResourceId" `
-    tags=$Tags `
+    tags=$tagsForTemplate `
     | ConvertFrom-Json
 
   return $output
@@ -1502,6 +1522,8 @@ function Deploy-MonitorPrivateLinkScope()
 
   Write-Debug -Debug:$true -Message "Deploy Azure Monitor Private Link Scope $PrivateLinkScopeName"
 
+  $tagsForTemplate = Get-TagsForArmTemplate -Tags $Tags
+
   $output = az deployment group create --verbose `
     --subscription "$SubscriptionId" `
     -n "$PrivateLinkScopeName" `
@@ -1512,7 +1534,7 @@ function Deploy-MonitorPrivateLinkScope()
     linkScopeName=$PrivateLinkScopeName `
     queryAccessMode=$QueryAccessMode `
     ingestionAccessMode=$IngestionAccessMode `
-    tags=$Tags `
+    tags=$tagsForTemplate `
     | ConvertFrom-Json
 
   return $output
@@ -1809,6 +1831,8 @@ function Deploy-NetworkNic()
 
   Write-Debug -Debug:$true -Message "Deploy NIC $NicName"
 
+  $tagsForTemplate = Get-TagsForArmTemplate -Tags $Tags
+
   $output = az deployment group create --verbose `
     --subscription "$SubscriptionId" `
     -n "$NicName" `
@@ -1824,7 +1848,7 @@ function Deploy-NetworkNic()
     privateIpAddressVersion="$PrivateIpAddressVersion" `
     publicIpResourceId="$PublicIpResourceId" `
     ipConfigName="$IpConfigName" `
-    tags=$Tags `
+    tags=$tagsForTemplate `
     | ConvertFrom-Json
   
   return $output
@@ -1856,6 +1880,8 @@ function Deploy-NetworkSecurityGroup() {
 
   Write-Debug -Debug:$true -Message "Deploy NSG $NSGName"
 
+  $tagsForTemplate = Get-TagsForArmTemplate -Tags $Tags
+
   $output = az deployment group create --verbose `
     --subscription "$SubscriptionId" `
     -n "$NSGName" `
@@ -1864,7 +1890,7 @@ function Deploy-NetworkSecurityGroup() {
     --parameters `
     location="$Location" `
     nsgName="$NSGName" `
-    tags=$Tags `
+    tags=$tagsForTemplate `
     | ConvertFrom-Json
   
   return $output
@@ -1993,6 +2019,8 @@ function Deploy-NetworkPublicIp()
   )
   Write-Debug -Debug:$true -Message "Deploy PIP $PublicIpAddressName"
 
+  $tagsForTemplate = Get-TagsForArmTemplate -Tags $Tags
+
   $output = az deployment group create --verbose `
     --subscription "$SubscriptionId" `
     -n "$PublicIpAddressName" `
@@ -2004,7 +2032,7 @@ function Deploy-NetworkPublicIp()
     publicIpType="$PublicIpAddressType" `
     publicIpSku="$PublicIpAddressSku" `
     domainNameLabel="$HostName" `
-    tags=$Tags `
+    tags=$tagsForTemplate `
     | ConvertFrom-Json
   
   return $output
@@ -2034,6 +2062,8 @@ function Deploy-NetworkPrivateDnsZone()
 
   Write-Debug -Debug:$true -Message "Deploy Private DNS Zone $DnsZoneName"
 
+  $tagsForTemplate = Get-TagsForArmTemplate -Tags $Tags
+
   $output = az deployment group create --verbose `
     --subscription "$SubscriptionId" `
     -n "$DnsZoneName" `
@@ -2041,7 +2071,7 @@ function Deploy-NetworkPrivateDnsZone()
     --template-uri "$TemplateUri" `
     --parameters `
     privateDnsZoneName="$DnsZoneName" `
-    tags=$Tags `
+    tags=$tagsForTemplate `
     | ConvertFrom-Json
 
   return $output
@@ -2136,6 +2166,8 @@ function Deploy-NetworkPrivateDnsZoneVNetLink()
 
   Write-Debug -Debug:$true -Message "Deploy Private DNS Zone VNet Link $DnsZoneName to $VNetResourceId"
 
+  $tagsForTemplate = Get-TagsForArmTemplate -Tags $Tags
+
   $output = az deployment group create --verbose `
     --subscription "$SubscriptionId" `
     -n "$DnsZoneName" `
@@ -2145,7 +2177,7 @@ function Deploy-NetworkPrivateDnsZoneVNetLink()
     privateDnsZoneName="$DnsZoneName" `
     vnetResourceId="$VNetResourceId" `
     enableAutoRegistration=$false `
-    tags=$Tags `
+    tags=$tagsForTemplate `
     | ConvertFrom-Json
 
   return $output
@@ -2190,6 +2222,8 @@ function Deploy-NetworkPrivateEndpointAndNic()
 
   Write-Debug -Debug:$true -Message "Deploy Private Endpoint and NIC $PrivateEndpointName"
 
+  $tagsForTemplate = Get-TagsForArmTemplate -Tags $Tags
+
   $output = az deployment group create --verbose `
     --subscription "$SubscriptionId" `
     -n "$PrivateEndpointName" `
@@ -2202,7 +2236,7 @@ function Deploy-NetworkPrivateEndpointAndNic()
     privateEndpointName="$PrivateEndpointName" `
     networkInterfaceName="$NetworkInterfaceName" `
     subnetResourceId="$SubnetResourceId" `
-    tags=$Tags `
+    tags=$tagsForTemplate `
     | ConvertFrom-Json
 
   Write-Debug -Debug:$true -Message "Wait for NIC provisioning to complete"
@@ -2352,6 +2386,8 @@ function Deploy-NetworkVNet() {
 
   Write-Debug -Debug:$true -Message "Deploy VNet $VNetName"
 
+  $tagsForTemplate = Get-TagsForArmTemplate -Tags $Tags
+
   $output = az deployment group create --verbose `
     --subscription "$SubscriptionId" `
     -n "$VNetName" `
@@ -2363,7 +2399,7 @@ function Deploy-NetworkVNet() {
     vnetPrefix="$VNetPrefix" `
     enableDdosProtection="$EnableDdosProtection" `
     enableVmProtection="$EnableVmProtection" `
-    tags=$Tags `
+    tags=$tagsForTemplate `
     | ConvertFrom-Json
 
   return $output
@@ -2982,6 +3018,8 @@ function Deploy-UserAssignedIdentity()
 
   Write-Debug -Debug:$true -Message "Deploy UAI $UAIName"
 
+  $tagsForTemplate = Get-TagsForArmTemplate -Tags $Tags
+
   $output = az deployment group create --verbose `
     --subscription "$SubscriptionId" `
     -n "$UAIName" `
@@ -2991,7 +3029,7 @@ function Deploy-UserAssignedIdentity()
     location="$Location" `
     tenantId="$TenantId" `
     identityName="$UAIName" `
-    tags=$Tags `
+    tags=$tagsForTemplate `
     | ConvertFrom-Json
 
   return $output
@@ -3162,6 +3200,8 @@ function Deploy-StorageAccount()
 
   Write-Debug -Debug:$true -Message "Deploy Storage Account $StorageAccountName"
 
+  $tagsForTemplate = Get-TagsForArmTemplate -Tags $Tags
+
   $output = az deployment group create --verbose `
     --subscription "$SubscriptionId" `
     -n "$StorageAccountName" `
@@ -3177,7 +3217,7 @@ function Deploy-StorageAccount()
     allowedSubnetResourceIds="$AllowedSubnetResourceIdsCsv" `
     allowedIpAddressRanges="$AllowedIpAddressRangesCsv" `
     defaultAccessAction=$DefaultAction `
-    tags=$Tags `
+    tags=$tagsForTemplate `
     | ConvertFrom-Json
 
   return $output
@@ -3739,7 +3779,7 @@ function Copy-StorageTables()
     $dfLsNameSink = $StorageAccountNameSink
 
     Write-Debug -Debug:$true -Message "Create ADF RG $ResourceGroupNameDataFactory"
-    $tags = Get-Tags -EnvironmentName $EnvironmentName
+    $tags = Get-TagsForAzureCli -Tags "EnvironmentName=$EnvironmentName"
     az group create -n $ResourceGroupNameDataFactory -l $Location --tags $tags
 
     Write-Debug -Debug:$true -Message "Create ADF $DataFactoryName"
@@ -3885,6 +3925,32 @@ function Get-TagsForArmTemplate()
   return $tagsForArm
 }
 
+function Get-TagsForAzureCli()
+{
+  [CmdletBinding()]
+  param
+  (
+    [Parameter(Mandatory = $false)]
+    [string]
+    $Tags = ""
+  )
+
+  Write-Debug -Debug:$true -Message "Get-TagsForAzureCli: $Tags"
+
+  # Declare an ArrayList
+  $tagsArrayList = New-Object System.Collections.ArrayList
+
+  # Split the inbound tags, we assume it's in format of foo=bar,baz=bam
+  $tagKVPairs = $Tags.Split(",")
+
+  foreach ($tagKVPair in $tagKVPairs)
+  {
+    $tagsArrayList.Add($tagKVPair) | Out-Null
+  }
+
+  return $tagsArrayList.ToArray()
+}
+
 function Remove-AzPackages()
 {
   Get-Package | Where-Object { $_.Name -like 'Az*' } | ForEach-Object { Uninstall-Package -Name $_.Name -AllVersions }
@@ -3982,6 +4048,8 @@ function Deploy-Vm()
 
   Write-Debug -Debug:$true -Message "Deploy VM $VmName"
 
+  $tagsForTemplate = Get-TagsForArmTemplate -Tags $Tags
+
   $output = az deployment group create --verbose `
     --subscription "$SubscriptionId" `
     -n "$VmName" `
@@ -4010,7 +4078,7 @@ function Deploy-Vm()
       networkInterfaceResourceId="$NetworkInterfaceResourceId" `
       enableBootDiagnostics=$EnableBootDiagnostics `
       bootDiagnosticsStorageAccountName="$BootDiagnosticsStorageAccountName" `
-      tags=$Tags `
+      tags=$tagsForTemplate `
     | ConvertFrom-Json
 
   return $output
