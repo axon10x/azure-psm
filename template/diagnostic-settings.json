@@ -32,6 +32,8 @@
     }
   },
   "variables": {
+    "workspaceId": "[if(parameters('logAnalyticsWorkspaceResourceId'), parameters('logAnalyticsWorkspaceResourceId'), json('null'))]",
+    "storageAccountId": "[if(parameters('storageAccountResourceId'), parameters('storageAccountResourceId'), json('null'))]",
     "allLogs": "[if( equals(true(), bool(parameters('sendAllLogs'))), array(createObject('categoryGroup', 'allLogs', 'enabled', 'true')), json('[]') )]",
     "auditLogs": "[if( equals(true(), bool(parameters('sendAuditLogs'))), array(createObject('categoryGroup', 'allLogs', 'enabled', 'true')), json('[]') )]",
     "logs": "[union(variables('allLogs'), variables('auditLogs'))]",
@@ -45,8 +47,8 @@
       "apiVersion": "[variables('apiVersionDiagnostics')]",
       "scope": "[parameters('resourceId')]",
       "properties": {
-        "workspaceId": "[parameters('logAnalyticsWorkspaceResourceId')]",
-        "storageAccountId": "[parameters('storageAccountResourceId')]",
+        "workspaceId": "[variables('workspaceId')]",
+        "storageAccountId": "[variables('storageAccountId')]",
         "metrics": "[variables('metrics')]",
         "logs": "[variables('logs')]"
       }
