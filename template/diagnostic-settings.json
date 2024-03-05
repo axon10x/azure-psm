@@ -39,7 +39,7 @@
     "properties": "[
       if
       (
-        parameters('logAnalyticsWorkspaceResourceId'),
+        not(empty(parameters('logAnalyticsWorkspaceResourceId'))),
         createObject
         (
           'workspaceId', parameters('logAnalyticsWorkspaceResourceId'),
