@@ -15,9 +15,16 @@
     "logAnalyticsWorkspaceResourceId": {
       "type": "string"
     },
-    "sendLogs": {
+    "storageAccountResourceId": {
+      "type": "string"
+    },
+    "sendAllLogs": {
       "type": "bool",
       "defaultValue": true
+    },
+    "sendAuditLogs": {
+      "type": "bool",
+      "defaultValue": false
     },
     "sendMetrics": {
       "type": "bool",
@@ -25,7 +32,9 @@
     }
   },
   "variables": {
-    "logs": "[if( equals(true(), bool(parameters('sendLogs'))), array(createObject('categoryGroup', 'allLogs', 'enabled', 'true')), json('[]') )]",
+    "allLogs": "[if( equals(true(), bool(parameters('sendAllLogs'))), array(createObject('categoryGroup', 'allLogs', 'enabled', 'true')), json('[]') )]",
+    "auditLogs": "[if( equals(true(), bool(parameters('sendAuditLogs'))), array(createObject('categoryGroup', 'allLogs', 'enabled', 'true')), json('[]') )]",
+    "logs": "[union(variables('allLogs'), variables('auditLogs'))]",
     "metrics": "[if( equals(true(), bool(parameters('sendMetrics'))), array(createObject('category', 'AllMetrics', 'timeGrain', 'PT1M', 'enabled', 'true', 'retentionPolicy', createObject('enabled', 'false', 'days', 0))), json('[]') )]",
     "apiVersionDiagnostics": "2021-05-01-preview"
   },
@@ -37,6 +46,7 @@
       "scope": "[parameters('resourceId')]",
       "properties": {
         "workspaceId": "[parameters('logAnalyticsWorkspaceResourceId')]",
+        "storageAccountId": "[parameters('storageAccountResourceId')]",
         "metrics": "[variables('metrics')]",
         "logs": "[variables('logs')]"
       }

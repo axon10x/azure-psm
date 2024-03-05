@@ -73,12 +73,18 @@ function Deploy-DiagnosticsSetting()
     [Parameter(Mandatory = $true)]
     [string]
     $DiagnosticsSettingName,
-    [Parameter(Mandatory = $true)]
+    [Parameter(Mandatory = $false)]
     [string]
     $LogAnalyticsWorkspaceResourceId,
     [Parameter(Mandatory = $false)]
+    [string]
+    $StorageAccountResourceId,
+    [Parameter(Mandatory = $false)]
     [bool]
-    $SendLogs = $true,
+    $SendAllLogs = $true,
+    [Parameter(Mandatory = $false)]
+    [bool]
+    $SendAuditLogs = $false,
     [Parameter(Mandatory = $false)]
     [bool]
     $SendMetrics = $true
@@ -95,7 +101,9 @@ function Deploy-DiagnosticsSetting()
     resourceId="$ResourceId" `
     diagnosticsSettingName="$DiagnosticsSettingName" `
     logAnalyticsWorkspaceResourceId="$LogAnalyticsWorkspaceResourceId" `
-    sendLogs=$SendLogs `
+    storageAccountResourceId="$StorageAccountResourceId" `
+    sendAllLogs=$SendAllLogs `
+    sendAuditLogs=$SendAuditLogs `
     sendMetrics=$SendMetrics `
     | ConvertFrom-Json
 
