@@ -36,24 +36,7 @@
     "auditLogs": "[if( equals(true(), bool(parameters('sendAuditLogs'))), array(createObject('categoryGroup', 'auditLogs', 'enabled', 'true')), json('[]') )]",
     "logs": "[union(variables('allLogs'), variables('auditLogs'))]",
     "metrics": "[if( equals(true(), bool(parameters('sendMetrics'))), array(createObject('category', 'AllMetrics', 'timeGrain', 'PT1M', 'enabled', 'true', 'retentionPolicy', createObject('enabled', 'false', 'days', 0))), json('[]') )]",
-    "properties": "[
-      if
-      (
-        not(empty(parameters('logAnalyticsWorkspaceResourceId'))),
-        createObject
-        (
-          'workspaceId', parameters('logAnalyticsWorkspaceResourceId'),
-          'metrics', variables('metrics'),
-          'logs', variables('logs')
-        ),
-        createObject
-        (
-          'storageAccountId', parameters('storageAccountResourceId'),
-          'metrics', variables('metrics'),
-          'logs', variables('logs')
-        )
-      )
-    ]",
+    "props": "[if(not(empty(parameters('logAnalyticsWorkspaceResourceId'))), createObject('workspaceId', parameters('logAnalyticsWorkspaceResourceId'), 'metrics', variables('metrics'), 'logs', variables('logs')), createObject('storageAccountId', parameters('storageAccountResourceId'), 'metrics', variables('metrics'), 'logs', variables('logs')))]",
     "apiVersionDiagnostics": "2021-05-01-preview"
   },
   "resources": [
@@ -62,7 +45,7 @@
       "type": "Microsoft.Insights/diagnosticSettings",
       "apiVersion": "[variables('apiVersionDiagnostics')]",
       "scope": "[parameters('resourceId')]",
-      "properties": "[variables('properties')]"
+      "properties": "[variables('props')]"
     }
   ]
 }
