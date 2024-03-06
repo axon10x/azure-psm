@@ -166,8 +166,9 @@ function Deploy-DiagnosticsSetting()
     sendAllLogs=$SendAllLogs `
     sendAuditLogs=$SendAuditLogs `
     sendMetrics=$SendMetrics `
-    2>nul `
     | ConvertFrom-Json
+
+    # 2>nul `
 
   if (!$output)
   {
