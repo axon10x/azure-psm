@@ -12,12 +12,19 @@
     "diagnosticsSettingName": {
       "type": "string"
     },
-    "logAnalyticsWorkspaceResourceId": {
+    "logAnalyticsWorkspaceId": {
       "type": "string"
     },
-    "sendLogs": {
+    "storageAccountId": {
+      "type": "string"
+    },
+    "sendAllLogs": {
       "type": "bool",
       "defaultValue": true
+    },
+    "sendAuditLogs": {
+      "type": "bool",
+      "defaultValue": false
     },
     "sendMetrics": {
       "type": "bool",
@@ -25,8 +32,23 @@
     }
   },
   "variables": {
-    "logs": "[if( equals(true(), bool(parameters('sendLogs'))), array(createObject('categoryGroup', 'allLogs', 'enabled', 'true')), json('[]') )]",
+    "allLogs": "[if( equals(true(), bool(parameters('sendAllLogs'))), array(createObject('categoryGroup', 'allLogs', 'enabled', 'true')), json('[]') )]",
+    "auditLogs": "[if( equals(true(), bool(parameters('sendAuditLogs'))), array(createObject('categoryGroup', 'audit', 'enabled', 'true')), json('[]') )]",
+    "logs": "[union(variables('allLogs'), variables('auditLogs'))]",
     "metrics": "[if( equals(true(), bool(parameters('sendMetrics'))), array(createObject('category', 'AllMetrics', 'timeGrain', 'PT1M', 'enabled', 'true', 'retentionPolicy', createObject('enabled', 'false', 'days', 0))), json('[]') )]",
+    "props": "[
+      if
+      (
+        and(not(empty(parameters('logAnalyticsWorkspaceId'))), not(empty(parameters('storageAccountId')))),
+        createObject('workspaceId', parameters('logAnalyticsWorkspaceId'), 'storageAccountId', parameters('storageAccountId'), 'metrics', variables('metrics'), 'logs', variables('logs')), 
+        if
+        (
+          not(empty(parameters('logAnalyticsWorkspaceId'))), 
+          createObject('workspaceId', parameters('logAnalyticsWorkspaceId'), 'metrics', variables('metrics'), 'logs', variables('logs')), 
+          createObject('storageAccountId', parameters('storageAccountId'), 'metrics', variables('metrics'), 'logs', variables('logs'))
+        )
+      )
+    ]",
     "apiVersionDiagnostics": "2021-05-01-preview"
   },
   "resources": [
@@ -35,11 +57,7 @@
       "type": "Microsoft.Insights/diagnosticSettings",
       "apiVersion": "[variables('apiVersionDiagnostics')]",
       "scope": "[parameters('resourceId')]",
-      "properties": {
-        "workspaceId": "[parameters('logAnalyticsWorkspaceResourceId')]",
-        "metrics": "[variables('metrics')]",
-        "logs": "[variables('logs')]"
-      }
+      "properties": "[variables('props')]"
     }
   ]
 }

@@ -10,10 +10,10 @@ videos_transform_preset="H264MultipleBitrate1080p"
 videos_job_name="job-""$artifact_id"
 video_files_asset_name="$stream_ingest_asset_name""-videos"
 video_files_container_name=$video_files_asset_name
-video_files_job_output_asset_name="$video_files_asset_name='"   # This works though it looks like it shouldn't. https://docs.microsoft.com/en-us/cli/azure/ams/job?view=azure-cli-latest#az-ams-job-start
+video_files_job_output_asset_name="$video_files_asset_name='"   # This works though it looks like it shouldn't. https://learn.microsoft.com/cli/azure/ams/job?view=azure-cli-latest#az-ams-job-start
 
 # Output to MP4 files for on-demand download, archiving etc.
-# Scale MRU - https://docs.microsoft.com/en-us/azure/media-services/latest/media-reserved-units-cli-how-to
+# Scale MRU - https://learn.microsoft.com/azure/media-services/latest/media-reserved-units-cli-how-to
 az ams account mru show -n $ams_acct_name -g $resource_group_name
 
 az ams account mru set -n $ams_acct_name -g $resource_group_name --count 10 --type S3

@@ -4,6 +4,6 @@ The examples here create a custom role to allow Azure users in the DevTest Users
 
 References:
 
-- https://docs.microsoft.com/en-us/azure/lab-services/devtest-lab-add-devtest-user#actions-that-can-be-performed-in-each-role
-- https://docs.microsoft.com/en-us/azure/lab-services/devtest-lab-grant-user-permissions-to-specific-lab-policies#creating-a-lab-custom-role-using-powershell
-- https://docs.microsoft.com/en-us/cli/azure/role/definition?view=azure-cli-latest
+- https://learn.microsoft.com/azure/lab-services/devtest-lab-add-devtest-user#actions-that-can-be-performed-in-each-role
+- https://learn.microsoft.com/azure/lab-services/devtest-lab-grant-user-permissions-to-specific-lab-policies#creating-a-lab-custom-role-using-powershell
+- https://learn.microsoft.com/cli/azure/role/definition?view=azure-cli-latest

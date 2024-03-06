@@ -44,7 +44,7 @@ This deployment can target both Ubuntu Server 18.10 as well as Oracle Enterprise
 
 ## References
 
-- Azure ARM template Reference for VMs: https://docs.microsoft.com/en-us/azure/templates/microsoft.compute/virtualmachines
+- Azure ARM template Reference for VMs: https://learn.microsoft.com/azure/templates/microsoft.compute/virtualmachines
 
 - Azure Linux VM sizes: https://docs.microsoft.com/azure/virtual-machines/linux/sizes
 - Azure Linux VM premium storage: https://docs.microsoft.com/azure/virtual-machines/linux/premium-storage

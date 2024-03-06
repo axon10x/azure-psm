@@ -20,10 +20,10 @@ function Deploy-AppInsights()
     $AppInsightsName,
     [Parameter(Mandatory = $true)]
     [string]
-    $LogAnalyticsWorkspaceResourceId,
+    $LogAnalyticsWorkspaceId,
     [Parameter(Mandatory = $false)]
     [string]
-    $LinkedStorageAccountResourceId = "",
+    $LinkedStorageAccountId = "",
     [Parameter(Mandatory = $false)]
     [string]
     $PublicNetworkAccessForIngestion = "Disabled",
@@ -47,8 +47,8 @@ function Deploy-AppInsights()
     --parameters `
     location="$Location" `
     appInsightsName="$AppInsightsName" `
-    logAnalyticsWorkspaceResourceId="$LogAnalyticsWorkspaceResourceId" `
-    linkedStorageAccountResourceId="$LinkedStorageAccountResourceId" `
+    logAnalyticsWorkspaceId="$LogAnalyticsWorkspaceId" `
+    linkedStorageAccountId="$LinkedStorageAccountId" `
     publicNetworkAccessForIngestion="$PublicNetworkAccessForIngestion" `
     publicNetworkAccessForQuery="$PublicNetworkAccessForQuery" `
     tags=$tagsForTemplate `
@@ -152,7 +152,7 @@ function Deploy-AppService()
     $AppInsightsResourceId = "",
     [Parameter(Mandatory = $true)]
     [string]
-    $StorageAccountResourceId,
+    $StorageAccountId,
     [Parameter(Mandatory = $true)]
     [string]
     $StorageAccountName,
@@ -215,7 +215,7 @@ function Deploy-AppService()
     userAssignedIdentityClientId="$UserAssignedIdentityClientId" `
     appServicePlanResourceId="$AppServicePlanResourceId" `
     appInsightsResourceId="$AppInsightsResourceId" `
-    storageAccountResourceId="$StorageAccountResourceId" `
+    storageAccountId="$StorageAccountId" `
     storageAccountName="$StorageAccountName" `
     functionRuntimeVersion="$FunctionRuntimeVersion" `
     functionRuntimeWorker="$FunctionRuntimeWorker" `
