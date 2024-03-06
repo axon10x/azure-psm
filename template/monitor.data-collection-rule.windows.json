@@ -20,7 +20,7 @@
     "logAnalyticsWorkspaceName": {
       "type": "string"
     },
-    "logAnalyticsWorkspaceResourceId": {
+    "logAnalyticsWorkspaceId": {
       "type": "string"
     },
     "tags": {
@@ -119,7 +119,7 @@
         "destinations": {
           "logAnalytics": [
             {
-              "workspaceResourceId": "[parameters('logAnalyticsWorkspaceResourceId')]",
+              "workspaceResourceId": "[parameters('logAnalyticsWorkspaceId')]",
               "name": "[parameters('logAnalyticsWorkspaceName')]"
             }
           ],

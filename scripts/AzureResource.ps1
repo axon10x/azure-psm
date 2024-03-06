@@ -120,6 +120,77 @@ function Get-ResourceName()
   return $result
 }
 
+function Get-Resources()
+{
+  [CmdletBinding()]
+  param
+  (
+    [Parameter(Mandatory = $true)]
+    [string]
+    $SubscriptionId,
+    [Parameter(Mandatory = $false)]
+    [string]
+    $ResourceGroupName = "",
+    [Parameter(Mandatory = $false)]
+    [boolean]
+    $AddChildResources = $false
+  )
+
+  Write-Debug -Debug:$true -Message ("Get-Resources: SubscriptionId: " + "$SubscriptionId" + ", ResourceGroupName: " + "$ResourceGroupName")
+
+  [System.Collections.ArrayList]$resources = @()
+
+  if (!$ResourceGroupName)
+  {
+    $resources = "$(az resource list --subscription $SubscriptionId --query '[].{name:name, id:id, resourceGroup:resourceGroup}')" | ConvertFrom-Json
+  }
+  else
+  {
+    $resources = "$(az resource list --subscription $SubscriptionId -g $ResourceGroupName --query '[].{name:name, id:id, resourceGroup:resourceGroup}')" | ConvertFrom-Json
+  }
+
+  if ($AddChildResources)
+  {
+    [System.Collections.ArrayList]$childResources = @()
+
+    foreach ($resource in $resources)
+    {
+      $resourceId = $resource.id
+
+      if ($resourceId.EndsWith("Microsoft.Storage/storageAccounts/" + $resource.name))
+      {
+        $childNameSuffix = "/blobServices/default"
+        $childName = $resource.name + $childNameSuffix
+        $childId = $resourceId + $childNameSuffix
+        $ro = New-Object PSCustomObject -Property @{ name = $childName; id = $childId; resourceGroup = $resource.resourceGroup }
+        $childResources.Add($ro) | Out-Null
+    
+        $childNameSuffix = "/fileServices/default"
+        $childName = $resource.name + $childNameSuffix
+        $childId = $resourceId + $childNameSuffix
+        $ro = New-Object PSCustomObject -Property @{ name = $childName; id = $childId; resourceGroup = $resource.resourceGroup }
+        $childResources.Add($ro) | Out-Null
+    
+        $childNameSuffix = "/queueServices/default"
+        $childName = $resource.name + $childNameSuffix
+        $childId = $resourceId + $childNameSuffix
+        $ro = New-Object PSCustomObject -Property @{ name = $childName; id = $childId; resourceGroup = $resource.resourceGroup }
+        $childResources.Add($ro) | Out-Null
+    
+        $childNameSuffix = "/tableServices/default"
+        $childName = $resource.name + $childNameSuffix
+        $childId = $resourceId + $childNameSuffix
+        $ro = New-Object PSCustomObject -Property @{ name = $childName; id = $childId; resourceGroup = $resource.resourceGroup }
+        $childResources.Add($ro) | Out-Null
+      }
+    }
+
+    $resources.AddRange($childResources) | Out-Null
+  }
+
+  return $resources
+}
+
 function Remove-ResourceGroup()
 {
   [CmdletBinding()]

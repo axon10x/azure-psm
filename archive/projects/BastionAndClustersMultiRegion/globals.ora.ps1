@@ -155,7 +155,7 @@ $global:g_BastionVMName = ($g_ResourceGroupNameVMsBastion + "-bastionvm1")
 $global:g_BastionVMAdminUsername = "bastionadmin"
 $global:g_BastionVMSSHKeyData = ConvertTo-SecureString -String ($g_SSHPublicKey + " " + $g_BastionVMAdminUsername) -AsPlainText -Force
 
-# Cluster VMs - for a list of available sizes see https://docs.microsoft.com/en-us/azure/virtual-machines/linux/sizes or use Azure CLI command 'az vm list-sizes' with appropriate arguments.
+# Cluster VMs - for a list of available sizes see https://learn.microsoft.com/azure/virtual-machines/linux/sizes or use Azure CLI command 'az vm list-sizes' with appropriate arguments.
 $global:g_LinuxDistroClusterVM = "OEL"  # Ubuntu or OEL. See storagePrep.ps1.
 $global:g_TemplateFilePathClusterVM = ".\arm_files\vm-oel.template.json"  # vm-server or vm-oel
 $global:g_ParametersFilePathClusterVM = ".\arm_files\vm-oel.parameters.json"  # vm-server or vm-oel

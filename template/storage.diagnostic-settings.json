@@ -12,7 +12,7 @@
     "diagnosticsSettingName": {
       "type": "string"
     },
-    "logAnalyticsWorkspaceResourceId": {
+    "logAnalyticsWorkspaceId": {
       "type": "string"
     }
   },
@@ -26,7 +26,7 @@
       "name": "[parameters('diagnosticsSettingName')]",
       "scope": "[parameters('resourceId')]",
       "properties": {
-        "workspaceId": "[parameters('logAnalyticsWorkspaceResourceId')]",
+        "workspaceId": "[parameters('logAnalyticsWorkspaceId')]",
         "metrics": [
           {
             "category": "Transaction",
@@ -46,7 +46,7 @@
       "name": "[concat(parameters('diagnosticsSettingName'), '-blob')]",
       "scope": "[concat(parameters('resourceId'), '/blobServices/default')]",
       "properties": {
-        "workspaceId": "[parameters('logAnalyticsWorkspaceResourceId')]",
+        "workspaceId": "[parameters('logAnalyticsWorkspaceId')]",
         "logs": [
           {
             "category": "StorageRead",
@@ -92,7 +92,7 @@
       "name": "[concat(parameters('diagnosticsSettingName'), '-file')]",
       "scope": "[concat(parameters('resourceId'), '/fileServices/default')]",
       "properties": {
-        "workspaceId": "[parameters('logAnalyticsWorkspaceResourceId')]",
+        "workspaceId": "[parameters('logAnalyticsWorkspaceId')]",
         "logs": [
           {
             "category": "StorageRead",
@@ -138,7 +138,7 @@
       "name": "[concat(parameters('diagnosticsSettingName'), '-queue')]",
       "scope": "[concat(parameters('resourceId'), '/queueServices/default')]",
       "properties": {
-        "workspaceId": "[parameters('logAnalyticsWorkspaceResourceId')]",
+        "workspaceId": "[parameters('logAnalyticsWorkspaceId')]",
         "logs": [
           {
             "category": "StorageRead",
@@ -184,7 +184,7 @@
       "name": "[concat(parameters('diagnosticsSettingName'), '-table')]",
       "scope": "[concat(parameters('resourceId'), '/tableServices/default')]",
       "properties": {
-        "workspaceId": "[parameters('logAnalyticsWorkspaceResourceId')]",
+        "workspaceId": "[parameters('logAnalyticsWorkspaceId')]",
         "logs": [
           {
             "category": "StorageRead",

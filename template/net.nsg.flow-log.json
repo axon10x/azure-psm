@@ -30,11 +30,11 @@
         "description": "Resource ID of the target NSG"
       }
     },
-    "storageAccountResourceId": {
+    "storageAccountId": {
       "type": "string",
       "defaultValue": ""
     },
-    "logAnalyticsWorkspaceResourceId": {
+    "logAnalyticsWorkspaceId": {
       "type": "string",
       "defaultValue": ""
     },
@@ -105,10 +105,10 @@
             "nsgResourceId": {
               "type": "string"
             },
-            "storageAccountResourceId": {
+            "storageAccountId": {
               "type": "string"
             },
-            "logAnalyticsWorkspaceResourceId": {
+            "logAnalyticsWorkspaceId": {
               "type": "string"
             },
             "retentionDays": {
@@ -137,12 +137,12 @@
               "tags": "[variables('tags')]",
               "properties": {
                 "targetResourceId": "[parameters('nsgResourceId')]",
-                "storageId": "[parameters('storageAccountResourceId')]",
+                "storageId": "[parameters('storageAccountId')]",
                 "enabled": true,
                 "flowAnalyticsConfiguration": {
                   "networkWatcherFlowAnalyticsConfiguration": {
                     "enabled": true,
-                    "workspaceResourceId": "[parameters('logAnalyticsWorkspaceResourceId')]",
+                    "workspaceResourceId": "[parameters('logAnalyticsWorkspaceId')]",
                     "trafficAnalyticsInterval": "[parameters('trafficAnalyticsInterval')]"
                   }
                 },
@@ -171,8 +171,8 @@
           "nsgResourceId": {
             "value": "[parameters('nsgResourceId')]"
           },
-          "logAnalyticsWorkspaceResourceId": {
-            "value": "[parameters('logAnalyticsWorkspaceResourceId')]"
+          "logAnalyticsWorkspaceId": {
+            "value": "[parameters('logAnalyticsWorkspaceId')]"
           },
           "trafficAnalyticsInterval": {
             "value": "[parameters('trafficAnalyticsInterval')]"
@@ -183,8 +183,8 @@
           "flowLogsversion": {
             "value": "[parameters('flowLogsversion')]"
           },
-          "storageAccountResourceId": {
-            "value": "[parameters('storageAccountResourceId')]"
+          "storageAccountId": {
+            "value": "[parameters('storageAccountId')]"
           }
         }
       }

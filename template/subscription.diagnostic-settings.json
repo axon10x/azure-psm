@@ -5,7 +5,7 @@
     "diagnosticsSettingName": {
       "type": "string"
     },
-    "logAnalyticsWorkspaceResourceId": {
+    "logAnalyticsWorkspaceId": {
       "type": "string"
     }
   },
@@ -19,7 +19,7 @@
       "apiVersion": "[variables('apiVersionDiagnostics')]",
       "location": "Global",
       "properties": {
-        "workspaceId": "[parameters('logAnalyticsWorkspaceResourceId')]",
+        "workspaceId": "[parameters('logAnalyticsWorkspaceId')]",
         "logs": [
           {
             "category": "Administrative",

@@ -14,13 +14,13 @@ $azureModuleFileContents = ""
 $azureModuleManifestFileName = $azureModuleName + ".psd1"
 $azureModuleManifestFilPath = $azureModuleFolderPath + "\" + $azureModuleManifestFileName
 
+$moduleVersion = "2.0"
+
 if (!(Test-Path -Path $azureModuleFolderPath))
 {
   Write-Debug -Debug:$true -Message "Create new module folder $azureModuleFolderPath and set moduleVersion to $moduleVersion"
 
   New-Item -Path $azureModuleFolderPath -ItemType "Directory" -Force
-
-  $moduleVersion = "1.0"
 }
 else
 {
@@ -38,7 +38,6 @@ else
   }
   else
   {
-    $moduleVersion = "1.0"
     Write-Debug -Debug:$true -Message "Could not get module, setting new version to $moduleVersion"
   }
 }
