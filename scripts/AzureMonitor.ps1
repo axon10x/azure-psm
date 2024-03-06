@@ -69,7 +69,7 @@ function Deploy-DiagnosticsSettingsForAllResources()
     $TemplateUri,
     [Parameter(Mandatory = $false)]
     [string]
-    $DiagnosticsSettingName = "plzm-Azure-diag",
+    $DiagnosticsSettingName = "plzm-azure-diag",
     [Parameter(Mandatory=$false)]
     [string]
     $LogAnalyticsWorkspaceId = "",
@@ -161,11 +161,12 @@ function Deploy-DiagnosticsSetting()
     --parameters `
     resourceId="$ResourceId" `
     diagnosticsSettingName="$DiagnosticsSettingName" `
-    LogAnalyticsWorkspaceId="$LogAnalyticsWorkspaceId" `
-    StorageAccountId="$StorageAccountId" `
+    logAnalyticsWorkspaceId="$LogAnalyticsWorkspaceId" `
+    storageAccountId="$StorageAccountId" `
     sendAllLogs=$SendAllLogs `
     sendAuditLogs=$SendAuditLogs `
     sendMetrics=$SendMetrics `
+    2>nul `
     | ConvertFrom-Json
 
   if (!$output)
@@ -444,7 +445,7 @@ function Deploy-MonitorDataCollectionRule()
     location="$Location" `
     dataCollectionRuleName="$DataCollectionRuleName" `
     logAnalyticsWorkspaceName="$LogAnalyticsWorkspaceName" `
-    LogAnalyticsWorkspaceId="$LogAnalyticsWorkspaceId" `
+    logAnalyticsWorkspaceId="$LogAnalyticsWorkspaceId" `
     tags=$tagsForTemplate `
     | ConvertFrom-Json
 
@@ -605,7 +606,11 @@ function Get-DiagnosticsSettingsForResource()
 
   [System.Collections.ArrayList]$result = @()
 
-  if ($LogAnalyticsWorkspaceId)
+  if ($LogAnalyticsWorkspaceId -and $StorageAccountId)
+  {
+    $query = "[?(workspaceId=='" + $LogAnalyticsWorkspaceId + "' && storageAccountId=='" + $StorageAccountId + "')].{name:name, id:id}"
+  }
+  elseif ($LogAnalyticsWorkspaceId)
   {
     $query = "[?(workspaceId=='" + $LogAnalyticsWorkspaceId + "')].{name:name, id:id}"
   }
@@ -773,7 +778,12 @@ function Remove-DiagnosticsSettingsForAllResources()
 
   foreach ($resource in $resources)
   {
-    Remove-DiagnosticsSettingsForResource -SubscriptionId $SubscriptionId -LogAnalyticsWorkspaceId $LogAnalyticsWorkspaceId -ResourceId $resource.id -ResourceName $resource.name
+    Remove-DiagnosticsSettingsForResource `
+      -SubscriptionId $SubscriptionId `
+      -LogAnalyticsWorkspaceId $LogAnalyticsWorkspaceId `
+      -StorageAccountId $StorageAccountId `
+      -ResourceId $resource.id `
+      -ResourceName $resource.name
   }
 }
 
@@ -800,7 +810,12 @@ function Remove-DiagnosticsSettingsForResource()
   )
   Write-Debug -Debug:$true -Message "Remove-DiagnosticsSettingsForResource :: ResourceId = $ResourceId"
 
-  $settings = Get-DiagnosticsSettingsForResource -SubscriptionId $SubscriptionId -LogAnalyticsWorkspaceId $LogAnalyticsWorkspaceId -StorageAccountId $StorageAccountId -ResourceId $ResourceId -ResourceName $ResourceName
+  $settings = Get-DiagnosticsSettingsForResource `
+    -SubscriptionId $SubscriptionId `
+    -LogAnalyticsWorkspaceId $LogAnalyticsWorkspaceId `
+    -StorageAccountId $StorageAccountId `
+    -ResourceId $ResourceId `
+    -ResourceName $ResourceName
 
   if ($settings.Count -gt 0)
   {
