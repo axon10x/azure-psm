@@ -110,7 +110,6 @@ function Deploy-DiagnosticsSettingsForAllResources()
   }
 }
 
-
 function Deploy-DiagnosticsSetting()
 {
   [CmdletBinding()]
@@ -166,9 +165,9 @@ function Deploy-DiagnosticsSetting()
     sendAllLogs=$SendAllLogs `
     sendAuditLogs=$SendAuditLogs `
     sendMetrics=$SendMetrics `
+    2>nul `
     | ConvertFrom-Json
 
-    # 2>nul `
 
   if (!$output)
   {
