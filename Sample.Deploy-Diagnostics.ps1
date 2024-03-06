@@ -1,13 +1,15 @@
+# Fix the variables herein for your environment and just run it
+# Note: this WILL deploy diagnostics settings per what you set. Know what you are doing before running this.
 function Set-Diagnostics-Sample()
 {
   # Make sure you are logged in and az account set -s is set to the correct subscription - or just specify the sub ID explicitly here
   $SubscriptionId = "$(az account show -o tsv --query 'id')"
 
   $ResourceGroupName = "rsg-test"
-  $TemplateUri = "https://raw.githubusercontent.com/plzm/azure-deploy/main/templates/diagnostic-settings.json"
+  $TemplateUri = "https://raw.githubusercontent.com/plzm/azure-deploy/main/template/diagnostic-settings.json"
   $DiagnosticsSettingName = "diag"
-  $LogAnalyticsWorkspaceId = "/subscriptions/ce0880ba-720c-41f5-8546-5d8731ace6fe/resourceGroups/rsg-aa-ui-eus2-main/providers/microsoft.operationalinsights/workspaces/law-aa-ui-eus2-110"
-  $StorageAccountId = "/subscriptions/ce0880ba-720c-41f5-8546-5d8731ace6fe/resourcegroups/rsg-aa-ui-eus2-main/providers/microsoft.storage/storageaccounts/saaauieus2130"
+  $LogAnalyticsWorkspaceId = "/subscriptions/$SubscriptionId/resourceGroups/rsg-aa-ui-eus2-main/providers/microsoft.operationalinsights/workspaces/law-aa-ui-eus2-110"
+  $StorageAccountId = "/subscriptions/$SubscriptionId/resourcegroups/rsg-aa-ui-eus2-main/providers/microsoft.storage/storageaccounts/saaauieus2130"
   $SendAllLogs = $false
   $SendAuditLogs = $true
   $SendMetrics = $true
@@ -26,14 +28,16 @@ function Set-Diagnostics-Sample()
     -AttemptFallback $AttemptFallback
 }
 
+# Fix the variables herein for your environment and just run it
+# Note: this WILL DELETE diagnostics settings per what you set. Know what you are doing before running this.
 function Remove-Diagnostics-Sample()
 {
   # Make sure you are logged in and az account set -s is set to the correct subscription - or just specify the sub ID explicitly here
   $SubscriptionId = "$(az account show -o tsv --query 'id')"
 
   $ResourceGroupName = "rsg-test"
-  $LogAnalyticsWorkspaceId = "/subscriptions/ce0880ba-720c-41f5-8546-5d8731ace6fe/resourceGroups/rsg-aa-ui-eus2-main/providers/microsoft.operationalinsights/workspaces/law-aa-ui-eus2-110"
-  $StorageAccountId = "/subscriptions/ce0880ba-720c-41f5-8546-5d8731ace6fe/resourcegroups/rsg-aa-ui-eus2-main/providers/microsoft.storage/storageaccounts/saaauieus2130"
+  $LogAnalyticsWorkspaceId = "/subscriptions/$SubscriptionId/resourceGroups/rsg-aa-ui-eus2-main/providers/microsoft.operationalinsights/workspaces/law-aa-ui-eus2-110"
+  $StorageAccountId = "/subscriptions/$SubscriptionId/resourcegroups/rsg-aa-ui-eus2-main/providers/microsoft.storage/storageaccounts/saaauieus2130"
 
   Remove-Diagnostics `
     -SubscriptionId $SubscriptionId `
@@ -41,7 +45,6 @@ function Remove-Diagnostics-Sample()
     -LogAnalyticsWorkspaceId $LogAnalyticsWorkspaceId `
     -StorageAccountId $StorageAccountId
 }
-
 
 function Set-Diagnostics()
 {
@@ -83,7 +86,7 @@ function Set-Diagnostics()
 
   # ##################################################
   # Variables
-  # plzm-Azure PS1 module
+  # plzm-Azure PS1 module with tons of functionality incl needed by this diagnostics harness - and yeah, you should look at the code and not just trust me before running this :)
   $moduleUrlRoot = "https://raw.githubusercontent.com/plzm/azure-deploy/main/modules/plzm.Azure/"
   # ##################################################
 
@@ -162,7 +165,7 @@ function Get-PlzmAzureModule()
 
   if (!(Test-Path -Path $localFolderPath))
   {
-    New-Item -Path $localFolderPath -ItemType "Directory" -Force
+    New-Item -Path $localFolderPath -ItemType "Directory" -Force | Out-Null
   }
 
   # PSM1 file
