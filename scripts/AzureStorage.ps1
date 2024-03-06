@@ -91,7 +91,7 @@ function Deploy-StorageDiagnosticsSetting()
     $DiagnosticsSettingName,
     [Parameter(Mandatory = $true)]
     [string]
-    $LogAnalyticsWorkspaceResourceId
+    $LogAnalyticsWorkspaceId
   )
 
   Write-Debug -Debug:$true -Message "Deploy Storage Diagnostics Setting $DiagnosticsSettingName"
@@ -104,7 +104,7 @@ function Deploy-StorageDiagnosticsSetting()
     --parameters `
     resourceId="$ResourceId" `
     diagnosticsSettingName="$DiagnosticsSettingName" `
-    logAnalyticsWorkspaceResourceId="$LogAnalyticsWorkspaceResourceId" `
+    logAnalyticsWorkspaceId="$LogAnalyticsWorkspaceId" `
     | ConvertFrom-Json
 
   return $output

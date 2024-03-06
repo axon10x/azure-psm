@@ -52,11 +52,11 @@ az_alerts_email="$(az ad signed-in-user show -o tsv --query "mail")"
 # #####
 # Operations
 
-# https://docs.microsoft.com/en-us/cli/azure/group
+# https://learn.microsoft.com/cli/azure/group
 echo "Create Resource Group"
 az group create -l $azure_region -n $resource_group_name
 
-# https://docs.microsoft.com/en-us/cli/azure/storage/account
+# https://learn.microsoft.com/cli/azure/storage/account
 echo "Create Storage Account"
 az storage account create -l $azure_region -g $resource_group_name -n $storage_acct_name --kind StorageV2 --sku Standard_LRS
 
@@ -65,13 +65,13 @@ az storage account create -l $azure_region -g $resource_group_name -n $storage_a
 echo "Get Storage Account key"
 storage_acct_key="$(az storage account keys list -g "$resource_group_name" -n "$storage_acct_name" -o tsv --query "[0].value")"
 
-# https://docs.microsoft.com/en-us/cli/azure/storage/container
+# https://learn.microsoft.com/cli/azure/storage/container
 echo "Create Storage Container"
 az storage container create -n $storage_container_name --account-name $storage_acct_name --account-key $storage_acct_key
 
 echo "Download the sample database to filesystem, then upload to blob storage. We will use this for the source database."
 # Using wget, assuming running in bash
-# If need Powershell instead, can use Invoke-WebRequest to download: https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/invoke-webrequest?view=powershell-6
+# If need Powershell instead, can use Invoke-WebRequest to download: https://learn.microsoft.com/powershell/module/microsoft.powershell.utility/invoke-webrequest?view=powershell-6
 wget -O $az_sql_db_sample_bacpac_local_path $az_sql_db_sample_download_uri
 az storage blob upload --account-name "$storage_acct_name" --account-key "$storage_acct_key" -c "$storage_container_name" -n "$az_sql_db_sample_bacpac_file" -f "$az_sql_db_sample_bacpac_local_path"
 rm $az_sql_db_sample_bacpac_local_path

@@ -85,12 +85,12 @@ azure_sql_security_role_name="TestRole"  # This MUST match what's in the bacpac/
 # #####
 # Operations
 
-# https://docs.microsoft.com/en-us/cli/azure/group
+# https://learn.microsoft.com/cli/azure/group
 # Create new resource group
 echo "Create Resource Group"
 az group create -l $azure_region -n $resource_group_name
 
-# https://docs.microsoft.com/en-us/cli/azure/storage/account
+# https://learn.microsoft.com/cli/azure/storage/account
 # Create storage account
 echo "Create Storage Account"
 az storage account create -l $azure_region -g $resource_group_name -n $storage_acct_name --kind StorageV2 --sku Standard_LRS
@@ -100,7 +100,7 @@ az storage account create -l $azure_region -g $resource_group_name -n $storage_a
 echo "Get Storage Account key"
 storage_acct_key="$(az storage account keys list -g "$resource_group_name" -n "$storage_acct_name" -o tsv --query "[0].value")"
 
-# https://docs.microsoft.com/en-us/cli/azure/storage/container
+# https://learn.microsoft.com/cli/azure/storage/container
 # Create containers in storage account
 echo "Create Storage Containers"
 az storage container create -n $storage_container_source --account-name $storage_acct_name --account-key $storage_acct_key
@@ -109,39 +109,39 @@ az storage container create -n $storage_container_assets --account-name $storage
 az storage container create -n $storage_container_archive --account-name $storage_acct_name --account-key $storage_acct_key
 az storage container create -n $storage_container_unprocessed --account-name $storage_acct_name --account-key $storage_acct_key
 
-# https://docs.microsoft.com/en-us/cli/azure/servicebus/namespace
+# https://learn.microsoft.com/cli/azure/servicebus/namespace
 # Create service bus namespace
 echo "Create Service Bus Namespace"
 az servicebus namespace create  -l $azure_region -g $resource_group_name -n $service_bus_namespace_name --sku $service_bus_sku
 
-# https://docs.microsoft.com/en-us/cli/azure/servicebus/namespace/authorization-rule
+# https://learn.microsoft.com/cli/azure/servicebus/namespace/authorization-rule
 # Create service bus namespace authorization rule
 echo "Create Service Bus Namespace authorization rule"
 az servicebus namespace authorization-rule create -g $resource_group_name --namespace-name $service_bus_namespace_name -n $service_bus_namespace_access_policy_name --rights Listen Send
 
-# https://docs.microsoft.com/en-us/cli/azure/servicebus/topic
+# https://learn.microsoft.com/cli/azure/servicebus/topic
 # Create service bus topic
 echo "Create Service Bus Topic"
 az servicebus topic create -g $resource_group_name --namespace-name $service_bus_namespace_name -n $service_bus_topic_name
 
-# https://docs.microsoft.com/en-us/cli/azure/servicebus/topic/subscription
+# https://learn.microsoft.com/cli/azure/servicebus/topic/subscription
 # Create service bus topic subscription
 echo "Create Service Bus Topic Subscription"
 az servicebus topic subscription create -g $resource_group_name --namespace-name $service_bus_namespace_name --topic-name $service_bus_topic_name -n $service_bus_topic_subscription_name
 
-# https://docs.microsoft.com/en-us/cli/azure/appservice/plan
+# https://learn.microsoft.com/cli/azure/appservice/plan
 # Create app service plan
 echo "Create App Service Plan"
 az appservice plan create -l $azure_region -g $resource_group_name -n $app_service_plan_name --sku $app_service_plan_sku
 
-# https://docs.microsoft.com/en-us/cli/azure/group/deployment
+# https://learn.microsoft.com/cli/azure/group/deployment
 # Create application insights instance and get instrumentation key
 echo "Create Application Insights and get Instrumentation Key"
 app_insights_key="$(az group deployment create -g $resource_group_name -n $app_insights_name --template-file "app_insights.template.json" \
   -o tsv --query "properties.outputs.app_insights_instrumentation_key.value" \
   --parameters location="$azure_region" instance_name="$app_insights_name")"
 
-# https://docs.microsoft.com/en-us/cli/azure/functionapp
+# https://learn.microsoft.com/cli/azure/functionapp
 # Create function app with plan and app insights created above
 # Using Windows at this point because MSI on Linux still in preview
 echo "Create Function App and link to App Service Plan and App Insights instance created above"
@@ -149,7 +149,7 @@ az functionapp create -g $resource_group_name -n $functionapp_name --storage-acc
   --app-insights $app_insights_name --app-insights-key $app_insights_key \
   --plan $app_service_plan_name --os-type Windows --runtime dotnet
 
-# https://docs.microsoft.com/en-us/cli/azure/functionapp/identity
+# https://learn.microsoft.com/cli/azure/functionapp/identity
 # Assign managed identity to function app
 # Omit scope assignment for least privilege, assign explicit access below for storage, key vault, SQL
 #  --scope $functionapp_msi_scope
@@ -170,7 +170,7 @@ functionapp_msi_display_name="$(az ad sp show --id $functionapp_msi_principal_id
 echo "Assign MSI principal rights to read/write data to storage account (this is redundant with RG Contributor, but OK to do and needed if the storage acct is in another RG)"
 az role assignment create --scope "$functionapp_msi_scope_storage" --assignee-object-id "$functionapp_msi_principal_id" --role "$functionapp_msi_role_storage"
 
-# https://docs.microsoft.com/en-us/cli/azure/keyvault
+# https://learn.microsoft.com/cli/azure/keyvault
 # Create key vault
 echo "Create Azure Key Vault"
 az keyvault create -l $azure_region -g $resource_group_name -n $key_vault_name

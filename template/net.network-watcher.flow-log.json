@@ -26,10 +26,10 @@
         "description": "Resource ID of the target NSG"
       }
     },
-    "storageAccountResourceId": {
+    "storageAccountId": {
       "type": "string"
     },
-    "logAnalyticsWorkspaceResourceId": {
+    "logAnalyticsWorkspaceId": {
       "type": "string"
     },
     "retentionDays": {
@@ -72,12 +72,12 @@
       "location": "[parameters('location')]",
       "properties": {
         "targetResourceId": "[parameters('nsgResourceId')]",
-        "storageId": "[parameters('storageAccountResourceId')]",
+        "storageId": "[parameters('storageAccountId')]",
         "enabled": true,
         "flowAnalyticsConfiguration": {
           "networkWatcherFlowAnalyticsConfiguration": {
             "enabled": true,
-            "workspaceResourceId": "[parameters('logAnalyticsWorkspaceResourceId')]",
+            "workspaceResourceId": "[parameters('logAnalyticsWorkspaceId')]",
             "trafficAnalyticsInterval": "[parameters('trafficAnalyticsInterval')]"
           }
         },

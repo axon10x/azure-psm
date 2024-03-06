@@ -57,10 +57,10 @@ function Deploy-AppInsights()
     $AppInsightsName,
     [Parameter(Mandatory = $true)]
     [string]
-    $LogAnalyticsWorkspaceResourceId,
+    $LogAnalyticsWorkspaceId,
     [Parameter(Mandatory = $false)]
     [string]
-    $LinkedStorageAccountResourceId = "",
+    $LinkedStorageAccountId = "",
     [Parameter(Mandatory = $false)]
     [string]
     $PublicNetworkAccessForIngestion = "Disabled",
@@ -84,8 +84,8 @@ function Deploy-AppInsights()
     --parameters `
     location="$Location" `
     appInsightsName="$AppInsightsName" `
-    logAnalyticsWorkspaceResourceId="$LogAnalyticsWorkspaceResourceId" `
-    linkedStorageAccountResourceId="$LinkedStorageAccountResourceId" `
+    logAnalyticsWorkspaceId="$LogAnalyticsWorkspaceId" `
+    linkedStorageAccountId="$LinkedStorageAccountId" `
     publicNetworkAccessForIngestion="$PublicNetworkAccessForIngestion" `
     publicNetworkAccessForQuery="$PublicNetworkAccessForQuery" `
     tags=$tagsForTemplate `
@@ -189,7 +189,7 @@ function Deploy-AppService()
     $AppInsightsResourceId = "",
     [Parameter(Mandatory = $true)]
     [string]
-    $StorageAccountResourceId,
+    $StorageAccountId,
     [Parameter(Mandatory = $true)]
     [string]
     $StorageAccountName,
@@ -252,7 +252,7 @@ function Deploy-AppService()
     userAssignedIdentityClientId="$UserAssignedIdentityClientId" `
     appServicePlanResourceId="$AppServicePlanResourceId" `
     appInsightsResourceId="$AppInsightsResourceId" `
-    storageAccountResourceId="$StorageAccountResourceId" `
+    storageAccountId="$StorageAccountId" `
     storageAccountName="$StorageAccountName" `
     functionRuntimeVersion="$FunctionRuntimeVersion" `
     functionRuntimeWorker="$FunctionRuntimeWorker" `
@@ -1122,6 +1122,64 @@ function Deploy-ActionGroup()
   return $output
 }
 
+function Deploy-DiagnosticsSettingsForAllResources()
+{
+  [CmdletBinding()]
+  param
+  (
+    [Parameter(Mandatory=$true)]
+    [string]
+    $SubscriptionId,
+    [Parameter(Mandatory=$false)]
+    [string]
+    $ResourceGroupName = "",
+    [Parameter(Mandatory = $true)]
+    [string]
+    $TemplateUri,
+    [Parameter(Mandatory = $false)]
+    [string]
+    $DiagnosticsSettingName = "plzm-azure-diag",
+    [Parameter(Mandatory=$false)]
+    [string]
+    $LogAnalyticsWorkspaceId = "",
+    [Parameter(Mandatory=$false)]
+    [string]
+    $StorageAccountId = "",
+    [Parameter(Mandatory = $false)]
+    [bool]
+    $SendAllLogs = $true,
+    [Parameter(Mandatory = $false)]
+    [bool]
+    $SendAuditLogs = $false,
+    [Parameter(Mandatory = $false)]
+    [bool]
+    $SendMetrics = $true,
+    [Parameter(Mandatory = $false)]
+    [bool]
+    $AttemptFallback = $false
+  )
+  Write-Debug -Debug:$true -Message "Deploy-DiagnosticsSettingsForAllResources :: ResourceGroupName = $ResourceGroupName, LogAnalyticsWorkspaceId = $LogAnalyticsWorkspaceId, StorageAccountId = $StorageAccountId"
+
+  $resources = Get-Resources -SubscriptionId $SubscriptionId -ResourceGroupName $ResourceGroupName -AddChildResources $true
+
+  foreach ($resource in $resources)
+  {
+    Deploy-DiagnosticsSetting `
+      -SubscriptionId $SubscriptionId `
+      -ResourceGroupName $resource.resourceGroup `
+      -TemplateUri $TemplateUri `
+      -ResourceId $resource.id `
+      -DiagnosticsSettingName $DiagnosticsSettingName `
+      -LogAnalyticsWorkspaceId $LogAnalyticsWorkspaceId `
+      -StorageAccountId $StorageAccountId `
+      -SendAllLogs $SendAllLogs `
+      -SendAuditLogs $SendAuditLogs `
+      -SendMetrics $SendMetrics `
+      -AttemptFallback $AttemptFallback
+  }
+}
+
+
 function Deploy-DiagnosticsSetting()
 {
   [CmdletBinding()]
@@ -1142,18 +1200,27 @@ function Deploy-DiagnosticsSetting()
     [Parameter(Mandatory = $true)]
     [string]
     $DiagnosticsSettingName,
-    [Parameter(Mandatory = $true)]
+    [Parameter(Mandatory = $false)]
     [string]
-    $LogAnalyticsWorkspaceResourceId,
+    $LogAnalyticsWorkspaceId,
+    [Parameter(Mandatory = $false)]
+    [string]
+    $StorageAccountId,
     [Parameter(Mandatory = $false)]
     [bool]
-    $SendLogs = $true,
+    $SendAllLogs = $true,
     [Parameter(Mandatory = $false)]
     [bool]
-    $SendMetrics = $true
+    $SendAuditLogs = $false,
+    [Parameter(Mandatory = $false)]
+    [bool]
+    $SendMetrics = $true,
+    [Parameter(Mandatory = $false)]
+    [bool]
+    $AttemptFallback = $false
   )
 
-  Write-Debug -Debug:$true -Message "Deploy Diagnostics Setting $DiagnosticsSettingName"
+  Write-Debug -Debug:$true -Message "Deploy Diagnostics Setting $DiagnosticsSettingName to ResourceId $ResourceId"
 
   $output = az deployment group create --verbose `
     --subscription "$SubscriptionId" `
@@ -1163,10 +1230,53 @@ function Deploy-DiagnosticsSetting()
     --parameters `
     resourceId="$ResourceId" `
     diagnosticsSettingName="$DiagnosticsSettingName" `
-    logAnalyticsWorkspaceResourceId="$LogAnalyticsWorkspaceResourceId" `
-    sendLogs=$SendLogs `
+    logAnalyticsWorkspaceId="$LogAnalyticsWorkspaceId" `
+    storageAccountId="$StorageAccountId" `
+    sendAllLogs=$SendAllLogs `
+    sendAuditLogs=$SendAuditLogs `
     sendMetrics=$SendMetrics `
+    2>nul `
     | ConvertFrom-Json
+
+  if (!$output)
+  {
+    $output = "ERROR!"
+
+    if ($AttemptFallback)
+    {
+      if ($SendAuditLogs -and !$SendAllLogs)
+      {
+        $SendAuditLogs = $false
+        $SendAllLogs = $true
+      }
+      elseif ($SendAllLogs)
+      {
+        $SendAuditLogs = $false
+        $SendAllLogs = $false
+      }
+      elseif (!$SendAllLogs -and !$SendAuditLogs -and $SendMetrics)
+      {
+        $SendMetrics = $false
+      }
+      else
+      {
+        $AttemptFallback = $false
+      }
+
+      $output = Deploy-DiagnosticsSetting `
+        -SubscriptionId $SubscriptionId `
+        -ResourceGroupName $ResourceGroupName `
+        -TemplateUri $TemplateUri `
+        -ResourceId $ResourceId `
+        -DiagnosticsSettingName $DiagnosticsSettingName `
+        -LogAnalyticsWorkspaceId $LogAnalyticsWorkspaceId `
+        -StorageAccountId $StorageAccountId `
+        -SendAllLogs $SendAllLogs `
+        -SendAuditLogs $SendAuditLogs `
+        -SendMetrics $SendMetrics `
+        -AttemptFallback $AttemptFallback
+    }
+  }
 
   return $output
 }
@@ -1385,7 +1495,7 @@ function Deploy-MonitorDataCollectionRule()
     $LogAnalyticsWorkspaceName,
     [Parameter(Mandatory = $true)]
     [string]
-    $LogAnalyticsWorkspaceResourceId,
+    $LogAnalyticsWorkspaceId,
     [Parameter(Mandatory = $false)]
     [string]
     $Tags = ""
@@ -1404,7 +1514,7 @@ function Deploy-MonitorDataCollectionRule()
     location="$Location" `
     dataCollectionRuleName="$DataCollectionRuleName" `
     logAnalyticsWorkspaceName="$LogAnalyticsWorkspaceName" `
-    logAnalyticsWorkspaceResourceId="$LogAnalyticsWorkspaceResourceId" `
+    logAnalyticsWorkspaceId="$LogAnalyticsWorkspaceId" `
     tags=$tagsForTemplate `
     | ConvertFrom-Json
 
@@ -1551,6 +1661,9 @@ function Get-DiagnosticsSettingsForResource()
     [Parameter(Mandatory=$false)]
     [string]
     $LogAnalyticsWorkspaceId = "",
+    [Parameter(Mandatory=$false)]
+    [string]
+    $StorageAccountId = "",
     [Parameter(Mandatory=$true)]
     [string]
     $ResourceId,
@@ -1562,9 +1675,17 @@ function Get-DiagnosticsSettingsForResource()
 
   [System.Collections.ArrayList]$result = @()
 
-  if ($LogAnalyticsWorkspaceId)
+  if ($LogAnalyticsWorkspaceId -and $StorageAccountId)
+  {
+    $query = "[?(workspaceId=='" + $LogAnalyticsWorkspaceId + "' && storageAccountId=='" + $StorageAccountId + "')].{name:name, id:id}"
+  }
+  elseif ($LogAnalyticsWorkspaceId)
   {
     $query = "[?(workspaceId=='" + $LogAnalyticsWorkspaceId + "')].{name:name, id:id}"
+  }
+  elseif ($StorageAccountId)
+  {
+    $query = "[?(storageAccountId=='" + $StorageAccountId + "')].{name:name, id:id}"
   }
   else
   {
@@ -1608,7 +1729,10 @@ function Get-DiagnosticsSettingsForSub()
     $SubscriptionId,
     [Parameter(Mandatory=$false)]
     [string]
-    $LogAnalyticsWorkspaceId = ""
+    $LogAnalyticsWorkspaceId = "",
+    [Parameter(Mandatory=$false)]
+    [string]
+    $StorageAccountId = ""
   )
   Write-Debug -Debug:$true -Message "Get-DiagnosticsSettingsForSub $ResourceName"
 
@@ -1617,6 +1741,10 @@ function Get-DiagnosticsSettingsForSub()
   if ($LogAnalyticsWorkspaceId)
   {
     $query = "(value)[?(workspaceId=='" + $LogAnalyticsWorkspaceId + "')].{name:name, id:id}"
+  }
+  elseif ($StorageAccountId)
+  {
+    $query = "(value)[?(storageAccountId=='" + $StorageAccountId + "')].{name:name, id:id}"
   }
   else
   {
@@ -1688,12 +1816,9 @@ function Remove-DiagnosticsSetting()
     $DiagnosticsSettingName,
     [Parameter(Mandatory=$true)]
     [string]
-    $ResourceId,
-    [Parameter(Mandatory=$true)]
-    [string]
-    $ResourceName
+    $ResourceId
   )
-  Write-Debug -Debug:$true -Message "Remove-DiagnosticsSetting $DiagnosticsSettingName from $ResourceName"
+  Write-Debug -Debug:$true -Message "Remove-DiagnosticsSetting $DiagnosticsSettingName from $ResourceId"
 
   az monitor diagnostic-settings delete --subscription $SubscriptionId --name $DiagnosticsSettingName --resource $ResourceId
 }
@@ -1708,15 +1833,26 @@ function Remove-DiagnosticsSettingsForAllResources()
     $SubscriptionId,
     [Parameter(Mandatory=$false)]
     [string]
-    $LogAnalyticsWorkspaceId = ""
+    $ResourceGroupName = "",
+    [Parameter(Mandatory=$false)]
+    [string]
+    $LogAnalyticsWorkspaceId = "",
+    [Parameter(Mandatory=$false)]
+    [string]
+    $StorageAccountId = ""
   )
-  Write-Debug -Debug:$true -Message "Remove-DiagnosticsSettingsForAllResources on Log Analytics $LogAnalyticsWorkspaceId"
+  Write-Debug -Debug:$true -Message "Remove-DiagnosticsSettingsForAllResources :: ResourceGroupName = $ResourceGroupName, LogAnalyticsWorkspaceId = $LogAnalyticsWorkspaceId"
 
-  $resources = "$(az resource list --subscription $SubscriptionId --query '[].{name:name, id:id}')" | ConvertFrom-Json
+  $resources = Get-Resources -SubscriptionId $SubscriptionId -ResourceGroupName $ResourceGroupName -AddChildResources $true
 
   foreach ($resource in $resources)
   {
-    Remove-DiagnosticsSettingsForResource -SubscriptionId $SubscriptionId -LogAnalyticsWorkspaceId $LogAnalyticsWorkspaceId -ResourceId $resource.id -ResourceName $resource.name
+    Remove-DiagnosticsSettingsForResource `
+      -SubscriptionId $SubscriptionId `
+      -LogAnalyticsWorkspaceId $LogAnalyticsWorkspaceId `
+      -StorageAccountId $StorageAccountId `
+      -ResourceId $resource.id `
+      -ResourceName $resource.name
   }
 }
 
@@ -1731,6 +1867,9 @@ function Remove-DiagnosticsSettingsForResource()
     [Parameter(Mandatory=$false)]
     [string]
     $LogAnalyticsWorkspaceId = "",
+    [Parameter(Mandatory=$false)]
+    [string]
+    $StorageAccountId = "",
     [Parameter(Mandatory=$true)]
     [string]
     $ResourceId,
@@ -1738,9 +1877,14 @@ function Remove-DiagnosticsSettingsForResource()
     [string]
     $ResourceName
   )
-  Write-Debug -Debug:$true -Message "Remove-DiagnosticsSettingsForResource $ResourceName"
+  Write-Debug -Debug:$true -Message "Remove-DiagnosticsSettingsForResource :: ResourceId = $ResourceId"
 
-  $settings = Get-DiagnosticsSettingsForResource -SubscriptionId $SubscriptionId -LogAnalyticsWorkspaceId $LogAnalyticsWorkspaceId -ResourceId $ResourceId -ResourceName $ResourceName
+  $settings = Get-DiagnosticsSettingsForResource `
+    -SubscriptionId $SubscriptionId `
+    -LogAnalyticsWorkspaceId $LogAnalyticsWorkspaceId `
+    -StorageAccountId $StorageAccountId `
+    -ResourceId $ResourceId `
+    -ResourceName $ResourceName
 
   if ($settings.Count -gt 0)
   {
@@ -1749,8 +1893,7 @@ function Remove-DiagnosticsSettingsForResource()
       Remove-DiagnosticsSetting `
         -SubscriptionId $SubscriptionId `
         -DiagnosticsSettingName $setting.name `
-        -ResourceId $ResourceId `
-        -ResourceName $ResourceName
+        -ResourceId $ResourceId
     }
   }
 }
@@ -2818,6 +2961,77 @@ function Get-ResourceName()
   return $result
 }
 
+function Get-Resources()
+{
+  [CmdletBinding()]
+  param
+  (
+    [Parameter(Mandatory = $true)]
+    [string]
+    $SubscriptionId,
+    [Parameter(Mandatory = $false)]
+    [string]
+    $ResourceGroupName = "",
+    [Parameter(Mandatory = $false)]
+    [boolean]
+    $AddChildResources = $false
+  )
+
+  Write-Debug -Debug:$true -Message ("Get-Resources: SubscriptionId: " + "$SubscriptionId" + ", ResourceGroupName: " + "$ResourceGroupName")
+
+  [System.Collections.ArrayList]$resources = @()
+
+  if (!$ResourceGroupName)
+  {
+    $resources = "$(az resource list --subscription $SubscriptionId --query '[].{name:name, id:id, resourceGroup:resourceGroup}')" | ConvertFrom-Json
+  }
+  else
+  {
+    $resources = "$(az resource list --subscription $SubscriptionId -g $ResourceGroupName --query '[].{name:name, id:id, resourceGroup:resourceGroup}')" | ConvertFrom-Json
+  }
+
+  if ($AddChildResources)
+  {
+    [System.Collections.ArrayList]$childResources = @()
+
+    foreach ($resource in $resources)
+    {
+      $resourceId = $resource.id
+
+      if ($resourceId.EndsWith("Microsoft.Storage/storageAccounts/" + $resource.name))
+      {
+        $childNameSuffix = "/blobServices/default"
+        $childName = $resource.name + $childNameSuffix
+        $childId = $resourceId + $childNameSuffix
+        $ro = New-Object PSCustomObject -Property @{ name = $childName; id = $childId; resourceGroup = $resource.resourceGroup }
+        $childResources.Add($ro) | Out-Null
+    
+        $childNameSuffix = "/fileServices/default"
+        $childName = $resource.name + $childNameSuffix
+        $childId = $resourceId + $childNameSuffix
+        $ro = New-Object PSCustomObject -Property @{ name = $childName; id = $childId; resourceGroup = $resource.resourceGroup }
+        $childResources.Add($ro) | Out-Null
+    
+        $childNameSuffix = "/queueServices/default"
+        $childName = $resource.name + $childNameSuffix
+        $childId = $resourceId + $childNameSuffix
+        $ro = New-Object PSCustomObject -Property @{ name = $childName; id = $childId; resourceGroup = $resource.resourceGroup }
+        $childResources.Add($ro) | Out-Null
+    
+        $childNameSuffix = "/tableServices/default"
+        $childName = $resource.name + $childNameSuffix
+        $childId = $resourceId + $childNameSuffix
+        $ro = New-Object PSCustomObject -Property @{ name = $childName; id = $childId; resourceGroup = $resource.resourceGroup }
+        $childResources.Add($ro) | Out-Null
+      }
+    }
+
+    $resources.AddRange($childResources) | Out-Null
+  }
+
+  return $resources
+}
+
 function Remove-ResourceGroup()
 {
   [CmdletBinding()]
@@ -3245,7 +3459,7 @@ function Deploy-StorageDiagnosticsSetting()
     $DiagnosticsSettingName,
     [Parameter(Mandatory = $true)]
     [string]
-    $LogAnalyticsWorkspaceResourceId
+    $LogAnalyticsWorkspaceId
   )
 
   Write-Debug -Debug:$true -Message "Deploy Storage Diagnostics Setting $DiagnosticsSettingName"
@@ -3258,7 +3472,7 @@ function Deploy-StorageDiagnosticsSetting()
     --parameters `
     resourceId="$ResourceId" `
     diagnosticsSettingName="$DiagnosticsSettingName" `
-    logAnalyticsWorkspaceResourceId="$LogAnalyticsWorkspaceResourceId" `
+    logAnalyticsWorkspaceId="$LogAnalyticsWorkspaceId" `
     | ConvertFrom-Json
 
   return $output
