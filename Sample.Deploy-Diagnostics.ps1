@@ -41,116 +41,48 @@ Users can specify diagnostic setting name when deploying, but the diagnostic set
 Sample script here which shows a simple scenario for both deploy and remove - the user would adapt Set-Diagnostics-Sample() and Remove-Diagnostics-Sample() with their specific subscription and other resource IDs. Everything else, including Powershell module download and local install, is handled for the user.
 #>
 
+# May need to set execution policy to AllSigned or Bypass because I have not yet signed the plzm.Azure module.
+# https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.security/set-executionpolicy
+# Set-ExecutionPolicy -ExecutionPolicy AllSigned -Scope CurrentUser
+
 # Fix the variables herein for your environment and run it
 # Note: this WILL deploy diagnostics settings per what you set. Know what you are doing before running this.
-function Set-Diagnostics-Sample()
-{
-  # Make sure you are logged in and az account set -s is set to the correct subscription - or just specify the sub ID explicitly here
-  $SubscriptionId = "$(az account show -o tsv --query 'id')"
-
-  # Resource Group where your resources are that you want to equip with diagnostics settings
-  $ResourceGroupNameTarget = "rsg-test"
-  # You can use my ARM template for diagnostics setting, or substitute in your own
-  $TemplateUri = "https://raw.githubusercontent.com/plzm/azure-deploy/main/template/diagnostic-settings.json"
-  # You can substitute in your own diagnostic setting name. It doesn't matter for these scripts, but can be used for specific retrieval or removal.
-  $DiagnosticsSettingName = "diag"
-
-  # Sink(s) - adjust these to your environment
-  $ResourceGroupNameSinks = "rsg-sinks"
-  $LogAnalyticsWorkspaceName = "law-sink"
-  $StorageAccountName = "sasink"
-  $LogAnalyticsWorkspaceId = "/subscriptions/$SubscriptionId/resourceGroups/$ResourceGroupNameSinks/providers/microsoft.operationalinsights/workspaces/$LogAnalyticsWorkspaceName"
-  $StorageAccountId = "/subscriptions/$SubscriptionId/resourcegroups/$ResourceGroupNameSinks/providers/microsoft.storage/storageaccounts/$StorageAccountName"
-
-  $SendAllLogs = $false
-  $SendAuditLogs = $true
-  $SendMetrics = $true
-  $AttemptFallback = $true
-
-  Set-Diagnostics `
-    -SubscriptionId $SubscriptionId `
-    -ResourceGroupName $ResourceGroupNameTarget `
-    -TemplateUri $TemplateUri `
-    -DiagnosticsSettingName $DiagnosticsSettingName `
-    -LogAnalyticsWorkspaceId $LogAnalyticsWorkspaceId `
-    -StorageAccountId $StorageAccountId `
-    -SendAllLogs $SendAllLogs `
-    -SendAuditLogs $SendAuditLogs `
-    -SendMetrics $SendMetrics `
-    -AttemptFallback $AttemptFallback
-}
-
-# Fix the variables herein for your environment and run it
-# Note: this WILL DELETE diagnostics settings per what you set. Know what you are doing before running this.
-function Remove-Diagnostics-Sample()
-{
-  # Make sure you are logged in and az account set -s is set to the correct subscription - or just specify the sub ID explicitly here
-  $SubscriptionId = "$(az account show -o tsv --query 'id')"
-
-  # Resource Group where your resources are from which you want to remove diagnostics settings
-  $ResourceGroupNameTarget = "rsg-test"
-
-  # Sink(s)
-  $ResourceGroupNameSinks = "rsg-sinks"
-  $LogAnalyticsWorkspaceName = "law-sink"
-  $StorageAccountName = "sasink"
-  $LogAnalyticsWorkspaceId = "/subscriptions/$SubscriptionId/resourceGroups/$ResourceGroupNameSinks/providers/microsoft.operationalinsights/workspaces/$LogAnalyticsWorkspaceName"
-  $StorageAccountId = "/subscriptions/$SubscriptionId/resourcegroups/$ResourceGroupNameSinks/providers/microsoft.storage/storageaccounts/$StorageAccountName"
-
-  Remove-Diagnostics `
-    -SubscriptionId $SubscriptionId `
-    -ResourceGroupName $ResourceGroupNameTarget `
-    -LogAnalyticsWorkspaceId $LogAnalyticsWorkspaceId `
-    -StorageAccountId $StorageAccountId
-}
-
 function Set-Diagnostics()
 {
-  [CmdletBinding()]
-  param
-  (
-    [Parameter(Mandatory=$true)]
-    [string]
-    $SubscriptionId,
-    [Parameter(Mandatory=$false)]
-    [string]
-    $ResourceGroupNameTarget = "",
-    [Parameter(Mandatory = $true)]
-    [string]
-    $TemplateUri,
-    [Parameter(Mandatory = $false)]
-    [string]
-    $DiagnosticsSettingName = "diag",
-    [Parameter(Mandatory=$false)]
-    [string]
-    $LogAnalyticsWorkspaceId = "",
-    [Parameter(Mandatory=$false)]
-    [string]
-    $StorageAccountId = "",
-    [Parameter(Mandatory = $false)]
-    [bool]
-    $SendAllLogs = $true,
-    [Parameter(Mandatory = $false)]
-    [bool]
-    $SendAuditLogs = $false,
-    [Parameter(Mandatory = $false)]
-    [bool]
-    $SendMetrics = $true,
-    [Parameter(Mandatory = $false)]
-    [bool]
-    $AttemptFallback = $false
-  )
   Write-Debug -Debug:$true -Message "Set-Diagnostics"
 
   # ##################################################
   # Variables
   # plzm-Azure PS1 module with tons of functionality incl needed by this diagnostics harness - and yeah, you should look at the code and not just trust me before running this :)
-  $moduleUrlRoot = "https://raw.githubusercontent.com/plzm/azure-deploy/main/modules/plzm.Azure/"
+  $ModuleUrlRoot = "https://raw.githubusercontent.com/plzm/azure-deploy/main/modules/plzm.Azure/"
+
+  # Make sure you are logged in and az account set -s is set to the correct subscription - or just specify the sub ID explicitly here
+  $SubscriptionId = "$(az account show -o tsv --query 'id')"
+
+  # Resource Group where your resources are that you want to equip with diagnostics settings
+  $ResourceGroupNameTarget = "plzm-eus2"
+  # You can use my ARM template for diagnostics setting, or substitute in your own
+  $TemplateUri = "https://raw.githubusercontent.com/plzm/azure-deploy/main/template/diagnostic-settings.json"
+  # You can substitute in your own diagnostic setting name. It doesn't matter for these scripts, but can be used for specific retrieval or removal.
+  $DiagnosticsSettingName = "auto-diag"
+
+  # Sink(s) - adjust these to your environment
+  $ResourceGroupNameSinks = "plzm-eus2"
+  $LogAnalyticsWorkspaceName = "law-plzm-eus2"
+  $StorageAccountName = "saplzmeus201"
+  $LogAnalyticsWorkspaceId = "/subscriptions/$SubscriptionId/resourceGroups/$ResourceGroupNameSinks/providers/microsoft.operationalinsights/workspaces/$LogAnalyticsWorkspaceName"
+  $StorageAccountId = "/subscriptions/$SubscriptionId/resourcegroups/$ResourceGroupNameSinks/providers/microsoft.storage/storageaccounts/$StorageAccountName"
+
+  # Diagnostics settings
+  $SendAllLogs = $false
+  $SendAuditLogs = $true
+  $SendMetrics = $false
+  $AttemptFallback = $true
   # ##################################################
 
   # ##################################################
   # Download and import the plzm-Azure PS1 module
-  Get-PlzmAzureModule -UrlRoot "$moduleUrlRoot"
+  Get-PlzmAzureModule -UrlRoot "$ModuleUrlRoot"
   # ##################################################
 
   plzm.Azure\Deploy-DiagnosticsSettingsForAllResources `
@@ -166,35 +98,33 @@ function Set-Diagnostics()
     -AttemptFallback $AttemptFallback
 }
 
+# Fix the variables herein for your environment and run it
+# Note: this WILL DELETE diagnostics settings per what you set. Know what you are doing before running this.
 function Remove-Diagnostics()
 {
-  [CmdletBinding()]
-  param
-  (
-    [Parameter(Mandatory=$true)]
-    [string]
-    $SubscriptionId,
-    [Parameter(Mandatory=$false)]
-    [string]
-    $ResourceGroupNameTarget = "",
-    [Parameter(Mandatory=$false)]
-    [string]
-    $LogAnalyticsWorkspaceId = "",
-    [Parameter(Mandatory=$false)]
-    [string]
-    $StorageAccountId = ""
-  )
   Write-Debug -Debug:$true -Message "Remove-Diagnostics"
 
   # ##################################################
-  # Variables
-  # plzm-Azure PS1 module
-  $moduleUrlRoot = "https://raw.githubusercontent.com/plzm/azure-deploy/main/modules/plzm.Azure/"
+  # plzm-Azure PS1 module with tons of functionality incl needed by this diagnostics harness - and yeah, you should look at the code and not just trust me before running this :)
+  $ModuleUrlRoot = "https://raw.githubusercontent.com/plzm/azure-deploy/main/modules/plzm.Azure/"
+
+  # Make sure you are logged in and az account set -s is set to the correct subscription - or just specify the sub ID explicitly here
+  $SubscriptionId = "$(az account show -o tsv --query 'id')"
+
+  # Resource Group where your resources are from which you want to remove diagnostics settings
+  $ResourceGroupNameTarget = "plzm-eus2"
+
+  # Sink(s)
+  $ResourceGroupNameSinks = "plzm-eus2"
+  $LogAnalyticsWorkspaceName = "law-plzm-eus2"
+  $StorageAccountName = "saplzmeus201"
+  $LogAnalyticsWorkspaceId = "/subscriptions/$SubscriptionId/resourceGroups/$ResourceGroupNameSinks/providers/microsoft.operationalinsights/workspaces/$LogAnalyticsWorkspaceName"
+  $StorageAccountId = "/subscriptions/$SubscriptionId/resourcegroups/$ResourceGroupNameSinks/providers/microsoft.storage/storageaccounts/$StorageAccountName"
   # ##################################################
 
   # ##################################################
   # Download and import the plzm-Azure PS1 module
-  Get-PlzmAzureModule -UrlRoot "$moduleUrlRoot"
+  Get-PlzmAzureModule -UrlRoot "$ModuleUrlRoot"
   # ##################################################
 
   plzm.Azure\Remove-DiagnosticsSettingsForAllResources `
