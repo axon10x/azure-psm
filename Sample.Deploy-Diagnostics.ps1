@@ -53,31 +53,62 @@ function Set-Diagnostics()
 
   # ##################################################
   # Variables
+  # ##################################################
+  # YOU MUST SPECIFY THESE VARIABLES
+
+  # Resource Group where your resources are that you want to configure with diagnostics settings
+  $ResourceGroupNameTarget = "plzm-eus2"
+
+  # You can substitute in your own diagnostic setting name, but you can also leave this as is. It's fine to have the same diagnostics setting name on multiple resources.
+  $DiagnosticsSettingName = "auto-diag"
+
+  # Sink(s) - adjust these to your environment
+  $ResourceGroupNameSinks = "plzm-eus2" # Resource Group where the sinks are
+  $LogAnalyticsWorkspaceName = "law-plzm-eus2" # Name of the Log Analytics workspace (if you use one) where you want diagnostic logs sent - otherwise comment this line out or set to empty string
+  $StorageAccountName = "saplzmeus201" # Name of the Storage Account (if you use one) where you want diagnostic logs sent - otherwise comment this line out or set to empty string
+
+  # Execution settings
+  $SendAllLogs = $false # Whether to send the category group "allLogs"
+  $SendAuditLogs = $true # Whether to send the category group "audit" / "auditLogs"
+  $SendMetrics = $false # Whether to send Metrics
+  $AttemptFallback = $true # Whether the script should attempt to set "allLogs" if "audit" is not supported on a resource type
+  # ##################################################
+  # YOU CAN LEAVE THESE VARIABLES AS-IS UNLESS YOU HAVE SPECIFIC REASONS TO CHANGE THEM
+
   # plzm-Azure PS1 module with tons of functionality incl needed by this diagnostics harness - and yeah, you should look at the code and not just trust me before running this :)
   $ModuleUrlRoot = "https://raw.githubusercontent.com/plzm/azure-deploy/main/modules/plzm.Azure/"
 
   # Make sure you are logged in and az account set -s is set to the correct subscription - or just specify the sub ID explicitly here
   $SubscriptionId = "$(az account show -o tsv --query 'id')"
 
-  # Resource Group where your resources are that you want to equip with diagnostics settings
-  $ResourceGroupNameTarget = "plzm-eus2"
   # You can use my ARM template for diagnostics setting, or substitute in your own
   $TemplateUri = "https://raw.githubusercontent.com/plzm/azure-deploy/main/template/diagnostic-settings.json"
-  # You can substitute in your own diagnostic setting name. It doesn't matter for these scripts, but can be used for specific retrieval or removal.
-  $DiagnosticsSettingName = "auto-diag"
 
-  # Sink(s) - adjust these to your environment
-  $ResourceGroupNameSinks = "plzm-eus2"
-  $LogAnalyticsWorkspaceName = "law-plzm-eus2"
-  $StorageAccountName = "saplzmeus201"
-  $LogAnalyticsWorkspaceId = "/subscriptions/$SubscriptionId/resourceGroups/$ResourceGroupNameSinks/providers/microsoft.operationalinsights/workspaces/$LogAnalyticsWorkspaceName"
-  $StorageAccountId = "/subscriptions/$SubscriptionId/resourcegroups/$ResourceGroupNameSinks/providers/microsoft.storage/storageaccounts/$StorageAccountName"
+  if ($LogAnalyticsWorkspaceName -eq "" -and $StorageAccountName -eq "")
+  {
+    Write-Error -Message "You must specify at least one sink - either a Log Analytics workspace or a Storage Account"
+    return
+  }
+  else
+  {
+    if ($LogAnalyticsWorkspaceName -eq "")
+    {
+      $LogAnalyticsWorkspaceId = ""
+    }
+    else
+    {
+      $LogAnalyticsWorkspaceId = "/subscriptions/$SubscriptionId/resourceGroups/$ResourceGroupNameSinks/providers/microsoft.operationalinsights/workspaces/$LogAnalyticsWorkspaceName"
+    }
 
-  # Diagnostics settings
-  $SendAllLogs = $false
-  $SendAuditLogs = $true
-  $SendMetrics = $false
-  $AttemptFallback = $true
+    if ($StorageAccountName -eq "")
+    {
+      $StorageAccountId = ""
+    }
+    else
+    {
+      $StorageAccountId = "/subscriptions/$SubscriptionId/resourcegroups/$ResourceGroupNameSinks/providers/microsoft.storage/storageaccounts/$StorageAccountName"
+    }
+  }
   # ##################################################
 
   # ##################################################
@@ -104,22 +135,51 @@ function Remove-Diagnostics()
 {
   Write-Debug -Debug:$true -Message "Remove-Diagnostics"
 
+  # Variables
   # ##################################################
+  # YOU MUST SPECIFY THESE VARIABLES
+
+  # Resource Group where your resources are from which you want to remove diagnostics settings
+  $ResourceGroupNameTarget = "plzm-eus2"
+
+  # Sink(s) - adjust these to your environment
+  $ResourceGroupNameSinks = "plzm-eus2" # Resource Group where the sinks are
+  $LogAnalyticsWorkspaceName = "law-plzm-eus2" # Name of the Log Analytics workspace (if you use one) where you want diagnostic logs sent - otherwise comment this line out or set to empty string
+  $StorageAccountName = "saplzmeus201" # Name of the Storage Account (if you use one) where you want diagnostic logs sent - otherwise comment this line out or set to empty string
+  # ##################################################
+  # YOU CAN LEAVE THESE VARIABLES AS-IS UNLESS YOU HAVE SPECIFIC REASONS TO CHANGE THEM
+
   # plzm-Azure PS1 module with tons of functionality incl needed by this diagnostics harness - and yeah, you should look at the code and not just trust me before running this :)
   $ModuleUrlRoot = "https://raw.githubusercontent.com/plzm/azure-deploy/main/modules/plzm.Azure/"
 
   # Make sure you are logged in and az account set -s is set to the correct subscription - or just specify the sub ID explicitly here
   $SubscriptionId = "$(az account show -o tsv --query 'id')"
 
-  # Resource Group where your resources are from which you want to remove diagnostics settings
-  $ResourceGroupNameTarget = "plzm-eus2"
+  if ($LogAnalyticsWorkspaceName -eq "" -and $StorageAccountName -eq "")
+  {
+    Write-Error -Message "You must specify at least one sink - either a Log Analytics workspace or a Storage Account"
+    return
+  }
+  else
+  {
+    if ($LogAnalyticsWorkspaceName -eq "")
+    {
+      $LogAnalyticsWorkspaceId = ""
+    }
+    else
+    {
+      $LogAnalyticsWorkspaceId = "/subscriptions/$SubscriptionId/resourceGroups/$ResourceGroupNameSinks/providers/microsoft.operationalinsights/workspaces/$LogAnalyticsWorkspaceName"
+    }
 
-  # Sink(s)
-  $ResourceGroupNameSinks = "plzm-eus2"
-  $LogAnalyticsWorkspaceName = "law-plzm-eus2"
-  $StorageAccountName = "saplzmeus201"
-  $LogAnalyticsWorkspaceId = "/subscriptions/$SubscriptionId/resourceGroups/$ResourceGroupNameSinks/providers/microsoft.operationalinsights/workspaces/$LogAnalyticsWorkspaceName"
-  $StorageAccountId = "/subscriptions/$SubscriptionId/resourcegroups/$ResourceGroupNameSinks/providers/microsoft.storage/storageaccounts/$StorageAccountName"
+    if ($StorageAccountName -eq "")
+    {
+      $StorageAccountId = ""
+    }
+    else
+    {
+      $StorageAccountId = "/subscriptions/$SubscriptionId/resourcegroups/$ResourceGroupNameSinks/providers/microsoft.storage/storageaccounts/$StorageAccountName"
+    }
+  }
   # ##################################################
 
   # ##################################################
