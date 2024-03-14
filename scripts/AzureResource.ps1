@@ -142,11 +142,16 @@ function Get-Resources()
 
   if (!$ResourceGroupName)
   {
-    $resources = "$(az resource list --subscription $SubscriptionId --query '[].{name:name, id:id, resourceGroup:resourceGroup}')" | ConvertFrom-Json
+    $result = "$(az resource list --subscription $SubscriptionId --query '[].{name:name, id:id, resourceGroup:resourceGroup}')" | ConvertFrom-Json
   }
   else
   {
-    $resources = "$(az resource list --subscription $SubscriptionId -g $ResourceGroupName --query '[].{name:name, id:id, resourceGroup:resourceGroup}')" | ConvertFrom-Json
+    $result = "$(az resource list --subscription $SubscriptionId -g $ResourceGroupName --query '[].{name:name, id:id, resourceGroup:resourceGroup}')" | ConvertFrom-Json
+  }
+
+  foreach ($ro in $result)
+  {
+    $resources.Add($ro) | Out-Null
   }
 
   if ($AddChildResources)
