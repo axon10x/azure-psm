@@ -32,7 +32,7 @@ The script is opinionated in that, for example, the fallback strategy (if electe
 
 There is also a "remove all" counterpart, since good practice in CI/CD/DevOps/infrastructure means each deploy tool has a correlated remove tool, so that as teams test something like this, it's very easy for them to do a deploy, realize they want to change something, then un-deploy in one line of code, etc.
 
-The remove script does not need diagnostic setting names. Instead, if you specify the sink(s) in question, it will iterate through each resource's diagnostic settings (since an Azure resource can have up to 20 total diagnostic settings, or more in the case of storage accounts) and only remove those which correspond to the sink(s) user specifies. In this way, existing diagnostic settings which point at other than the DSR sinks are preserved, and user diagnostics for other purposes (like operational dashboards and alerts) continue as is.
+The remove script does not need diagnostic setting names. Instead, if you specify the sink(s) in question, it will iterate through each resource's diagnostic settings (since an Azure resource can have up to 20 total diagnostic settings, or more in the case of storage accounts) and only remove those which correspond to the sink(s) user specifies. In this way, existing diagnostic settings which point at other than the specified sinks are preserved, and user diagnostics for other purposes (like operational dashboards and alerts) continue as is.
 
 The script uses an ARM template, also in this repo, for deploying diagnostic settings. My ARM template includes logic to handle multiple sinks etc.
 
