@@ -19,12 +19,16 @@ function Get-TagsForArmTemplate()
     {
       $tagKVArray = $tagKVPair.Split("=")
       $tagsObject[$tagKVArray[0]] = $tagKVArray[1]
+
+      $tagsForArm = ConvertTo-Json -InputObject $tagsObject -Compress
+      $tagsForArm = $tagsForArm.Replace('"', '''')
+      $tagsForArm = "`"$tagsForArm`""
     }
   }
-
-  $tagsForArm = ConvertTo-Json -InputObject $tagsObject -Compress
-  $tagsForArm = $tagsForArm.Replace('"', '''')
-  $tagsForArm = "`"$tagsForArm`""
+  else
+  {
+    $tagsForArm = $null
+  }
 
   return $tagsForArm
 }
