@@ -27,7 +27,7 @@ function Get-TagsForArmTemplate()
   }
   else
   {
-    $tagsForArm = $null
+    $tagsForArm = "{}"
   }
 
   return $tagsForArm
