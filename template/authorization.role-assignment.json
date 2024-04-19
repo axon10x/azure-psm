@@ -2,10 +2,6 @@
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "timestamp": {
-      "type": "string",
-      "defaultValue": "[utcNow('u')]"
-    },
     "roleDefinitionId": {
       "type": "String",
       "defaultValue": "",
@@ -18,6 +14,10 @@
       "type": "String",
       "defaultValue": ""
     },
+    "resourceGroupName": {
+      "type": "string",
+      "defaultValue": ""
+    },
     "resourceType": {
       "type": "String",
       "defaultValue": ""
@@ -25,27 +25,13 @@
     "resourceName": {
       "type": "String",
       "defaultValue": ""
-    },
-    "tags": {
-      "type": "object",
-      "defaultValue": "[createObject()]"
     }
   },
   "variables": {
-    "timeStampTag": {
-      "Timestamp": "[parameters('timestamp')]"
-    },
-    "tags": "[union(parameters('tags'), variables('timeStampTag'))]",
     "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', parameters('roleDefinitionId'))]",
     "roleAssignmentName": "[guid(subscription().id, resourceGroup().name, parameters('roleDefinitionId'), parameters('principalId'), parameters('resourceType'), parameters('resourceName'))]",
-    "scopeId": "[
-      if
-      (
-        or(empty(parameters('resourceType')), empty(parameters('resourceName'))),
-        '',
-        concat(parameters('resourceType'), '/', parameters('resourceName'))
-      )
-  ]","apiVersionAuthRoleAssignment": "2022-04-01"
+    "scopeId": "[concat('/subscriptions/', subscription().id, '/resourceGroups/', parameters('resourceGroupName'), '/', parameters('resourceType'), '/', parameters('resourceName'))]", 
+    "apiVersionAuthRoleAssignment": "2022-04-01"
 },
 "resources": [
   {
