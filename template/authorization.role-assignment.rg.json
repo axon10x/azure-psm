@@ -25,19 +25,15 @@
         "User"
       ]
     },
-    "resourceType": {
-      "type": "string",
-      "defaultValue": ""
-    },
-    "resourceName": {
+    "resourceGroupName": {
       "type": "string",
       "defaultValue": ""
     }
   },
   "variables": {
     "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', parameters('roleDefinitionId'))]",
-    "roleAssignmentName": "[guid(subscription().id, resourceGroup().name, parameters('roleDefinitionId'), parameters('principalId'), parameters('resourceType'), parameters('resourceName'))]",
-    "scopeId": "[if(or(empty(parameters('resourceType')), empty(parameters('resourceName'))), subscription().id, concat(parameters('resourceType'), '/', parameters('resourceName')))]",
+    "roleAssignmentName": "[guid(subscription().id, resourceGroup().name, parameters('roleDefinitionId'), parameters('principalId'))]",
+    "scopeId": "[concat('/subscriptions/', subscription().id, '/resourceGroups/', parameters('resourceGroupName'))]",
     "apiVersionAuthRoleAssignment": "2022-04-01"
   },
   "resources": [
