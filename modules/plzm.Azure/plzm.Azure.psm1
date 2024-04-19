@@ -3138,6 +3138,100 @@ function Test-ResourceGroupExists()
 # AzureSecurity.ps1
 # ##################################################
 
+function Deploy-RoleAssignment()
+{
+  [CmdletBinding()]
+  param
+  (
+    [Parameter(Mandatory = $true)]
+    [string]
+    $Location,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $TemplateUri,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $RoleDefinitionId,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $PrincipalId,
+    [Parameter(Mandatory = $false)]
+    [string]
+    $PrincipalType = "ServicePrincipal",
+    [Parameter(Mandatory = $true)]
+    [string]
+    $ResourceGroupName,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $ResourceType,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $ResourceName
+  )
+
+  Write-Debug -Debug:$true -Message "Deploy Role Assignment: RoleDefinitionId=$RoleDefinitionId, PrincipalId=$PrincipalId, PrincipalType=$PrincipalType, ResourceGroupName=$ResourceGroupName, ResourceType=$ResourceType, ResourceName=$ResourceName"
+
+  $deploymentName = "rbac-" + $PrincipalId + "-" + $RoleDefinitionId
+
+  $output = az deployment sub create --verbose `
+    -n "$deploymentName" `
+    --location="$Location" `
+    --template-uri "$TemplateUri" `
+    --parameters `
+    roleDefinitionId="$RoleDefinitionId" `
+    principalId="$PrincipalId" `
+    principalType="$PrincipalType" `
+    resourceGroupName="$ResourceGroupName" `
+    resourceType="$ResourceType" `
+    resourceName="$ResourceName" `
+    | ConvertFrom-Json
+
+  return $output
+}
+
+function Deploy-RoleAssignmentRg()
+{
+  [CmdletBinding()]
+  param
+  (
+    [Parameter(Mandatory = $true)]
+    [string]
+    $Location,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $TemplateUri,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $RoleDefinitionId,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $PrincipalId,
+    [Parameter(Mandatory = $false)]
+    [string]
+    $PrincipalType = "ServicePrincipal",
+    [Parameter(Mandatory = $true)]
+    [string]
+    $ResourceGroupName
+  )
+
+  Write-Debug -Debug:$true -Message "Deploy RG Role Assignment: RoleDefinitionId=$RoleDefinitionId, PrincipalId=$PrincipalId, PrincipalType=$PrincipalType, ResourceGroupName=$ResourceGroupName"
+
+  $deploymentName = "rbac-" + $PrincipalId + "-" + $RoleDefinitionId
+
+  $output = az deployment sub create --verbose `
+    -n "$deploymentName" `
+    --location="$Location" `
+    --template-uri "$TemplateUri" `
+    --parameters `
+    roleDefinitionId="$RoleDefinitionId" `
+    principalId="$PrincipalId" `
+    principalType="$PrincipalType" `
+    resourceGroupName="$ResourceGroupName" `
+    | ConvertFrom-Json
+
+  return $output
+}
+
 function Deploy-RoleAssignmentSub()
 {
   [CmdletBinding()]
@@ -3160,9 +3254,9 @@ function Deploy-RoleAssignmentSub()
     $PrincipalType = "ServicePrincipal"
   )
 
-  $deploymentName = "rbac-" + $Location + "-" + (Get-Timestamp -MakeStringSafe $true)
-
   Write-Debug -Debug:$true -Message "Deploy Sub Role Assignment: RoleDefinitionId=$RoleDefinitionId, PrincipalId=$PrincipalId, PrincipalType=$PrincipalType"
+
+  $deploymentName = "rbac-" + $PrincipalId + "-" + $RoleDefinitionId
 
   $output = az deployment sub create --verbose `
     -n "$deploymentName" `
