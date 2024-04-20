@@ -68,8 +68,8 @@ function Deploy-AppInsights()
     [string]
     $PublicNetworkAccessForQuery = "Enabled",
     [Parameter(Mandatory = $false)]
-    [string]
-    $Tags = ""
+    [object]
+    $Tags = $null
   )
 
   Write-Debug -Debug:$true -Message "Deploy App Insights $AppInsightsName"
@@ -124,8 +124,8 @@ function Deploy-AppServiceCertificate()
     [string]
     $KeyVaultSecretName,
     [Parameter(Mandatory = $false)]
-    [string]
-    $Tags = ""
+    [object]
+    $Tags = $null
   )
 
   Write-Debug -Debug:$true -Message "Deploy App Service Certificate $AppServiceCertificateName"
@@ -230,8 +230,8 @@ function Deploy-AppService()
     [string]
     $CertificateForAppServiceThumbprint = "",
     [Parameter(Mandatory = $false)]
-    [string]
-    $Tags = ""
+    [object]
+    $Tags = $null
   )
 
   Write-Debug -Debug:$true -Message "Deploy App Service $AppServiceName"
@@ -311,8 +311,8 @@ function Deploy-AppServicePlan()
     [bool]
     $ZoneRedundant = $true,
     [Parameter(Mandatory = $false)]
-    [string]
-    $Tags = ""
+    [object]
+    $Tags = $null
   )
 
   Write-Debug -Debug:$true -Message "Deploy App Service Plan $AppServicePlanName"
@@ -372,8 +372,8 @@ function Deploy-AppServicePlanAutoscaleSettings()
     [int]
     $DefaultInstances,
     [Parameter(Mandatory = $false)]
-    [string]
-    $Tags = ""
+    [object]
+    $Tags = $null
   )
 
   Write-Debug -Debug:$true -Message "Deploy App Service Plan Autoscale Settings $AutoscaleSettingsName"
@@ -747,8 +747,8 @@ function Deploy-KeyVault()
     [string]
     $AllowedSubnetResourceIdsCsv = "",
     [Parameter(Mandatory = $false)]
-    [string]
-    $Tags = ""
+    [object]
+    $Tags = $null
   )
 
   Write-Debug -Debug:$true -Message "Deploy Key Vault $KeyVaultName"
@@ -1097,8 +1097,8 @@ function Deploy-ActionGroup()
     [string]
     $AzureAppPushReceivers = "",
     [Parameter(Mandatory = $false)]
-    [string]
-    $Tags = ""
+    [object]
+    $Tags = $null
   )
 
   Write-Debug -Debug:$true -Message "Deploy Action Group $ActionGroupName"
@@ -1308,8 +1308,8 @@ function Deploy-LogAnalyticsWorkspace()
     [string]
     $PublicNetworkAccessForQuery = "Enabled",
     [Parameter(Mandatory = $false)]
-    [string]
-    $Tags = ""
+    [object]
+    $Tags = $null
   )
 
   Write-Debug -Debug:$true -Message "Deploy Log Analytics Workspace $WorkspaceName"
@@ -1386,8 +1386,8 @@ function Deploy-MetricAlert()
     [string]
     $ActionGroupId,
     [Parameter(Mandatory = $false)]
-    [string]
-    $Tags = ""
+    [object]
+    $Tags = $null
   )
 
   Write-Debug -Debug:$true -Message "Deploy Metric Alert $MetricAlertName"
@@ -1446,8 +1446,8 @@ function Deploy-MonitorDataCollectionEndpoint()
     [string]
     $PublicNetworkAccess = "Disabled",
     [Parameter(Mandatory = $false)]
-    [string]
-    $Tags = ""
+    [object]
+    $Tags = $null
   )
 
   Write-Debug -Debug:$true -Message "Deploy Data Collection Endpoint $DataCollectionEndpointName"
@@ -1497,8 +1497,8 @@ function Deploy-MonitorDataCollectionRule()
     [string]
     $LogAnalyticsWorkspaceId,
     [Parameter(Mandatory = $false)]
-    [string]
-    $Tags = ""
+    [object]
+    $Tags = $null
   )
 
   Write-Debug -Debug:$true -Message "Deploy Data Collection Endpoint $DataCollectionRuleName"
@@ -1626,8 +1626,8 @@ function Deploy-MonitorPrivateLinkScope()
     [string]
     $IngestionAccessMode = "Open",
     [Parameter(Mandatory = $false)]
-    [string]
-    $Tags = ""
+    [object]
+    $Tags = $null
   )
 
   Write-Debug -Debug:$true -Message "Deploy Azure Monitor Private Link Scope $PrivateLinkScopeName"
@@ -1968,8 +1968,8 @@ function Deploy-NetworkNic()
     [string]
     $IpConfigName = "",
     [Parameter(Mandatory = $false)]
-    [string]
-    $Tags = ""
+    [object]
+    $Tags = $null
   )
 
   Write-Debug -Debug:$true -Message "Deploy NIC $NicName"
@@ -2017,8 +2017,8 @@ function Deploy-NetworkSecurityGroup() {
     [string]
     $NSGName,
     [Parameter(Mandatory = $false)]
-    [string]
-    $Tags = ""
+    [object]
+    $Tags = $null
   )
 
   Write-Debug -Debug:$true -Message "Deploy NSG $NSGName"
@@ -2157,8 +2157,8 @@ function Deploy-NetworkPublicIp()
     [string]
     $HostName = "",
     [Parameter(Mandatory = $false)]
-    [string]
-    $Tags = ""
+    [object]
+    $Tags = $null
   )
   Write-Debug -Debug:$true -Message "Deploy PIP $PublicIpAddressName"
 
@@ -2199,8 +2199,8 @@ function Deploy-NetworkPrivateDnsZone()
     [string]
     $DnsZoneName,
     [Parameter(Mandatory = $false)]
-    [string]
-    $Tags = ""
+    [object]
+    $Tags = $null
   )
 
   Write-Debug -Debug:$true -Message "Deploy Private DNS Zone $DnsZoneName"
@@ -2241,8 +2241,8 @@ function Deploy-NetworkPrivateDnsZones()
     [string]
     $VNetName,
     [Parameter(Mandatory = $false)]
-    [string]
-    $Tags = ""
+    [object]
+    $Tags = $null
   )
 
   Write-Debug -Debug:$true -Message "Deploy Private DNS Zones and VNet links"
@@ -2303,8 +2303,8 @@ function Deploy-NetworkPrivateDnsZoneVNetLink()
     [string]
     $VNetResourceId,
     [Parameter(Mandatory = $false)]
-    [string]
-    $Tags = ""
+    [object]
+    $Tags = $null
   )
 
   Write-Debug -Debug:$true -Message "Deploy Private DNS Zone VNet Link $DnsZoneName to $VNetResourceId"
@@ -2359,8 +2359,8 @@ function Deploy-NetworkPrivateEndpointAndNic()
     [string]
     $SubnetResourceId,
     [Parameter(Mandatory = $false)]
-    [string]
-    $Tags = ""
+    [object]
+    $Tags = $null
   )
 
   Write-Debug -Debug:$true -Message "Deploy Private Endpoint and NIC $PrivateEndpointName"
@@ -2523,8 +2523,8 @@ function Deploy-NetworkVNet() {
     [bool]
     $EnableVmProtection = $false,
     [Parameter(Mandatory = $false)]
-    [string]
-    $Tags = ""
+    [object]
+    $Tags = $null
   )
 
   Write-Debug -Debug:$true -Message "Deploy VNet $VNetName"
@@ -3325,8 +3325,8 @@ function Deploy-UserAssignedIdentity()
     [string]
     $UAIName,
     [Parameter(Mandatory = $false)]
-    [string]
-    $Tags = ""
+    [object]
+    $Tags = $null
   )
 
   Write-Debug -Debug:$true -Message "Deploy UAI $UAIName"
@@ -3507,8 +3507,8 @@ function Deploy-StorageAccount()
     [string]
     $DefaultAction = "Deny",
     [Parameter(Mandatory = $false)]
-    [string]
-    $Tags = ""
+    [object]
+    $Tags = $null
   )
 
   Write-Debug -Debug:$true -Message "Deploy Storage Account $StorageAccountName"
@@ -4213,8 +4213,8 @@ function Get-TagsForArmTemplate()
   param
   (
     [Parameter(Mandatory = $false)]
-    [string]
-    $Tags = ""
+    [object]
+    $Tags = $null
   )
 
   Write-Debug -Debug:$true -Message "Get-TagsForArmTemplate: $Tags"
@@ -4249,8 +4249,8 @@ function Get-TagsForAzureCli()
   param
   (
     [Parameter(Mandatory = $false)]
-    [string]
-    $Tags = ""
+    [object]
+    $Tags = $null
   )
 
   Write-Debug -Debug:$true -Message "Get-TagsForAzureCli: $Tags"
@@ -4360,8 +4360,8 @@ function Deploy-Vm()
     [string]
     $BootDiagnosticsStorageAccountName = "",
     [Parameter(Mandatory = $false)]
-    [string]
-    $Tags = ""
+    [object]
+    $Tags = $null
   )
 
   Write-Debug -Debug:$true -Message "Deploy VM $VmName"
