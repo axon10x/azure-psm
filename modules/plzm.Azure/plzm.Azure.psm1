@@ -4240,7 +4240,9 @@ function Get-TagsForArmTemplate()
     $tagsForArm = "{}"
   }
 
-  return $tagsForArm
+  $result = ConvertFrom-Json -InputObject $tagsForArm
+
+  return $result
 }
 
 function Get-TagsForAzureCli()
