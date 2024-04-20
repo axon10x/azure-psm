@@ -52,8 +52,8 @@ function Deploy-KeyVault()
     [string]
     $AllowedSubnetResourceIdsCsv = "",
     [Parameter(Mandatory = $false)]
-    [string]
-    $Tags = ""
+    [object]
+    $Tags = $null
   )
 
   Write-Debug -Debug:$true -Message "Deploy Key Vault $KeyVaultName"

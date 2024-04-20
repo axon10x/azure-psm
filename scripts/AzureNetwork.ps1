@@ -40,8 +40,8 @@ function Deploy-NetworkNic()
     [string]
     $IpConfigName = "",
     [Parameter(Mandatory = $false)]
-    [string]
-    $Tags = ""
+    [object]
+    $Tags = $null
   )
 
   Write-Debug -Debug:$true -Message "Deploy NIC $NicName"
@@ -89,8 +89,8 @@ function Deploy-NetworkSecurityGroup() {
     [string]
     $NSGName,
     [Parameter(Mandatory = $false)]
-    [string]
-    $Tags = ""
+    [object]
+    $Tags = $null
   )
 
   Write-Debug -Debug:$true -Message "Deploy NSG $NSGName"
@@ -229,8 +229,8 @@ function Deploy-NetworkPublicIp()
     [string]
     $HostName = "",
     [Parameter(Mandatory = $false)]
-    [string]
-    $Tags = ""
+    [object]
+    $Tags = $null
   )
   Write-Debug -Debug:$true -Message "Deploy PIP $PublicIpAddressName"
 
@@ -271,8 +271,8 @@ function Deploy-NetworkPrivateDnsZone()
     [string]
     $DnsZoneName,
     [Parameter(Mandatory = $false)]
-    [string]
-    $Tags = ""
+    [object]
+    $Tags = $null
   )
 
   Write-Debug -Debug:$true -Message "Deploy Private DNS Zone $DnsZoneName"
@@ -313,8 +313,8 @@ function Deploy-NetworkPrivateDnsZones()
     [string]
     $VNetName,
     [Parameter(Mandatory = $false)]
-    [string]
-    $Tags = ""
+    [object]
+    $Tags = $null
   )
 
   Write-Debug -Debug:$true -Message "Deploy Private DNS Zones and VNet links"
@@ -375,8 +375,8 @@ function Deploy-NetworkPrivateDnsZoneVNetLink()
     [string]
     $VNetResourceId,
     [Parameter(Mandatory = $false)]
-    [string]
-    $Tags = ""
+    [object]
+    $Tags = $null
   )
 
   Write-Debug -Debug:$true -Message "Deploy Private DNS Zone VNet Link $DnsZoneName to $VNetResourceId"
@@ -431,8 +431,8 @@ function Deploy-NetworkPrivateEndpointAndNic()
     [string]
     $SubnetResourceId,
     [Parameter(Mandatory = $false)]
-    [string]
-    $Tags = ""
+    [object]
+    $Tags = $null
   )
 
   Write-Debug -Debug:$true -Message "Deploy Private Endpoint and NIC $PrivateEndpointName"
@@ -595,8 +595,8 @@ function Deploy-NetworkVNet() {
     [bool]
     $EnableVmProtection = $false,
     [Parameter(Mandatory = $false)]
-    [string]
-    $Tags = ""
+    [object]
+    $Tags = $null
   )
 
   Write-Debug -Debug:$true -Message "Deploy VNet $VNetName"

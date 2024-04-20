@@ -31,8 +31,8 @@ function Deploy-AppInsights()
     [string]
     $PublicNetworkAccessForQuery = "Enabled",
     [Parameter(Mandatory = $false)]
-    [string]
-    $Tags = ""
+    [object]
+    $Tags = $null
   )
 
   Write-Debug -Debug:$true -Message "Deploy App Insights $AppInsightsName"
@@ -87,8 +87,8 @@ function Deploy-AppServiceCertificate()
     [string]
     $KeyVaultSecretName,
     [Parameter(Mandatory = $false)]
-    [string]
-    $Tags = ""
+    [object]
+    $Tags = $null
   )
 
   Write-Debug -Debug:$true -Message "Deploy App Service Certificate $AppServiceCertificateName"
@@ -193,8 +193,8 @@ function Deploy-AppService()
     [string]
     $CertificateForAppServiceThumbprint = "",
     [Parameter(Mandatory = $false)]
-    [string]
-    $Tags = ""
+    [object]
+    $Tags = $null
   )
 
   Write-Debug -Debug:$true -Message "Deploy App Service $AppServiceName"
@@ -274,8 +274,8 @@ function Deploy-AppServicePlan()
     [bool]
     $ZoneRedundant = $true,
     [Parameter(Mandatory = $false)]
-    [string]
-    $Tags = ""
+    [object]
+    $Tags = $null
   )
 
   Write-Debug -Debug:$true -Message "Deploy App Service Plan $AppServicePlanName"
@@ -335,8 +335,8 @@ function Deploy-AppServicePlanAutoscaleSettings()
     [int]
     $DefaultInstances,
     [Parameter(Mandatory = $false)]
-    [string]
-    $Tags = ""
+    [object]
+    $Tags = $null
   )
 
   Write-Debug -Debug:$true -Message "Deploy App Service Plan Autoscale Settings $AutoscaleSettingsName"

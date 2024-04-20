@@ -40,8 +40,8 @@ function Deploy-StorageAccount()
     [string]
     $DefaultAction = "Deny",
     [Parameter(Mandatory = $false)]
-    [string]
-    $Tags = ""
+    [object]
+    $Tags = $null
   )
 
   Write-Debug -Debug:$true -Message "Deploy Storage Account $StorageAccountName"
