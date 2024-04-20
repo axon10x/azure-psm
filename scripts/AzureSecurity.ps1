@@ -31,7 +31,7 @@ function Deploy-RoleAssignment()
 
   Write-Debug -Debug:$true -Message "Deploy Role Assignment: RoleDefinitionId=$RoleDefinitionId, PrincipalId=$PrincipalId, PrincipalType=$PrincipalType, ResourceGroupName=$ResourceGroupName, ResourceType=$ResourceType, ResourceName=$ResourceName"
 
-  $deploymentName = "rbac-" + $RoleDefinitionId
+  $deploymentName = "$Location-$ResourceName-$RoleDefinitionId"
 
   $output = az deployment sub create --verbose `
     -n "$deploymentName" `
@@ -76,7 +76,7 @@ function Deploy-RoleAssignmentRg()
 
   Write-Debug -Debug:$true -Message "Deploy RG Role Assignment: RoleDefinitionId=$RoleDefinitionId, PrincipalId=$PrincipalId, PrincipalType=$PrincipalType, ResourceGroupName=$ResourceGroupName"
 
-  $deploymentName = "rbac-rg-" + $RoleDefinitionId
+  $deploymentName = "$Location-$ResourceGroupName-$RoleDefinitionId"
 
   $output = az deployment sub create --verbose `
     -n "$deploymentName" `
@@ -116,7 +116,7 @@ function Deploy-RoleAssignmentSub()
 
   Write-Debug -Debug:$true -Message "Deploy Sub Role Assignment: RoleDefinitionId=$RoleDefinitionId, PrincipalId=$PrincipalId, PrincipalType=$PrincipalType"
 
-  $deploymentName = "rbac-sub-" + $RoleDefinitionId
+  $deploymentName = "$Location-$RoleDefinitionId"
 
   $output = az deployment sub create --verbose `
     -n "$deploymentName" `
