@@ -28,8 +28,8 @@ function Deploy-ActionGroup()
     [string]
     $AzureAppPushReceivers = "",
     [Parameter(Mandatory = $false)]
-    [string]
-    $Tags = ""
+    [object]
+    $Tags = $null
   )
 
   Write-Debug -Debug:$true -Message "Deploy Action Group $ActionGroupName"
@@ -239,8 +239,8 @@ function Deploy-LogAnalyticsWorkspace()
     [string]
     $PublicNetworkAccessForQuery = "Enabled",
     [Parameter(Mandatory = $false)]
-    [string]
-    $Tags = ""
+    [object]
+    $Tags = $null
   )
 
   Write-Debug -Debug:$true -Message "Deploy Log Analytics Workspace $WorkspaceName"
@@ -317,8 +317,8 @@ function Deploy-MetricAlert()
     [string]
     $ActionGroupId,
     [Parameter(Mandatory = $false)]
-    [string]
-    $Tags = ""
+    [object]
+    $Tags = $null
   )
 
   Write-Debug -Debug:$true -Message "Deploy Metric Alert $MetricAlertName"
@@ -377,8 +377,8 @@ function Deploy-MonitorDataCollectionEndpoint()
     [string]
     $PublicNetworkAccess = "Disabled",
     [Parameter(Mandatory = $false)]
-    [string]
-    $Tags = ""
+    [object]
+    $Tags = $null
   )
 
   Write-Debug -Debug:$true -Message "Deploy Data Collection Endpoint $DataCollectionEndpointName"
@@ -428,8 +428,8 @@ function Deploy-MonitorDataCollectionRule()
     [string]
     $LogAnalyticsWorkspaceId,
     [Parameter(Mandatory = $false)]
-    [string]
-    $Tags = ""
+    [object]
+    $Tags = $null
   )
 
   Write-Debug -Debug:$true -Message "Deploy Data Collection Endpoint $DataCollectionRuleName"
@@ -557,8 +557,8 @@ function Deploy-MonitorPrivateLinkScope()
     [string]
     $IngestionAccessMode = "Open",
     [Parameter(Mandatory = $false)]
-    [string]
-    $Tags = ""
+    [object]
+    $Tags = $null
   )
 
   Write-Debug -Debug:$true -Message "Deploy Azure Monitor Private Link Scope $PrivateLinkScopeName"

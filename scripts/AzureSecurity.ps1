@@ -185,8 +185,8 @@ function Deploy-UserAssignedIdentity()
     [string]
     $UAIName,
     [Parameter(Mandatory = $false)]
-    [string]
-    $Tags = ""
+    [object]
+    $Tags = $null
   )
 
   Write-Debug -Debug:$true -Message "Deploy UAI $UAIName"

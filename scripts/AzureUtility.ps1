@@ -4,8 +4,8 @@ function Get-TagsForArmTemplate()
   param
   (
     [Parameter(Mandatory = $false)]
-    [string]
-    $Tags = ""
+    [object]
+    $Tags = $null
   )
 
   Write-Debug -Debug:$true -Message "Get-TagsForArmTemplate: $Tags"
@@ -40,8 +40,8 @@ function Get-TagsForAzureCli()
   param
   (
     [Parameter(Mandatory = $false)]
-    [string]
-    $Tags = ""
+    [object]
+    $Tags = $null
   )
 
   Write-Debug -Debug:$true -Message "Get-TagsForAzureCli: $Tags"
