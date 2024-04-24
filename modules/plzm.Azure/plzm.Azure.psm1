@@ -1695,28 +1695,32 @@ function Get-DiagnosticsSettingsForResource()
   Write-Debug -Debug:$true -Message "query = $query"
 
   # Main resource diagnostic settings
-  #$settings = "$(az monitor diagnostic-settings list --subscription $SubscriptionId --resource $ResourceId --query "$query" 2>nul)" | ConvertFrom-Json
-  $settings = "$(az monitor diagnostic-settings list --subscription $SubscriptionId --resource $ResourceId --query "$query")" | ConvertFrom-Json
+  $settings = "$(az monitor diagnostic-settings list --subscription $SubscriptionId --resource $ResourceId --query "$query" 2>nul)"
+  #$settings = "$(az monitor diagnostic-settings list --subscription $SubscriptionId --resource $ResourceId --query "$query")" | ConvertFrom-Json
 
-  if ($settings) { $result.Add($settings) | Out-Null }
-
-  if ($ResourceId.EndsWith("Microsoft.Storage/storageAccounts/" + $ResourceName))
+  if ($settings)
   {
-    $rid = $ResourceId + "/blobServices/default"
-    $settings = "$(az monitor diagnostic-settings list --subscription $SubscriptionId --resource $rid --query "$query" 2>nul)" | ConvertFrom-Json
-    if ($settings) { $result.Add($settings) | Out-Null }
+    $settings = $settings | ConvertFrom-Json
+    $result.Add($settings) | Out-Null
 
-    $rid = $ResourceId + "/fileServices/default"
-    $settings = "$(az monitor diagnostic-settings list --subscription $SubscriptionId --resource $rid --query "$query" 2>nul)" | ConvertFrom-Json
-    if ($settings) { $result.Add($settings) | Out-Null }
+    if ($ResourceId.EndsWith("Microsoft.Storage/storageAccounts/" + $ResourceName))
+    {
+      $rid = $ResourceId + "/blobServices/default"
+      $settings = "$(az monitor diagnostic-settings list --subscription $SubscriptionId --resource $rid --query "$query" 2>nul)" | ConvertFrom-Json
+      if ($settings) { $result.Add($settings) | Out-Null }
 
-    $rid = $ResourceId + "/queueServices/default"
-    $settings = "$(az monitor diagnostic-settings list --subscription $SubscriptionId --resource $rid --query "$query" 2>nul)" | ConvertFrom-Json
-    if ($settings) { $result.Add($settings) | Out-Null }
+      $rid = $ResourceId + "/fileServices/default"
+      $settings = "$(az monitor diagnostic-settings list --subscription $SubscriptionId --resource $rid --query "$query" 2>nul)" | ConvertFrom-Json
+      if ($settings) { $result.Add($settings) | Out-Null }
 
-    $rid = $ResourceId + "/tableServices/default"
-    $settings = "$(az monitor diagnostic-settings list --subscription $SubscriptionId --resource $rid --query "$query" 2>nul)" | ConvertFrom-Json
-    if ($settings) { $result.Add($settings) | Out-Null }
+      $rid = $ResourceId + "/queueServices/default"
+      $settings = "$(az monitor diagnostic-settings list --subscription $SubscriptionId --resource $rid --query "$query" 2>nul)" | ConvertFrom-Json
+      if ($settings) { $result.Add($settings) | Out-Null }
+
+      $rid = $ResourceId + "/tableServices/default"
+      $settings = "$(az monitor diagnostic-settings list --subscription $SubscriptionId --resource $rid --query "$query" 2>nul)" | ConvertFrom-Json
+      if ($settings) { $result.Add($settings) | Out-Null }
+    }
   }
 
   return $result
