@@ -1695,15 +1695,8 @@ function Get-DiagnosticsSettingsForResource()
   Write-Debug -Debug:$true -Message "query = $query"
 
   # Main resource diagnostic settings
-  try
-  {
-    $settings = "$(az monitor diagnostic-settings list --subscription $SubscriptionId --resource $ResourceId --query "$query" 2>nul)"
-  }
-  catch
-  {
-    Write-Debug -Debug:$true -Message "Error: $_"
-    $settings = $null
-  }
+  #$settings = "$(az monitor diagnostic-settings list --subscription $SubscriptionId --resource $ResourceId --query "$query" 2>nul)"
+  $settings = az monitor diagnostic-settings list --subscription $SubscriptionId --resource $ResourceId --query "$query" 2>nul
 
   if ($settings)
   {
