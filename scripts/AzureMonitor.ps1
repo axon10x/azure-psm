@@ -602,7 +602,7 @@ function Get-DiagnosticsSettingsForResource()
     [string]
     $ResourceName
   )
-  Write-Debug -Debug:$true -Message "Get-DiagnosticsSettingsForResource $ResourceName"
+  Write-Debug -Debug:$true -Message "Get-DiagnosticsSettingsForResource : SubscriptionId = $SubscriptionId, LogAnalyticsWorkspaceId = $LogAnalyticsWorkspaceId, ResourceId = $ResourceId, ResourceName = $ResourceName"
 
   [System.Collections.ArrayList]$result = @()
 
@@ -622,6 +622,8 @@ function Get-DiagnosticsSettingsForResource()
   {
     $query = "[].{name:name, id:id}"
   }
+
+  Write-Debug -Debug:$true -Message "query = $query"
 
   # Main resource diagnostic settings
   $settings = "$(az monitor diagnostic-settings list --subscription $SubscriptionId --resource $ResourceId --query "$query" 2>nul)" | ConvertFrom-Json
@@ -808,7 +810,7 @@ function Remove-DiagnosticsSettingsForResource()
     [string]
     $ResourceName
   )
-  Write-Debug -Debug:$true -Message "Remove-DiagnosticsSettingsForResource :: ResourceId = $ResourceId"
+  Write-Debug -Debug:$true -Message "Remove-DiagnosticsSettingsForResource :: ResourceId = $ResourceId, ResourceName = $ResourceName"
 
   $settings = Get-DiagnosticsSettingsForResource `
     -SubscriptionId $SubscriptionId `
