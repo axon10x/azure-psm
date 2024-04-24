@@ -1675,55 +1675,76 @@ function Get-DiagnosticsSettingsForResource()
 
   [System.Collections.ArrayList]$result = @()
 
-  if ($LogAnalyticsWorkspaceId -and $StorageAccountId)
-  {
-    $query = "[?(workspaceId=='" + $LogAnalyticsWorkspaceId + "' && storageAccountId=='" + $StorageAccountId + "')].{name:name, id:id}"
-  }
-  elseif ($LogAnalyticsWorkspaceId)
-  {
-    $query = "[?(workspaceId=='" + $LogAnalyticsWorkspaceId + "')].{name:name, id:id}"
-  }
-  elseif ($StorageAccountId)
-  {
-    $query = "[?(storageAccountId=='" + $StorageAccountId + "')].{name:name, id:id}"
-  }
-  else
-  {
-    $query = "[].{name:name, id:id}"
-  }
+  $diagSupported = Test-ResourceTypeSupportsDiagnosticsSettings -ResourceId $ResourceId
 
-  Write-Debug -Debug:$true -Message "query = $query"
-
-  # Main resource diagnostic settings
-  #$settings = "$(az monitor diagnostic-settings list --subscription $SubscriptionId --resource $ResourceId --query "$query" 2>nul)"
-  $settings = az monitor diagnostic-settings list --subscription $SubscriptionId --resource $ResourceId --query "$query" 2>nul
-
-  if ($settings)
+  if ($diagSupported)
   {
-    $settings = $settings | ConvertFrom-Json
-    $result.Add($settings) | Out-Null
+    $settings = Get-DiagnosticsSettingsFiltered -SubscriptionId $SubscriptionId -LogAnalyticsWorkspaceId $LogAnalyticsWorkspaceId -StorageAccountId $StorageAccountId -ResourceId $ResourceId
 
-    if ($ResourceId.EndsWith("Microsoft.Storage/storageAccounts/" + $ResourceName))
+    if ($settings)
     {
-      $rid = $ResourceId + "/blobServices/default"
-      $settings = "$(az monitor diagnostic-settings list --subscription $SubscriptionId --resource $rid --query "$query" 2>nul)" | ConvertFrom-Json
-      if ($settings) { $result.Add($settings) | Out-Null }
+      $result.Add($settings) | Out-Null
 
-      $rid = $ResourceId + "/fileServices/default"
-      $settings = "$(az monitor diagnostic-settings list --subscription $SubscriptionId --resource $rid --query "$query" 2>nul)" | ConvertFrom-Json
-      if ($settings) { $result.Add($settings) | Out-Null }
+      if ($ResourceId.EndsWith("Microsoft.Storage/storageAccounts/" + $ResourceName))
+      {
+        $rid = $ResourceId + "/blobServices/default"
+        $settings = Get-DiagnosticsSettingsFiltered -SubscriptionId $SubscriptionId -LogAnalyticsWorkspaceId $LogAnalyticsWorkspaceId -StorageAccountId $StorageAccountId -ResourceId $rid
+        if ($settings) { $result.Add($settings) | Out-Null }
 
-      $rid = $ResourceId + "/queueServices/default"
-      $settings = "$(az monitor diagnostic-settings list --subscription $SubscriptionId --resource $rid --query "$query" 2>nul)" | ConvertFrom-Json
-      if ($settings) { $result.Add($settings) | Out-Null }
+        $rid = $ResourceId + "/fileServices/default"
+        $settings = Get-DiagnosticsSettingsFiltered -SubscriptionId $SubscriptionId -LogAnalyticsWorkspaceId $LogAnalyticsWorkspaceId -StorageAccountId $StorageAccountId -ResourceId $rid
+        if ($settings) { $result.Add($settings) | Out-Null }
 
-      $rid = $ResourceId + "/tableServices/default"
-      $settings = "$(az monitor diagnostic-settings list --subscription $SubscriptionId --resource $rid --query "$query" 2>nul)" | ConvertFrom-Json
-      if ($settings) { $result.Add($settings) | Out-Null }
+        $rid = $ResourceId + "/queueServices/default"
+        $settings = Get-DiagnosticsSettingsFiltered -SubscriptionId $SubscriptionId -LogAnalyticsWorkspaceId $LogAnalyticsWorkspaceId -StorageAccountId $StorageAccountId -ResourceId $rid
+        if ($settings) { $result.Add($settings) | Out-Null }
+
+        $rid = $ResourceId + "/tableServices/default"
+        $settings = Get-DiagnosticsSettingsFiltered -SubscriptionId $SubscriptionId -LogAnalyticsWorkspaceId $LogAnalyticsWorkspaceId -StorageAccountId $StorageAccountId -ResourceId $rid
+        if ($settings) { $result.Add($settings) | Out-Null }
+      }
     }
   }
 
   return $result
+}
+
+function Get-DiagnosticsSettingsFiltered()
+{
+  [CmdletBinding()]
+  param
+  (
+    [Parameter(Mandatory=$true)]
+    [string]
+    $SubscriptionId,
+    [Parameter(Mandatory=$false)]
+    [string]
+    $LogAnalyticsWorkspaceId = "",
+    [Parameter(Mandatory=$false)]
+    [string]
+    $StorageAccountId = "",
+    [Parameter(Mandatory=$true)]
+    [string]
+    $ResourceId
+  )
+  Write-Debug -Debug:$true -Message "Get-DiagnosticsSettingsFiltered : SubscriptionId = $SubscriptionId, LogAnalyticsWorkspaceId = $LogAnalyticsWorkspaceId, ResourceId = $ResourceId"
+
+  $settings = az monitor diagnostic-settings list --subscription $SubscriptionId --resource $ResourceId | ConvertFrom-Json
+
+  if ($LogAnalyticsWorkspaceId -and $StorageAccountId)
+  {
+    $settings = $settings | Where-Object {$_.workspaceId -eq $LogAnalyticsWorkspaceId -and $_.storageAccountId -eq $StorageAccountId}
+  }
+  elseif ($LogAnalyticsWorkspaceId)
+  {
+    $settings = $settings | Where-Object {$_.workspaceId -eq $LogAnalyticsWorkspaceId}
+  }
+  elseif ($StorageAccountId)
+  {
+    $settings = $settings | Where-Object {$_.storageAccountId -eq $StorageAccountId}
+  }
+
+  return $settings
 }
 
 function Get-DiagnosticsSettingsForSub()
@@ -1928,6 +1949,31 @@ function Remove-DiagnosticsSettingsForSub()
   }
 }
 
+function Test-ResourceTypeSupportsDiagnosticsSettings()
+{
+  [CmdletBinding()]
+  param
+  (
+    [Parameter(Mandatory=$true)]
+    [string]
+    $ResourceId
+  )
+
+  $result = $false
+
+  $apiVersion = "2021-05-01-preview"
+  $mgmtApiUri = "https://management.azure.com" + $ResourceId + "/providers/Microsoft.Insights/diagnosticSettings?api-version=$apiVersion"
+  Write-Debug -Debug:$true -Message "mgmtApiUri = $mgmtApiUri"
+  $statusCode = (Invoke-AzRestMethod -Uri $mgmtApiUri).StatusCode
+  Write-Debug -Debug:$true -Message "statusCode = $statusCode"
+  if ($statusCode -eq 200)
+  {
+    $result = $true
+  }
+  Write-Debug -Debug:$true -Message "result = $result"
+
+  return $result
+}
 
 # ##################################################
 # AzureNetwork.ps1
