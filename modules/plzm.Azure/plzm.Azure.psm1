@@ -1964,12 +1964,18 @@ function Test-ResourceTypeSupportsDiagnosticsSettings()
   $apiVersion = "2021-05-01-preview"
   $mgmtApiUri = "https://management.azure.com" + $ResourceId + "/providers/Microsoft.Insights/diagnosticSettings?api-version=$apiVersion"
   Write-Debug -Debug:$true -Message "mgmtApiUri = $mgmtApiUri"
-  $statusCode = (Invoke-AzRestMethod -Uri $mgmtApiUri).StatusCode
-  Write-Debug -Debug:$true -Message "statusCode = $statusCode"
-  if ($statusCode -eq 200)
-  {
-    $result = $true
-  }
+
+  $settings = az rest --uri $mgmtApiUri 2>nul | ConvertFrom-Json
+
+  if ($settings) { $result = $true }
+  #$statusCode = (Invoke-AzRestMethod -Uri $mgmtApiUri).StatusCode
+
+  #Write-Debug -Debug:$true -Message "statusCode = $statusCode"
+  #if ($statusCode -eq 200)
+  #{
+  #  $result = $true
+  #}
+
   Write-Debug -Debug:$true -Message "result = $result"
 
   return $result
