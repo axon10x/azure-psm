@@ -14,6 +14,8 @@ function Get-TagsForArmTemplate()
 
   if ($Tags)
   {
+    Write-Debug -Debug:$true -Message "Tags: $Tags"
+
     $tagKVPairs = $Tags.Split(",")
 
     foreach ($tagKVPair in $tagKVPairs)
@@ -28,6 +30,8 @@ function Get-TagsForArmTemplate()
   }
   else
   {
+    Write-Debug -Debug:$true -Message "Tags: Null/Empty"
+
     $tagsForArm = "{}"
   }
 
