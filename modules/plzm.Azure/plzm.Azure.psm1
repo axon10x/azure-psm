@@ -1968,13 +1968,6 @@ function Test-ResourceTypeSupportsDiagnosticsSettings()
   $settings = az rest --uri $mgmtApiUri 2>nul | ConvertFrom-Json
 
   if ($settings) { $result = $true }
-  #$statusCode = (Invoke-AzRestMethod -Uri $mgmtApiUri).StatusCode
-
-  #Write-Debug -Debug:$true -Message "statusCode = $statusCode"
-  #if ($statusCode -eq 200)
-  #{
-  #  $result = $true
-  #}
 
   Write-Debug -Debug:$true -Message "result = $result"
 
