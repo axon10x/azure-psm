@@ -202,7 +202,7 @@ function Deploy-UserAssignedIdentity()
     location="$Location" `
     tenantId="$TenantId" `
     identityName="$UAIName" `
-    tags=$tagsForTemplate `
+    tags="$tagsForTemplate" `
     | ConvertFrom-Json
 
   return $output
