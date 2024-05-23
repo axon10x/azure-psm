@@ -27,15 +27,15 @@ function Get-TagsForArmTemplate()
     $tagsForArm = ConvertTo-Json -InputObject $tagsObject -Compress
     $tagsForArm = $tagsForArm.Replace('"', '''')
     $tagsForArm = "`"$tagsForArm`""
+
+    $result = ConvertFrom-Json -InputObject $tagsForArm
   }
   else
   {
     Write-Debug -Debug:$true -Message "Tags: Null/Empty"
 
-    $tagsForArm = "{}"
+    $result = "{}"
   }
-
-  $result = ConvertFrom-Json -InputObject $tagsForArm
 
   return $result
 }
