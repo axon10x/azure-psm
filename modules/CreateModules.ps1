@@ -1,6 +1,6 @@
-$powershellVersion = "7.0.0"
+$powershellVersion = "7.0"
 $author = "Patrick El-Azem"
-$companyName = "ALFAADIN"
+$companyName = "AXON10 LLC"
 $projectUri = "https://github.com/plzm/azure-deploy"
 
 $copyright = "(c) " + (Get-Date).Year + " Patrick El-Azem. All rights reserved."
