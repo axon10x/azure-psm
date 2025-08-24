@@ -44,7 +44,7 @@
     "tags": "[union(parameters('tags'), variables('timeStampTag'))]",
     "fullName": "[concat(parameters('subscriptionName'), '-', parameters('apiName'))]",
     "scope": "[if(empty(parameters('apiName')), resourceId('Microsoft.ApiManagement/service/apis', parameters('apimServiceName')), resourceId('Microsoft.ApiManagement/service/apis', parameters('apimServiceName'), parameters('apiName')))]",
-    "apiVersionApim": "2021-12-01-preview"
+    "apiVersionApim": "2024-06-01-preview"
   },
   "resources": [
     {

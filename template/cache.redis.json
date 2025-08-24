@@ -97,7 +97,7 @@
     "identityType": "[if(and(not(parameters('assignSystemIdentity')), not(variables('assignUserIdentity'))), 'None', if(and(parameters('assignSystemIdentity'), variables('assignUserIdentity')), 'SystemAssigned,UserAssigned', if(parameters('assignSystemIdentity'), 'SystemAssigned', 'UserAssigned')))]",
     "userAssignedIdentities": "[if(empty(trim(parameters('userAssignedIdentityResourceId'))), json('null'), createObject(parameters('userAssignedIdentityResourceId'), json('{}')))]",
     "skuFamily": "[if(equals(parameters('skuName'), 'Premium'), 'P', 'C')]",
-    "apiVersionCache": "2021-06-01"
+    "apiVersionCache": "2024-11-01"
   },
   "resources":
   [

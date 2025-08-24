@@ -91,12 +91,12 @@
     "destinationPortRange": "[if(empty(parameters('destinationPortRange')), json('null'), parameters('destinationPortRange'))]",
     "destinationPortRanges": "[if(empty(parameters('destinationPortRanges')), json('[]'), split(parameters('destinationPortRanges'), ','))]",
     "destinationAddressPrefixes": "[if(empty(parameters('destinationAddressPrefixes')), json('[]'), split(parameters('destinationAddressPrefixes'), ','))]",
-    "apiVersionNet": "2022-07-01"
+    "apiVersionNetwork": "2024-07-01"
   },
   "resources": [
     {
       "type": "Microsoft.Network/networkSecurityGroups/securityRules",
-      "apiVersion": "[variables('apiVersionNet')]",
+      "apiVersion": "[variables('apiVersionNetwork')]",
       "name": "[concat(parameters('nsgName'), '/', parameters('nsgRuleName'))]",
       "properties": {
         "description": "[parameters('description')]",

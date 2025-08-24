@@ -102,7 +102,7 @@
     "assignUserIdentity": "[not(empty(trim(parameters('userAssignedIdentityResourceId'))))]",
     "identityType": "[if(and(not(parameters('assignSystemIdentity')), not(variables('assignUserIdentity'))), 'None', if(and(parameters('assignSystemIdentity'), variables('assignUserIdentity')), 'SystemAssigned,UserAssigned', if(parameters('assignSystemIdentity'), 'SystemAssigned', 'UserAssigned')))]",
     "userAssignedIdentities": "[if(empty(trim(parameters('userAssignedIdentityResourceId'))), json('null'), createObject(parameters('userAssignedIdentityResourceId'), json('{}')))]",
-    "apiVersionApim": "2021-12-01-preview"
+    "apiVersionApim": "2024-06-01-preview"
   },
   "resources": [
     {

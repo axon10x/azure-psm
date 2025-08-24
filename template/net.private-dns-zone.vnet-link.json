@@ -26,7 +26,7 @@
       "Timestamp": "[parameters('timestamp')]"
     },
     "tags": "[union(parameters('tags'), variables('timeStampTag'))]",
-    "apiVersionDnsZonesVnetLinks": "2020-06-01"
+    "apiVersionDnsZonesVnetLinks": "2024-06-01"
   },
   "resources": [
     {

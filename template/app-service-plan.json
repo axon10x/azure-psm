@@ -57,7 +57,7 @@
     },
     "reserved": "[contains(parameters('kind'), 'linux')]",
     "tags": "[union(parameters('tags'), variables('timeStampTag'))]",
-    "apiVersionAsp": "2022-09-01"
+    "apiVersionAsp": "2024-11-01"
   },
   "resources": [
     {

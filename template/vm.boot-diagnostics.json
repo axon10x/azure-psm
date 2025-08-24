@@ -31,7 +31,7 @@
   },
   "variables": {
     "bootDiagnosticsStorageUri": "[concat('https://', parameters('diagnosticsStorageAccountName'), '.blob.core.windows.net/')]",
-    "apiVersionCompute": "2022-03-01"
+    "apiVersionCompute": "2024-11-01"
   },
   "resources": [
     {

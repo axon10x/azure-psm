@@ -85,7 +85,7 @@
                     json('null')
                 )
             )
-  ]","apiVersionApim": "2020-12-01"
+  ]","apiVersionApim": "2024-06-01-preview"
 },
 "resources": [
   {

@@ -34,12 +34,12 @@
       "Timestamp": "[parameters('timestamp')]"
     },
     "tags": "[union(parameters('tags'), variables('timeStampTag'))]",
-    "apiVersionNet": "2020-07-01"
+    "apiVersionNetwork": "2024-07-01"
   },
   "resources": [
     {
       "type": "Microsoft.Network/networkSecurityGroups",
-      "apiVersion": "[variables('apiVersionNet')]",
+      "apiVersion": "[variables('apiVersionNetwork')]",
       "name": "[parameters('nsgName')]",
       "location": "[parameters('location')]",
       "tags": "[variables('tags')]",

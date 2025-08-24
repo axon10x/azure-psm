@@ -72,7 +72,7 @@
     "assignUserIdentity": "[not(empty(trim(parameters('userAssignedIdentityResourceId'))))]",
     "identityType": "[if(and(not(parameters('assignSystemIdentity')), not(variables('assignUserIdentity'))), 'None', if(and(parameters('assignSystemIdentity'), variables('assignUserIdentity')), 'SystemAssigned,UserAssigned', if(parameters('assignSystemIdentity'), 'SystemAssigned', 'UserAssigned')))]",
     "userAssignedIdentities": "[if(empty(trim(parameters('userAssignedIdentityResourceId'))), json('null'), createObject(parameters('userAssignedIdentityResourceId'), json('{}')))]",
-    "apiVersionAppConfig": "2022-05-01"
+    "apiVersionAppConfig": "2025-02-01-preview"
   },
   "resources":
   [

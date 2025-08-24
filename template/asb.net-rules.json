@@ -2,10 +2,6 @@
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "timestamp": {
-      "type": "string",
-      "defaultValue": "[utcNow('u')]"
-    },
     "namespaceName": {
       "type": "string"
     },
@@ -20,18 +16,10 @@
         "Allow",
         "Deny"
       ]
-    },
-    "tags": {
-      "type": "object",
-      "defaultValue": "[createObject()]"
     }
   },
   "variables": {
-    "timeStampTag": {
-      "Timestamp": "[parameters('timestamp')]"
-    },
-    "tags": "[union(parameters('tags'), variables('timeStampTag'))]",
-    "apiVersionServiceBusNetRules": "2018-01-01-preview",
+    "apiVersionServiceBusNetRules": "2025-05-01-preview",
     "ruleName": "[concat(parameters('namespaceName'), concat('/', 'default'))]"
   },
   "resources": [

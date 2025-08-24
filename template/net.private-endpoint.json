@@ -44,12 +44,12 @@
       "Timestamp": "[parameters('timestamp')]"
     },
     "tags": "[union(parameters('tags'), variables('timeStampTag'))]",
-    "apiVersionPrivateEndpoint": "2023-04-01"
+    "apiVersionNetwork": "2024-07-01"
   },
   "resources": [
     {
       "type": "Microsoft.Network/privateEndpoints",
-      "apiVersion": "[variables('apiVersionPrivateEndpoint')]",
+      "apiVersion": "[variables('apiVersionNetwork')]",
       "name": "[parameters('privateEndpointName')]",
       "location": "[parameters('location')]",
       "tags": "[variables('tags')]",

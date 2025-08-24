@@ -49,11 +49,11 @@
     },
     "tags": "[union(parameters('tags'), variables('timeStampTag'))]",
     "targetResourceIds": "[split(parameters('targetResourceIds'), ',')]",
-    "apiVersion": "2021-06-07-preview"
+    "apiVersion": "2025-01-01"
   },
   "resources": [
     {
-      "type": "Microsoft.Chaos/chaosExperiments",
+      "type": "Microsoft.Chaos/experiments",
       "name": "[parameters('experimentName')]",
       "apiVersion": "[variables('apiVersion')]",
       "location": "[parameters('location')]",

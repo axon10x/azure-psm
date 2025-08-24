@@ -23,7 +23,7 @@
       "Timestamp": "[parameters('timestamp')]"
     },
     "tags": "[union(parameters('tags'), variables('timeStampTag'))]",
-    "apiVersionApim": "2021-12-01-preview"
+    "apiVersionApim": "2024-06-01-preview"
   },
   "resources": [
     {

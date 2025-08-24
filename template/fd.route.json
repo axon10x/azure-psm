@@ -106,7 +106,7 @@
     },
     "tags": "[union(parameters('tags'), variables('timeStampTag'))]",
     "customDomainIds": "[if(empty(parameters('customDomainIds')), json('[]'), split(parameters('customDomainIds'), ','))]",
-    "apiVersionFd": "2020-09-01"
+    "apiVersionFd": "2025-06-01"
   },
   "resources": [
     {

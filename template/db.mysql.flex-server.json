@@ -140,8 +140,8 @@
       "type": "string",
       "defaultValue": "None",
       "allowedValues": [
-        "None"
-        "Replica"
+        "None",
+        "Replica",
         "Source"
       ]
     },
@@ -251,7 +251,7 @@
         json('null')
       )
     ]",
-    "apiVersionMySql": "2022-09-30-preview"
+    "apiVersionMySql": "2024-12-01-preview"
   },
   "resources": [
     {

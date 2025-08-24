@@ -47,7 +47,7 @@
       "Timestamp": "[parameters('timestamp')]"
     },
     "tags": "[union(parameters('tags'), variables('timeStampTag'))]",
-    "apiVersionEventHub": "2018-01-01-preview"
+    "apiVersionEventHub": "2025-05-01-preview"
   },
   "resources": [
     {

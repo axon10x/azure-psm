@@ -32,13 +32,13 @@
     }
   },
   "variables": {
-    "apiVersionNet": "2022-07-01"
+    "apiVersionNetwork": "2024-07-01"
   },
   "resources": [
     {
       "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
       "name": "[concat(parameters('vnetNameLocal'), '/', parameters('vnetPeeringName'))]",
-      "apiVersion": "[variables('apiVersionNet')]",
+      "apiVersion": "[variables('apiVersionNetwork')]",
       "properties": {
         "remoteVirtualNetwork": {
           "id": "[parameters('vnetResourceIdRemote')]"

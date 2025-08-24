@@ -62,12 +62,12 @@
     }
   },
   "variables": {
-    "apiVersionNet": "2022-07-01"
+    "apiVersionNetwork": "2024-07-01"
   },
   "resources": [
     {
       "type": "Microsoft.Network/networkWatchers/flowLogs",
-      "apiVersion": "[variables('apiVersionNet')]",
+      "apiVersion": "[variables('apiVersionNetwork')]",
       "name": "[concat(parameters('networkWatcherName'), '/', parameters('flowLogName'))]",
       "location": "[parameters('location')]",
       "properties": {

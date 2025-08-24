@@ -34,12 +34,12 @@
   },
   "variables": {
     "routeName": "[concat(parameters('routeTableName'), '/', parameters('routeName'))]",
-    "apiVersionNet": "2022-07-01"
+    "apiVersionNetwork": "2024-07-01"
   },
   "resources": [
     {
       "type": "Microsoft.Network/routeTables/routes",
-      "apiVersion": "[variables('apiVersionNet')]",
+      "apiVersion": "[variables('apiVersionNetwork')]",
       "name": "[variables('routeName')]",
       "properties": {
         "addressPrefix": "[parameters('destinationAddressPrefix')]",

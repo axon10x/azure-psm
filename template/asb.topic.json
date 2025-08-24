@@ -58,7 +58,7 @@
       "Timestamp": "[parameters('timestamp')]"
     },
     "tags": "[union(parameters('tags'), variables('timeStampTag'))]",
-    "apiVersionServiceBusTopics": "2017-04-01"
+    "apiVersionServiceBusTopics": "2025-05-01-preview"
   },
   "resources": [
     {

@@ -90,7 +90,7 @@
                 json('[
       {\"path\": \"/*\"}]')
             )
-      ]","apiVersionCosmosDb": "2021-06-15"
+      ]","apiVersionCosmosDb": "2025-05-01-preview"
     },
     "resources": [
       {
