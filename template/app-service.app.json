@@ -276,7 +276,7 @@
       }
     ],
     "appInsightsExtensionVersion": "~2",
-    "apiVersionWeb": "2022-09-01",
+    "apiVersionWeb": "2024-11-01",
     "apiVersionAppInsights": "2020-02-02"
   },
   "resources": [

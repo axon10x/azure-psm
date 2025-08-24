@@ -31,7 +31,7 @@
     },
     "tags": "[union(parameters('tags'), variables('timeStampTag'))]",
     "credentialName": "[concat(parameters('appInsightsName'), '-key')]",
-    "apiVersionApim": "2021-12-01-preview",
+    "apiVersionApim": "2024-06-01-preview",
     "apiVersionAppInsights": "2020-02-02"
   },
   "resources": [

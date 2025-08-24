@@ -70,7 +70,7 @@
       "Timestamp": "[parameters('timestamp')]"
     },
     "tags": "[union(parameters('tags'), variables('timeStampTag'))]",
-    "apiVersionLogAnalytics": "2022-10-01"
+    "apiVersionLogAnalytics": "2025-02-01"
   },
   "resources": [
     {

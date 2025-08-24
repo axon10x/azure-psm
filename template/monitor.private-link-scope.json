@@ -43,7 +43,7 @@
       "Timestamp": "[parameters('timestamp')]"
     },
     "tags": "[union(parameters('tags'), variables('timeStampTag'))]",
-    "apiVersionInsights": "2021-07-01-preview"
+    "apiVersionInsights": "2023-06-01-preview"
   },
   "resources": [
     {

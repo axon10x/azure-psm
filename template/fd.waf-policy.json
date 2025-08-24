@@ -42,7 +42,7 @@
       "Timestamp": "[parameters('timestamp')]"
     },
     "tags": "[union(parameters('tags'), variables('timeStampTag'))]",
-    "apiVersionFdWaf": "2020-11-01"
+    "apiVersionFdWaf": "2025-03-01"
   },
   "resources": [
     {

@@ -174,7 +174,7 @@
     },
     "tags": "[union(parameters('tags'), variables('timeStampTag'))]",
     "replicationLocations": "[if(equals(toLower(trim(parameters('skuName'))), 'premium'), split(parameters('replicationLocations'), ','), json('[]'))]",
-    "apiVersionRegistry": "2023-01-01-preview"
+    "apiVersionRegistry": "2025-05-01-preview"
   },
   "resources":
   [

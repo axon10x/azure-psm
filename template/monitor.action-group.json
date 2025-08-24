@@ -65,7 +65,7 @@
       "Timestamp": "[parameters('timestamp')]"
     },
     "tags": "[union(parameters('tags'), variables('timeStampTag'))]",
-    "apiVersion": "2023-01-01"
+    "apiVersion": "2024-10-01-preview"
   },
   "resources": [
     {

@@ -20,12 +20,12 @@
     }
   },
   "variables": {
-    "apiVersionPrivateEndpoint": "2023-04-01"
+    "apiVersionNetwork": "2024-07-01"
   },
   "resources": [
     {
       "type": "Microsoft.Network/privateEndpoints/privateDnsZoneGroups",
-      "apiVersion": "[variables('apiVersionPrivateEndpoint')]",
+      "apiVersion": "[variables('apiVersionNetwork')]",
       "name": "[concat(parameters('privateEndpointName'), '/', parameters('privateDnsZoneGroupName'))]",
       "properties": {
         "privateDnsZoneConfigs": [

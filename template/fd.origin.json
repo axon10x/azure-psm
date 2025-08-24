@@ -60,7 +60,7 @@
       "Timestamp": "[parameters('timestamp')]"
     },
     "tags": "[union(parameters('tags'), variables('timeStampTag'))]",
-    "apiVersionFd": "2020-09-01",
+    "apiVersionFd": "2025-06-01",
     "originHostHeader": "[if(empty(parameters('originHostHeader')), parameters('hostName'), parameters('originHostHeader'))]"
   },
   "resources": [

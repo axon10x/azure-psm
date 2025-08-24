@@ -21,10 +21,6 @@
       "type": "string",
       "defaultValue": ""
     },
-    "softDeleteEnabled": {
-      "type": "bool",
-      "defaultValue": false
-    },
     "tags": {
       "type": "object",
       "defaultValue": "[createObject()]"
@@ -35,7 +31,7 @@
       "Timestamp": "[parameters('timestamp')]"
     },
     "tags": "[union(parameters('tags'), variables('timeStampTag'))]",
-    "apiVersion": "2020-09-30"
+    "apiVersion": "2024-03-03"
   },
   "resources": [
     {

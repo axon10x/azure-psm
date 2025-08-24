@@ -118,7 +118,7 @@
                    'type', parameters('backupPolicyType') 
                 )
       )
-  ]","apiVersionCosmosDb": "2021-06-15"
+  ]","apiVersionCosmosDb": "2025-05-01-preview"
 },
 "resources": [
   {
@@ -126,6 +126,7 @@
     "apiVersion": "[variables('apiVersionCosmosDb')]",
     "name": "[parameters('accountName')]",
     "location": "[parameters('location')]",
+    "tags": "[variables('tags')]",
     "kind": "[parameters('accountKind')]",
     "properties": {
       "databaseAccountOfferType": "Standard",
