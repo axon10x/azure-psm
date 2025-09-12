@@ -3,7 +3,7 @@ $author = "Patrick El-Azem"
 $companyName = "AXON10 LLC"
 $projectUri = "https://github.com/plzm/azure-deploy"
 
-$copyright = "(c) " + (Get-Date).Year + " Patrick El-Azem. All rights reserved."
+$copyright = "(c) " + (Get-Date).Year + " " + $companyName + ". All rights reserved."
 
 $scriptsPath = ".\scripts\"
 $azureModuleName = "plzm.Azure"
