@@ -5,7 +5,7 @@
 
 Azure Policy remediation is usually preferable to script-based (since policy is a background engine that runs periodically and user with enough permission has to take specific steps to avoid policy effects, whereas script is point-in-time unless automated to run periodically).
 
-This script uses the plzm.Azure Powershell module built/available in this repo. The module contains functionality that can take care of all the diagnostics controls, as follows.
+This script uses the axon10.Azure Powershell module built/available in this repo. The module contains functionality that can take care of all the diagnostics controls, as follows.
 
 - User designates a subscription and, optionally, a resource group, as scope
 - User designates sink(s) - can specify a Log Analytics workspace and/or a storage account (either individually or both together are supported)
@@ -41,7 +41,7 @@ Users can specify diagnostic setting name when deploying, but the diagnostic set
 Sample script here which shows a simple scenario for both deploy and remove - the user would adapt Set-Diagnostics-Sample() and Remove-Diagnostics-Sample() with their specific subscription and other resource IDs. Everything else, including Powershell module download and local install, is handled for the user.
 #>
 
-# May need to set execution policy to AllSigned or Bypass because I have not yet signed the plzm.Azure module.
+# May need to set execution policy to AllSigned or Bypass because I have not yet signed the axon10.Azure module.
 # https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.security/set-executionpolicy
 # Set-ExecutionPolicy -ExecutionPolicy AllSigned -Scope CurrentUser
 
@@ -57,15 +57,15 @@ function Set-Diagnostics()
   # YOU MUST SPECIFY THESE VARIABLES
 
   # Resource Group where your resources are that you want to configure with diagnostics settings
-  $ResourceGroupNameTarget = "plzm-eus2"
+  $ResourceGroupNameTarget = "[SET A VALUE HERE]"
 
   # You can substitute in your own diagnostic setting name, but you can also leave this as is. It's fine to have the same diagnostics setting name on multiple resources.
-  $DiagnosticsSettingName = "auto-diag"
+  $DiagnosticsSettingName = "[SET A VALUE HERE]"
 
   # Sink(s) - adjust these to your environment
-  $ResourceGroupNameSinks = "plzm-eus2" # Resource Group where the sinks are
-  $LogAnalyticsWorkspaceName = "law-plzm-eus2" # Name of the Log Analytics workspace (if you use one) where you want diagnostic logs sent - otherwise comment this line out or set to empty string
-  $StorageAccountName = "saplzmeus201" # Name of the Storage Account (if you use one) where you want diagnostic logs sent - otherwise comment this line out or set to empty string
+  $ResourceGroupNameSinks = "[SET A VALUE HERE]" # Resource Group where the sinks are
+  $LogAnalyticsWorkspaceName = "[SET A VALUE HERE]" # Name of the Log Analytics workspace (if you use one) where you want diagnostic logs sent - otherwise comment this line out or set to empty string
+  $StorageAccountName = "[SET A VALUE HERE]" # Name of the Storage Account (if you use one) where you want diagnostic logs sent - otherwise comment this line out or set to empty string
 
   # Execution settings
   $SendAllLogs = $false # Whether to send the category group "allLogs"
@@ -75,14 +75,14 @@ function Set-Diagnostics()
   # ##################################################
   # YOU CAN LEAVE THESE VARIABLES AS-IS UNLESS YOU HAVE SPECIFIC REASONS TO CHANGE THEM
 
-  # plzm-Azure PS1 module with tons of functionality incl needed by this diagnostics harness - and yeah, you should look at the code and not just trust me before running this :)
-  $ModuleUrlRoot = "https://raw.githubusercontent.com/plzm/azure-deploy/main/modules/plzm.Azure/"
+  # axon10.Azure PS1 module with tons of functionality incl needed by this diagnostics harness - and yeah, you should look at the code and not just trust me before running this :)
+  $ModuleUrlRoot = "https://raw.githubusercontent.com/axon10x/azure-psm/main/modules/axon10.Azure/"
 
   # Make sure you are logged in and az account set -s is set to the correct subscription - or just specify the sub ID explicitly here
   $SubscriptionId = "$(az account show -o tsv --query 'id')"
 
-  # You can use my ARM template for diagnostics setting, or substitute in your own
-  $TemplateUri = "https://raw.githubusercontent.com/plzm/azure-deploy/main/template/diagnostic-settings.json"
+  # You can use our ARM template for diagnostics setting, or substitute in your own
+  $TemplateUri = "https://raw.githubusercontent.com/axon10x/azure-templates/main/arm/diagnostic-settings.json"
 
   if ($LogAnalyticsWorkspaceName -eq "" -and $StorageAccountName -eq "")
   {
@@ -112,11 +112,11 @@ function Set-Diagnostics()
   # ##################################################
 
   # ##################################################
-  # Download and import the plzm-Azure PS1 module
-  Get-PlzmAzureModule -UrlRoot "$ModuleUrlRoot"
+  # Download and import the axon10.Azure PS1 module
+  Get-AzureModule -UrlRoot "$ModuleUrlRoot"
   # ##################################################
 
-  plzm.Azure\Deploy-DiagnosticsSettingsForAllResources `
+  axon10.Azure\Deploy-DiagnosticsSettingsForAllResources `
     -SubscriptionId $SubscriptionId `
     -ResourceGroupName $ResourceGroupNameTarget `
     -TemplateUri $TemplateUri `
@@ -140,17 +140,17 @@ function Remove-Diagnostics()
   # YOU MUST SPECIFY THESE VARIABLES
 
   # Resource Group where your resources are from which you want to remove diagnostics settings
-  $ResourceGroupNameTarget = "plzm-eus2"
+  $ResourceGroupNameTarget = "[SET A VALUE HERE]"
 
   # Sink(s) - adjust these to your environment
-  $ResourceGroupNameSinks = "plzm-eus2" # Resource Group where the sinks are
-  $LogAnalyticsWorkspaceName = "law-plzm-eus2" # Name of the Log Analytics workspace (if you use one) where you want diagnostic logs sent - otherwise comment this line out or set to empty string
-  $StorageAccountName = "saplzmeus201" # Name of the Storage Account (if you use one) where you want diagnostic logs sent - otherwise comment this line out or set to empty string
+  $ResourceGroupNameSinks = "[SET A VALUE HERE]" # Resource Group where the sinks are
+  $LogAnalyticsWorkspaceName = "[SET A VALUE HERE]" # Name of the Log Analytics workspace (if you use one) where you want diagnostic logs sent - otherwise comment this line out or set to empty string
+  $StorageAccountName = "[SET A VALUE HERE]" # Name of the Storage Account (if you use one) where you want diagnostic logs sent - otherwise comment this line out or set to empty string
   # ##################################################
   # YOU CAN LEAVE THESE VARIABLES AS-IS UNLESS YOU HAVE SPECIFIC REASONS TO CHANGE THEM
 
-  # plzm-Azure PS1 module with tons of functionality incl needed by this diagnostics harness - and yeah, you should look at the code and not just trust me before running this :)
-  $ModuleUrlRoot = "https://raw.githubusercontent.com/plzm/azure-deploy/main/modules/plzm.Azure/"
+  # axon10.Azure PS1 module with tons of functionality incl needed by this diagnostics harness - and yeah, you should look at the code and not just trust me before running this :)
+  $ModuleUrlRoot = "https://raw.githubusercontent.com/axon10x/azure-psm/main/modules/axon10.Azure/"
 
   # Make sure you are logged in and az account set -s is set to the correct subscription - or just specify the sub ID explicitly here
   $SubscriptionId = "$(az account show -o tsv --query 'id')"
@@ -183,18 +183,18 @@ function Remove-Diagnostics()
   # ##################################################
 
   # ##################################################
-  # Download and import the plzm-Azure PS1 module
-  Get-PlzmAzureModule -UrlRoot "$ModuleUrlRoot"
+  # Download and import the axon10.Azure PS1 module
+  Get-AzureModule -UrlRoot "$ModuleUrlRoot"
   # ##################################################
 
-  plzm.Azure\Remove-DiagnosticsSettingsForAllResources `
+  axon10.Azure\Remove-DiagnosticsSettingsForAllResources `
     -SubscriptionId $SubscriptionId `
     -ResourceGroupName $ResourceGroupNameTarget `
     -LogAnalyticsWorkspaceId $LogAnalyticsWorkspaceId `
     -StorageAccountId $StorageAccountId
 }
 
-function Get-PlzmAzureModule()
+function Get-AzureModule()
 {
   [CmdletBinding()]
   param
@@ -204,9 +204,9 @@ function Get-PlzmAzureModule()
     $UrlRoot
   )
 
-  Write-Debug -Debug:$true -Message "Get-PlzmAzureModule"
+  Write-Debug -Debug:$true -Message "Get-AzureModule"
 
-  $moduleName = "plzm.Azure"
+  $moduleName = "axon10x.Azure"
   $localFolderPath = "./modules/$moduleName/"
   $psm1FileName = "$moduleName.psm1"
   $psd1FileName = "$moduleName.psd1"
@@ -227,5 +227,5 @@ function Get-PlzmAzureModule()
   Import-Module "$localFolderPath" -Force
 
   Write-Debug -Debug:$true -Message "Module $moduleName imported with version $((Get-Module $moduleName).Version)"
-  plzm.Azure\Get-Timestamp
+  axon10.Azure\Get-Timestamp
 }

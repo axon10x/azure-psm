@@ -69,7 +69,7 @@ function Deploy-DiagnosticsSettingsForAllResources()
     $TemplateUri,
     [Parameter(Mandatory = $false)]
     [string]
-    $DiagnosticsSettingName = "plzm-azure-diag",
+    $DiagnosticsSettingName = "axon10-azure-diag",
     [Parameter(Mandatory=$false)]
     [string]
     $LogAnalyticsWorkspaceId = "",
