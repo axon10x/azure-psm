@@ -12,9 +12,13 @@ jobs:
   create_modules:
     name: Create Modules
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+      statuses: write
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v5
 
       - name: Run script
         if: success()
@@ -23,5 +27,5 @@ jobs:
           ./modules/CreateModules.ps1
 
       - name: Push created module back to repo
-        uses: EndBug/add-and-commit@v9
         if: success()
+        uses: EndBug/add-and-commit@v9

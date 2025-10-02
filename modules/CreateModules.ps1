@@ -1,12 +1,12 @@
 $powershellVersion = "7.0"
 $author = "Patrick El-Azem"
 $companyName = "AXON10 LLC"
-$projectUri = "https://github.com/plzm/azure-deploy"
+$projectUri = "https://github.com/axon10x/azure-psm"
 
 $copyright = "(c) " + (Get-Date).Year + " " + $companyName + ". All rights reserved."
 
 $scriptsPath = ".\scripts\"
-$azureModuleName = "plzm.Azure"
+$azureModuleName = "axon10.Azure"
 $azureModuleFolderPath = ".\modules\" + $azureModuleName
 $azureModuleFileName = $azureModuleName + ".psm1"
 $azureModuleFilePath = $azureModuleFolderPath + "\" + $azureModuleFileName
@@ -14,7 +14,7 @@ $azureModuleFileContents = ""
 $azureModuleManifestFileName = $azureModuleName + ".psd1"
 $azureModuleManifestFilPath = $azureModuleFolderPath + "\" + $azureModuleManifestFileName
 
-$moduleVersion = "2.0"
+$moduleVersion = "3.0"
 
 if (!(Test-Path -Path $azureModuleFolderPath))
 {
