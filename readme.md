@@ -6,7 +6,9 @@
 
 /scripts/ contains mostly Powershell but also Bash scripts. The .ps1 script files can be dot-sourced to use them directly. Due to dependencies, we recommend using the Powershell module instead.
 
-/modules/ contains the axon10.Azure Powershell .psm/.psd1 module. Currently axon10.Azure is built automatically from all the .ps1 files in /scripts/ when a push is made to develop. See the create-modules.yml workflow for details.
+/modules/ contains the axon10.Azure Powershell module with .psm1/.psd1 files. Currently axon10.Azure is built automatically from all the .ps1 files in /scripts/ when a push is made to develop. See the create-modules.yml workflow for details.
+
+The runner pushes the built module back to the GitHub repo in the same branch. After the workflow runs, you should `git pull` to get the new module files on the same branch. Then you can do your usual CI flow, PRs, etc.
 
 ---
 
