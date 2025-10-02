@@ -2,13 +2,13 @@
 
 ![Create Powershell Modules](https://github.com/axon10x/azure-psm/actions/workflows/create-modules.yml/badge.svg)  
 
-## Azure deployment artifacts: ARM templates, scripts, etc.
+## Azure Powershell Module and Scripts
 
 /scripts/ contains mostly Powershell but also Bash scripts. The .ps1 script files can be dot-sourced to use them directly. Due to dependencies, we recommend using the Powershell module instead.
 
 /modules/ contains the axon10.Azure Powershell module with .psm1/.psd1 files. Currently axon10.Azure is built automatically from all the .ps1 files in /scripts/ when a push is made to develop. See the create-modules.yml workflow for details.
 
-The runner pushes the built module back to the GitHub repo in the same branch. After the workflow runs, you should `git pull` to get the new module files on the same branch. Then you can do your usual CI flow, PRs, etc.
+The "Create PowerShell modules from script files" workflow runner pushes the built module back to the GitHub repo in the same branch. After the workflow runs, you should `git pull` to get the new module files locally on the same branch. Then you can do your usual CI flow, PRs, etc.
 
 ---
 

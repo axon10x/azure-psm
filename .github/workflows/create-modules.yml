@@ -1,4 +1,4 @@
-name: Create Powershell modules from script files
+name: Create PowerShell modules from script files
 
 on:
   workflow_dispatch:
